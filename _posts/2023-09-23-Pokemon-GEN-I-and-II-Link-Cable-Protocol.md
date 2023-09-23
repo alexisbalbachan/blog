@@ -46,7 +46,7 @@ So i knew **it was possible**, it wasn't extremely difficult, and had all the in
 
 Fast forward to **2023**: I found out that Arduino boards were REALLY cheap (compared to a RPI), so i bought myself an Arduino Nano, a bunch of sensors, and started delving into the world of microcontrollers. Did some basic examples, then implemented communication protocols with different sensors until i felt ready for my next task: Trade pokemon between a PC and a Gameboy using the Arduino as an intermediary. \[**SPOILER: I DID IT!**\]
 
-
+![Pokemon Trade GUI](/docs/assets/images/PoC.png)
 
 ## Introduction
 
