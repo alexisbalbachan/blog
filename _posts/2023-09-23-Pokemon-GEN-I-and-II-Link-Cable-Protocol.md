@@ -85,15 +85,9 @@ The cable pins have already been described many times ([1], [2], [3])
 3. Data is received through this pin bit by bit. It is connected to SOUT on the other side of the cable.
 4. Not used/Usage unknown/Haven't found any additional reference to this pin.
 5. One Gameboy will generate a clock signal (see SPI section) in this pin to synchronize the exchanges. Both Gameboys will read from and write into their corresponding pins only when the clock signal reaches specific states.
-6. Ground reference pin so both Gameboys share a **common ground** (EXTREMELY IMPORTANT **\***).
+6. Ground reference pin so both Gameboys share a common ground (EXTREMELY IMPORTANT **\***).
 
-\* Voltage is the **difference** in electric potential between two points, so anytime a Gameboy sends a +5V signal it means that its potential is 5V **above its ground(GND) level**.
-
-This is similar to how we measure heigth, we use the sea level as our reference and each time we say that a mountain is x meters tall we're really saying its x meters above sea level!
-
-Different Gameboys will probably have (slightly?) different ground references, so a +5V measured from one ground may not measure the same when compared to the other ground, therefore communication between the two will be unreliable at best, and impossible at worst.
-
-My first mistake was ignoring the ground pin, i was just starting and tried to read what was being sent on each pin.. I remember reading the exact opposite of what was expected (E.G: Expected 101010 , got 010101 instead). I lost so much time trying to figure that out! The solution was connecting pin 6 to any of my arduino's GND pins.
+\* My first mistake was ignoring the ground pin, i was just starting and tried to read what was being sent on each pin.. I remember reading the exact opposite of what was expected (E.G: Expected 101010 , got 010101 instead). I lost so much time trying to figure that out! The solution was connecting pin 6 to any of my arduino's GND pins.
 
 
 [1]: https://hackaday.io/project/160329-blinky-for-game-boy/log/150762-game-link-cable-and-connector-pinout
