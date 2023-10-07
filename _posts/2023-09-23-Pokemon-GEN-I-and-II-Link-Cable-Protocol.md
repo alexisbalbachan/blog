@@ -3,7 +3,8 @@
 * [Introduction](#introduction)
 * [Physical Layer](#physical-layer)
    * [Link Cable Pinout](#link-cable-pinout)
-*
+   * [Signals](#signals)
+   * [SPI](#spi)
 
 
 ## Motivation
@@ -88,6 +89,21 @@ The cable pins have already been described many times ([1], [2], [3])
 6. Ground reference pin so both Gameboys share a common ground (EXTREMELY IMPORTANT **\***).
 
 \* My first mistake was ignoring the ground pin, i was just starting and tried to read what was being sent on each pin.. I remember reading the exact opposite of what was expected (E.G: Expected 101010 , got 010101 instead). I lost so much time trying to figure that out! The solution was connecting pin 6 to any of my arduino's GND pins.
+
+### Signals
+
+* Voltage levels on each pin should be either 0V (representing 0/LOW) or 5V (representing 1/HIGH).
+* I haven't tested this, but lower voltages may still work (e.g 3V or 4V could also be considered as HIGH). Just make sure that whatever communicates with a Gameboy can tolerate 5V on its pins.
+* I would't recommend using voltages higher than 5V as you could damage your Gameboy.
+
+<br>
+
+* Both SOUT and SIN normally stay at LOW (0V) when idle (it shouldn't really matter)
+* SCK stays HIGH when idle, a pullup resistor will ensure that 5V are read even when there's nothing connected on the other end of the cable.
+* Using a pulldown resistor on SCK should probably work, we're only looking to read a consistent value from that pin when the other side isn't transmitting anything (or isn't even connected), otherwise the value will fluctuate randomly and we may confuse those fluctuations with an actual clock signal!
+
+### SPI
+
 
 
 [1]: https://hackaday.io/project/160329-blinky-for-game-boy/log/150762-game-link-cable-and-connector-pinout
