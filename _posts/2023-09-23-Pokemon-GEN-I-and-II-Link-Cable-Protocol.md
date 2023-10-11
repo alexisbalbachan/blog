@@ -5,6 +5,7 @@
    * [Link Cable Pinout](#link-cable-pinout)
    * [Signals](#signals)
    * [SPI](#spi)
+     * [Concept](#concept)
 
 
 ## Motivation
@@ -117,16 +118,46 @@ Why synchronization? Well, the peers need to know **when** to read from their in
  <p align="center"> Assuming LOW is 0 and HIGH is 1.. What binary number is being transmitted? </p>
 
  <p align="center"><img src="/docs/assets/images/input_signal.png" alt="Mystery signal" style="width:500px;"/></p>
-
-
  
  The safest bet would be 000101010:
  
-  <p align="center"><img src="/docs/assets/images/input_signal1.png" alt="Interpretation1" style="width:500px;"/></p>
+ <p align="center"><img src="/docs/assets/images/input_signal1.png" alt="Interpretation1" style="width:500px;"/></p>
 
-  But, there are other interpretations that are equally valid:
+ But, there are other interpretations that are equally valid:
 
-   <p align="center"><img src="/docs/assets/images/input_signal2.png" alt="Interpretation1" style="width:500px;"/></p>
+ <p align="center"><img src="/docs/assets/images/input_signal2.png" alt="Interpretation2" style="width:500px;"/></p>
+
+ Also, where does the transmission actually start? (and end?):
+ 
+ <p align="center"><img src="/docs/assets/images/input_signal3.png" alt="Interpretation3" style="width:500px;"/></p>
+
+ I that even a single transmission?:
+ 
+ <p align="center"><img src="/docs/assets/images/input_signal4.png" alt="Interpretation4" style="width:500px;"/></p>
+
+ <br>
+
+SPI solves this problem by introducing a **shared clock** which indicates when to read from and write to the data lines.
+
+<p align="center">A clock is just a signal that switches between HIGH and LOW at regular intervals:</p>
+
+<p align="center"><img src="/docs/assets/images/clocks.png" alt="Clock examples" style="width:500px;"/></p>
+
+Where does the clock signal come from? One of the peers generates it while the other one just reads from that line!
+
+* The peer that sends the signal is named **MASTER** (can be also named **CONTROLLER** or **MAIN**)
+* The one that only reads from the clock line is called **SLAVE** (or **PERIPHERAL**, or even **TARGET**)
+* Data lines are also named after those roles:
+  * The line where the master writes into and the slave reads from is called **M**aster **O**ut **S**lave **I**n (**MOSI**)
+    * It can also be called **C**ontroller **O**ut **P**eripheral **I**n (**COPI**)
+    * Or **C**ontroller **O**ut **T**arget **I**n (**COTI**)
+  * The line where the slave writes into and the master reads from is called  **M**aster **I**n **S**lave **O**ut (**MISO**)
+    * It can also be called **C**ontroller **I**n **P**eripheral **O**ut (**CIPO**)
+    * Or **C**ontroller **I**n **T**arget **O**ut (**CITO**)
+ 
+ 
+ 
+  
 
 [1]: https://hackaday.io/project/160329-blinky-for-game-boy/log/150762-game-link-cable-and-connector-pinout
 [2]: https://www.insidegadgets.com/2018/12/09/making-the-gameboy-link-cable-wireless-packet-based/
