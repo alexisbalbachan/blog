@@ -114,7 +114,19 @@ At its most basic level it has 2 lines used for sending and receiving data, one 
 
 Why synchronization? Well, the peers need to know **when** to read from their input line and **when** to write into their output line, consider the following scenario:
 
+ <p align="center"> Assuming LOW is 0 and HIGH is 1.. What binary number is being transmitted? </p>
 
+ <p align="center"><img src="/docs/assets/images/input_signal.png" alt="Mystery signal" style="width:500px;"/></p>
+
+
+ 
+ The safest bet would be 000101010:
+ 
+  <p align="center"><img src="/docs/assets/images/input_signal1.png" alt="Interpretation1" style="width:500px;"/></p>
+
+  But, there are other interpretations that are equally valid:
+
+   <p align="center"><img src="/docs/assets/images/input_signal2.png" alt="Interpretation1" style="width:500px;"/></p>
 
 [1]: https://hackaday.io/project/160329-blinky-for-game-boy/log/150762-game-link-cable-and-connector-pinout
 [2]: https://www.insidegadgets.com/2018/12/09/making-the-gameboy-link-cable-wireless-packet-based/
