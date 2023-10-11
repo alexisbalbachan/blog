@@ -104,8 +104,23 @@ The cable pins have already been described many times ([1], [2], [3])
 
 ### SPI
 
+#### Concept
+
+At this layer (physical) we'll only be concerned with transmitting bits and bytes, their actual meaning will be dealt with in higher layers.
+
+SPI (**S**erial **P**eripheral **I**nterface) is a widely used communication protocol, its amazingly well documented ([4], [5], [6], [7], [8]) and is (in my opinion) quite easy to understand. 
+
+At its most basic level it has 2 lines used for sending and receiving data, one line for syncronization between the 2 peers, and one line for signaling the beginning/end of the trasmission.
+
+Why synchronization? Well, the peers need to know **when** to read from their input line and **when** to write into their output line, consider the following scenario:
+
 
 
 [1]: https://hackaday.io/project/160329-blinky-for-game-boy/log/150762-game-link-cable-and-connector-pinout
 [2]: https://www.insidegadgets.com/2018/12/09/making-the-gameboy-link-cable-wireless-packet-based/
 [3]: https://dhole.github.io/post/gameboy_serial_1/
+[4]: https://en.wikipedia.org/wiki/Serial_Peripheral_Interface
+[5]: https://www.analog.com/en/analog-dialogue/articles/introduction-to-spi-interface.html
+[6]: https://learn.sparkfun.com/tutorials/serial-peripheral-interface-spi/all
+[7]: https://www.circuitbasics.com/basics-of-the-spi-communication-protocol/
+[8]: https://wiki.dfrobot.com/how_the_spi_protocol_works
