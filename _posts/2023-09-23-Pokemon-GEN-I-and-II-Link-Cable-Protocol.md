@@ -154,8 +154,14 @@ Where does the clock signal come from? One of the peers generates it while the o
   * The line where the slave writes into and the master reads from is called  **M**aster **I**n **S**lave **O**ut (**MISO**)
     * It can also be called **C**ontroller **I**n **P**eripheral **O**ut (**CIPO**)
     * Or **C**ontroller **I**n **T**arget **O**ut (**CITO**)
+* There is also a fourth signal which indicates when the transmission starts and ends
+  * This line is controlled by the master (like the clock)
+  * Its called **S**lave **S**elect (**SS**), **C**hip **S**elect (**CS**), **C**hip **E**nable (**CE**)
+  * NOTE: SPI can support multiple slave nodes, and each one needs to have a separate **SS** line to the master (other lines are shared). They will only communicate when their **SS** line is active.
  
- 
+ <p align="center">Here's an example of what SPI transmissions looks like (MOSI: 1011, MISO: 0110)</p>
+
+<p align="center"><img src="/docs/assets/images/SPI_transmission.png" alt="Clock examples" style="width:500px;"/></p>
  
   
 
