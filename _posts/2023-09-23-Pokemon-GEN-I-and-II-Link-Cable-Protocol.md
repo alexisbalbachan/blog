@@ -145,23 +145,48 @@ SPI solves this problem by introducing a **shared clock** which indicates when t
 
 Where does the clock signal come from? One of the peers generates it while the other one just reads from that line!
 
-* The peer that sends the signal is named **MASTER** (can be also named **CONTROLLER** or **MAIN**)
-* The one that only reads from the clock line is called **SLAVE** (or **PERIPHERAL**, or even **TARGET**)
+* The peer that sends the signal is named **MASTER** (can be also named **CONTROLLER** or **MAIN**).
+* The one that only reads from the clock line is called **SLAVE** (or **PERIPHERAL**, or even **TARGET**).
 * Data lines are also named after those roles:
-  * The line where the master writes into and the slave reads from is called **M**aster **O**ut **S**lave **I**n (**MOSI**)
-    * It can also be called **C**ontroller **O**ut **P**eripheral **I**n (**COPI**)
-    * Or **C**ontroller **O**ut **T**arget **I**n (**COTI**)
-  * The line where the slave writes into and the master reads from is called  **M**aster **I**n **S**lave **O**ut (**MISO**)
-    * It can also be called **C**ontroller **I**n **P**eripheral **O**ut (**CIPO**)
-    * Or **C**ontroller **I**n **T**arget **O**ut (**CITO**)
-* There is also a fourth signal which indicates when the transmission starts and ends
-  * This line is controlled by the master (like the clock)
-  * Its called **S**lave **S**elect (**SS**), **C**hip **S**elect (**CS**), **C**hip **E**nable (**CE**)
+  * The line where the master writes into and the slave reads from is called **M**aster **O**ut **S**lave **I**n (**MOSI**).
+    * It can also be called **C**ontroller **O**ut **P**eripheral **I**n (**COPI**).
+    * Or **C**ontroller **O**ut **T**arget **I**n (**COTI**).
+  * The line where the slave writes into and the master reads from is called  **M**aster **I**n **S**lave **O**ut (**MISO**).
+    * It can also be called **C**ontroller **I**n **P**eripheral **O**ut (**CIPO**).
+    * Or **C**ontroller **I**n **T**arget **O**ut (**CITO**).
+* There is also a fourth signal which indicates when the transmission starts and ends:
+  * This line is controlled by the master (like the clock).
+  * Its called **S**lave **S**elect (**SS**), **C**hip **S**elect (**CS**), **C**hip **E**nable (**CE**).
   * NOTE: SPI can support multiple slave nodes, and each one needs to have a separate **SS** line to the master (other lines are shared). They will only communicate when their **SS** line is active.
+* Both Master and Slave send and receive data at the same time.
  
- <p align="center">Here's an example of what SPI transmissions looks like (MOSI: 1011, MISO: 0110)</p>
+<p align="center">Here's an example of what SPI transmissions looks like (MOSI: 1011, MISO: 0110)</p>
 
 <p align="center"><img src="/docs/assets/images/SPI_transmission.png" alt="Clock examples" style="width:500px;"/></p>
+
+Note that **in this example** MOSI and MISO signals will only change when the clock signal is LOW.
+
+* SPI operates in 4 different modes which are basically a set of rules that both master and slave have to agree upon beforehand.
+* There are 2 parameters to consider:
+  * Does the clock stay idle at HIGH or at LOW? This is called **C**lock **POL**arity (**CPOL**).
+  * Is data read when the clock changes to LOW or to HIGH? and in that same line, is data written when the clock changes to LOW or to HIGH? This is called **C**lock **Pha**se (**CPHA**).
+* Read/write should be done on **clock edges** which is the moment when the clock changes values, a rising edge goes from LOW to HIGH and a falling edge goes from HIGH to LOW.
+* Its more important to write on time than to read on time, you can actually read your data whenever you want before the next clock edge.
+
+<br>
+
+<div align="center">
+
+Here is a table briefly describing the 4 SPI modes:
+  
+| SPI Mode | Clock Polarity when idle | When to read/write (edges) |
+|----------|--------------------------|----------------------------|
+| 0        |           LOW            | R on RISING / W on FALLING |
+| 1        |           LOW            | R on FALLING / W on RISING |
+| 2        |           HIGH           | R on FALLING / W on RISING |
+| 3        |           HIGH           | R on RISING / W on FALLING |
+  
+</div>
  
   
 
