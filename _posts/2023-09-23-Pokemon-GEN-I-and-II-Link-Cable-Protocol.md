@@ -6,6 +6,7 @@
    * [Signals](#signals)
    * [SPI](#spi)
      * [Concept](#concept)
+     * [How Gameboys Implement SPI](#how-gameboys-implement-spi)
 
 
 ## Motivation
@@ -187,6 +188,31 @@ Here is a table briefly describing the 4 SPI modes:
 | 3        |           HIGH           | R on RISING / W on FALLING |
   
 </div>
+
+<br>
+
+Most SPI implementations will only work with message lengths that are multiple of 8 bits (so the smallest unit that can be sent is 1 byte)
+
+There is an additional thing to consider and that is the bit order of the data being read/written:
+* If you wanted to send any number, for example 42 whose binary representation is 00101010 then you could write it from right to left or from left to right.
+  * Writing from left to right (0->0->1->0->1->0->1->0) means that we're writing from its most significant bit onward (**MSB**).
+  * Writing from right to left (0->1->0->1->0->1->0->0) means that we're writing from its less significant bit onward (**LSB**).
+* Whatever order is chosen, both ends must respect it when writing and reading from the data lines.
+  * In our example if we read 42 in a different order (LSB instead of MSB or MSB instead of LSB) then we'll end up with a flipped number: 01010100 (84 in decimal).
+ 
+### How Gameboys Implement SPI
+
+* Gameboys use SPI mode 3 when communicating through the link cable, that means that the clock signal stays HIGH when idle, data is written on falling edges and is read on rising edges.
+* Data is transfered byte by byte, that means that once 8 bits are transfered, an interrupt will trigger to signal the software that a byte has arrived/has been sent.
+* Bytes are written/read from their **M**ost **S**ignificant **B**it (**MSB**) onwards, i.e. from right to left.
+* **THERE IS NO SS/CS LINE**: The master will just generate a clock signal and the slave will read/write from/into data lines as soon as it detects the corresponding clock edges.
+* This should be obvious but got me confused at first: The clock signal will only exist when data is being transferred, for some reason i thought that it was always active as long as the connection was established.
+* The original Gameboy can only generate a 8192Hz clock (1 cycle/bit every 122μs or every 0.000122 seconds!).
+* Gameboy Color can generate clocks at 4 different frequencies: 8192Hz, 16384Hz, 262144Hz, and 524288Hz.
+* Slave Gameboys have to adapt to any incoming clock signal, they support absurdly low speeds (1 cycle per month!) and up to 500KHz (original GB).
+
+TLDR: SPI mode 3/ MSB / No SS|CS line / 4 possible clock speeds as master (GBC) / supports a wide range of clock speeds as a slave
+
  
   
 
