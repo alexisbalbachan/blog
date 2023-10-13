@@ -200,7 +200,7 @@ There is an additional thing to consider and that is the bit order of the data b
 * Whatever order is chosen, both ends must respect it when writing and reading from the data lines.
   * In our example if we read 42 in a different order (LSB instead of MSB or MSB instead of LSB) then we'll end up with a flipped number: 01010100 (84 in decimal).
  
-### How Gameboys Implement SPI
+#### How Gameboys Implement SPI
 
 * Gameboys use SPI mode 3 when communicating through the link cable, so the clock signal stays HIGH when idle, data is written on falling edges and is read on rising edges.
 * Data is transfered byte by byte, that means that once 8 bits are transfered, an interrupt will trigger to signal the software that a byte has arrived/has been sent.
