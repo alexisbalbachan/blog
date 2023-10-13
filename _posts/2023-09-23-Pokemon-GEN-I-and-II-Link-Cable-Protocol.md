@@ -87,7 +87,7 @@ The cable pins have already been described many times ([1], [2], [3])
 2. Data is sent through this pin bit by bit. It is connected to SIN on the other side of the cable.
 3. Data is received through this pin bit by bit. It is connected to SOUT on the other side of the cable.
 4. Not used/Usage unknown/Haven't found any additional reference to this pin.
-5. One Gameboy will generate a clock signal (see SPI section) in this pin to synchronize the exchanges. Both Gameboys will read from and write into their corresponding pins only when the clock signal reaches specific states.
+5. One Gameboy will generate a clock signal (see SPI section) in this pin to synchronize the transmission. Both Gameboys will read from and write into their corresponding pins only when the clock signal reaches specific states.
 6. Ground reference pin so both Gameboys share a common ground (EXTREMELY IMPORTANT **\***).
 
 \* My first mistake was ignoring the ground pin, i was just starting and tried to read what was being sent on each pin.. I remember reading the exact opposite of what was expected (E.G: Expected 101010 , got 010101 instead). I lost so much time trying to figure that out! The solution was connecting pin 6 to any of my arduino's GND pins.
@@ -156,7 +156,7 @@ Where does the clock signal come from? One of the peers generates it while the o
     * It can also be called **C**ontroller **I**n **P**eripheral **O**ut (**CIPO**).
     * Or **C**ontroller **I**n **T**arget **O**ut (**CITO**).
 * There is also a fourth signal which indicates when the transmission starts and ends:
-  * This line is controlled by the master (like the clock).
+  * This line is controlled by the master aswell.
   * Its called **S**lave **S**elect (**SS**), **C**hip **S**elect (**CS**), **C**hip **E**nable (**CE**).
   * NOTE: SPI can support multiple slave nodes, and each one needs to have a separate **SS** line to the master (other lines are shared). They will only communicate when their **SS** line is active.
 * Both Master and Slave send and receive data at the same time.
@@ -199,19 +199,31 @@ There is an additional thing to consider and that is the bit order of the data b
   * Writing from right to left (0->1->0->1->0->1->0->0) means that we're writing from its less significant bit onward (**LSB**).
 * Whatever order is chosen, both ends must respect it when writing and reading from the data lines.
   * In our example if we read 42 in a different order (LSB instead of MSB or MSB instead of LSB) then we'll end up with a flipped number: 01010100 (84 in decimal).
- 
+
+<br>
+
 #### How Gameboys Implement SPI
+
+Here i'll describe some key aspects of the SPI implementation used by the Gameboys.
+
+A detailed description about the implementation can be found [HERE](https://gbdev.io/pandocs/Serial_Data_Transfer_%28Link_Cable%29.html) (Pandocs) and more importantly [HERE](https://ia803208.us.archive.org/9/items/GameBoyProgManVer1.1/GameBoyProgManVer1.1.pdf#%5B%7B%22num%22%3A158%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22FitH%22%7D%2C769%5D) (Gameboy Programming Manual Chapter 1 Section 2.4).
+
+<br>
 
 * Gameboys use **SPI mode 3** when communicating through the link cable, so the clock signal stays HIGH when idle, data is written on falling edges and is read on rising edges.
 * Data is transfered byte by byte, that means that once 8 bits are transfered, an interrupt will trigger to signal the software that a byte has arrived/has been sent.
-* Bytes are written/read from their **M**ost **S**ignificant **B**it (**MSB**) onwards, i.e. from right to left.
+* Bytes are written/read from their **M**ost **S**ignificant **B**it (**MSB**) onwards, i.e. from left to right.
 * **THERE IS NO SS/CS LINE**: The master will just generate a clock signal and the slave will read/write from/into data lines as soon as it detects the corresponding clock edges.
 * This should be obvious but got me confused at first: The clock signal will only exist when data is being transferred, for some reason i thought that it was always active as long as the connection was established.
 * The original Gameboy can only generate a 8192Hz clock (1 cycle/bit every 122μs or every 0.000122 seconds!).
 * Gameboy Color can generate clocks at 4 different frequencies: 8192Hz, 16384Hz, 262144Hz, and 524288Hz.
 * Slave Gameboys have to adapt to any incoming clock signal, they support absurdly low speeds (even 1 cycle per month!) and up to 500KHz (original GB).
+  
+* **Master/Slave Negotiation**:
+  * Gameboys first poll the clock line, if they find a clock signal then they'll act as a slave. If no signal is present then they'll start sending their own clock signal (thus becoming master).
+  * This means that the first Gameboy that tries to initiate a connection will probably become master.
 
-TLDR: SPI mode 3/ MSB / No SS|CS line / 4 possible clock speeds as master (GBC) / supports a wide range of clock speeds as a slave
+TLDR: SPI mode 3/ MSB / No SS|CS line / 4 possible clock speeds as master (GBC) / supports a wide range of clock speeds as a slave / First Gameboy to transfer is master.
 
  
   
