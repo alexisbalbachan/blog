@@ -10,7 +10,8 @@
      * [Additional Restrictions in Pokemon Games](#additional-restrictions-in-pokemon-games)
 * [Pokemon Trading Protocol](#pokemon-trading-protocol)
   * [Generation I](#generation-i)
-  * [Generation II](#generation-ii) 
+  * [Generation II](#generation-ii)
+  * [Time Capsule](#time-capsule)
 
 
 ## Motivation
@@ -258,6 +259,8 @@ In the previous section i described the SPI capabilities of the Gameboy Hardware
 ### Generation I
 
 ### Generation II
+
+### Time Capsule
   
 
 [1]: https://hackaday.io/project/160329-blinky-for-game-boy/log/150762-game-link-cable-and-connector-pinout
