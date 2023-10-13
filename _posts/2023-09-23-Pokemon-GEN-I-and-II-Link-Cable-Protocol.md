@@ -7,6 +7,10 @@
    * [SPI](#spi)
      * [Concept](#concept)
      * [How Gameboys Implement SPI](#how-gameboys-implement-spi)
+     * [Additional Restrictions in Pokemon Games](#additional-restrictions-in-pokemon-games)
+* [Pokemon Trading Protocol](#pokemon-trading-protocol)
+  * [Generation I](#generation-i)
+  * [Generation II](#generation-ii) 
 
 
 ## Motivation
@@ -201,6 +205,7 @@ There is an additional thing to consider and that is the bit order of the data b
   * In our example if we read 42 in a different order (LSB instead of MSB or MSB instead of LSB) then we'll end up with a flipped number: 01010100 (84 in decimal).
 
 <br>
+<br>
 
 #### How Gameboys Implement SPI
 
@@ -222,10 +227,37 @@ A detailed description about the implementation can be found [HERE](https://gbde
 * **Master/Slave Negotiation**:
   * Gameboys first poll the clock line, if they find a clock signal then they'll act as a slave. If no signal is present then they'll start sending their own clock signal (thus becoming master).
   * This means that the first Gameboy that tries to initiate a connection will probably become master.
-
-TLDR: SPI mode 3/ MSB / No SS|CS line / 4 possible clock speeds as master (GBC) / supports a wide range of clock speeds as a slave / First Gameboy to transfer is master.
-
  
+
+<br>
+
+Things to keep in mind:
+
+* Slave nodes **cannot** send anything on their own, they have to wait for the master's clock signal first (which happens only when the master wants to transfer something themselves).
+* Similarly slaves are unable to signal if they're ready for the transfer or not, it will occur anyway and the master will read whatever is in its input signal.
+* This is why master nodes need to be considerate and give some time between each transfer to make sure that the slave is ready for it!
+* Transfers are simultaneous, but the slave may have to read something from its master before knowing **what** to send, so in many implementations slaves are 1 step behind their master:
+  * (MASTER <-> SLAVE):  (1) REQUEST1 <-> NOTHING | (2) REQUEST2 <-> RESPONSE1 | (3) REQUEST3 <-> RESPONSE2 | etc.
+
+<br>
+<br>
+
+#### Additional Restrictions in Pokemon Games
+
+In the previous section i described the SPI capabilities of the Gameboy Hardware, **HOW** they'll be used depends on the software (i.e. the games):
+
+* Pokemon Games will use the lowest clock speed for transmissions (8192Hz). I'm assuming that this is to support trades between any hardware (original GB, GBP, and GBC).
+* There seems to be a limit on how SLOW a clock can be, so slaves will timeout if no clock edge is detected after a certain amount of time.
+* I'm not sure if slave pokemon games would support much higher clock speeds than the standard rate (haven't tested it yet).
+* It could be possible to change the clock rate at any time as long as it does no exceed the allowed limits.
+
+<br><br><br>
+
+## Pokemon Trading Protocol
+
+### Generation I
+
+### Generation II
   
 
 [1]: https://hackaday.io/project/160329-blinky-for-game-boy/log/150762-game-link-cable-and-connector-pinout
