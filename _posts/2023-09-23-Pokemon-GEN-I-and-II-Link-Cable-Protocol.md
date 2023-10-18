@@ -28,6 +28,7 @@ What about Mew? Well, a couple of years later i got a Gameshark which i used to 
 The really interesting thing about all of this is that the Gameshark cartridge came with a Gameboy to PC(Parallel? port) cable which is the closest thing i had that resembles a Link Cable:
 
  <p align="center"><img src="/docs/assets/images/s-l1600.png" alt="Gameshark Link to PC Cable" style="width:500px;"/></p>
+ <p align="center"><em>Gameboy to PC cable</em></p>
 
 <!--![Gameshark Link to PC Cable](/docs/assets/images/s-l1600.png)-->
 
@@ -214,6 +215,9 @@ Here i'll describe some key aspects of the SPI implementation used by the Gamebo
 
 A detailed description about the implementation can be found [HERE](https://gbdev.io/pandocs/Serial_Data_Transfer_%28Link_Cable%29.html) (Pandocs) and more importantly [HERE](https://ia803208.us.archive.org/9/items/GameBoyProgManVer1.1/GameBoyProgManVer1.1.pdf#%5B%7B%22num%22%3A158%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22FitH%22%7D%2C769%5D) (Gameboy Programming Manual Chapter 1 Section 2.4).
 
+ <p align="center"><img src="/docs/assets/images/SIO_block_diagram.png" alt="Serial communication block diagram" style="width:500px;"/></p>
+ <p align="center"><em>Serial communication block diagram (Gameboy Programming Manual)</em></p>
+
 <br>
 
 * Gameboys use **SPI mode 3** when communicating through the link cable, so the clock signal stays HIGH when idle, data is written on falling edges and is read on rising edges.
@@ -256,7 +260,25 @@ In the previous section i described the SPI capabilities of the Gameboy Hardware
 
 ## Pokemon Trading Protocol
 
+All the information provided in previous sections was tiresome to come by, as it's scattered all over the internet. But the important thing is that **it exists**!
+
+As mentioned before, i could only find **one** single resource that touches on this topic ([Check it out!](http://www.adanscotney.com/2014/01/spoofing-pokemon-trades-with-stellaris.html)). It was crucial for my project and for my understanding of the protocol, however it came with several issues:
+* The provided protocol description is.. vague to say the least (but a good place to start!)
+* Both the protocol description and the provided PoC **are incomplete** (Barely enough to trade pokemon in the simplest scenarios).
+* The code heavily relies on mirroring data to work (which may break some trades).
+* It also expects the user to provide a valid buffer (which represents their pokemon data). The buffer itself has to follow certain rules not mentioned elsewhere!
+* Some code may be missing (the demo video shows 2 pokemon being traded, but the code itself only reaches the trade screen).
+* It only focuses on **Gen I**.
+
+There are other resources available that implement the trading protocol but unfortunately it seems that all of them are heavily based on the one mentioned above (some even use the exact same code).
+
+The actual trading algorithms implemented in the games are available [HERE (Pokered: GEN I)](https://github.com/pret/pokered/blob/b302e93674f376f2881cbd931a698345ad27bec3/engine/link/cable_club.asm) and [HERE (Pokegold: GEN II)](https://github.com/pret/pokegold/blob/70f883dc8670c95f411a9bbfa6ff13c44c027632/engine/link/link.asm). Both projects were really helpful but the code is written in pure Gameboy assembly (similar to Z80) with little to no comments.
+
+I'll describe the trading protocol for generation I first and then include how generation II differs from it and what was added (both generations have a lot in common so its important to read both sections).
+
 ### Generation I
+
+
 
 ### Generation II
 
