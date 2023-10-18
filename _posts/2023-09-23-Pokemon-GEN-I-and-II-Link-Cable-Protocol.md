@@ -274,7 +274,7 @@ There are other resources available that implement the trading protocol but unfo
 
 The actual trading algorithms implemented in the games are available [HERE (Pokered: GEN I)](https://github.com/pret/pokered/blob/b302e93674f376f2881cbd931a698345ad27bec3/engine/link/cable_club.asm) and [HERE (Pokegold: GEN II)](https://github.com/pret/pokegold/blob/70f883dc8670c95f411a9bbfa6ff13c44c027632/engine/link/link.asm). Both projects were really helpful but the code is written in pure Gameboy assembly (similar to Z80) with little to no comments.
 
-I'll describe the trading protocol for generation I first and then include how generation II differs from it and what was added (both generations have a lot in common so its important to read both sections).
+I'll describe the trading protocol for generation I first, then include how generation II differs from it and what was added (both generations have a lot in common so its important to read both sections).
 
 ### Generation I
 
