@@ -10,6 +10,9 @@
      * [Additional Restrictions in Pokemon Games](#additional-restrictions-in-pokemon-games)
 * [Pokemon Trading Protocol](#pokemon-trading-protocol)
   * [Generation I](#generation-i)
+    * [Handshake](#handshake)
+    * [Players Ready](#players-ready)
+    * [Room Selection](#room-selection)
   * [Generation II](#generation-ii)
   * [Time Capsule](#time-capsule)
 
@@ -277,6 +280,217 @@ The actual trading algorithms implemented in the games are available [HERE (Poke
 I'll describe the trading protocol for generation I first, then include how generation II differs from it and what was added (both generations have a lot in common so its important to read both sections).
 
 ### Generation I
+
+<div align="center">
+
+<hr>
+<br>
+  
+#### Handshake
+
+The first Gameboy to initiate the connection (by talking to the Cable Club NPC at the Pokemon Center) will probe the SCK line and won't find any clock signal there, thus becoming **master**.
+It will repeatedly send **0x01** looking for a response on the other side, the slave gameboy must always reply with **0x02** (everytime it receives 0x01). 
+
+Note that the slave gameboy won't reply to the first 0x01 because it can only reply to what it has already been received, (the master->slave and slave->master transmission happends at the same time!) so the first message will always be replied with 0x00:
+
+| #MSG | MASTER | SLAVE              |
+|------|--------|--------------------|
+|1     | 0x01   | 0x00               |
+|2     | 0x01   | REPLY for #1 HERE  |
+
+On my tests, the master kept trying to establish a connection approximately 89 times (i.e. sends 0x01 89 times with no response on the other side):
+
+| #MSG | MASTER | SLAVE |
+|------|--------|-------|
+|1     | 0x01   | 0x00  |
+|2     | 0x01   | 0x00  |
+|3     | 0x01   | 0x00  |
+|4     | 0x01   | 0x00  |
+|5     | 0x01   | 0x00  |
+|......|........|.......|
+|89    | 0x01   | 0x00  |
+|90    | ABORT  | ABORT |
+
+Only one 0x02 response is needed for the master to accept the handshake, further responses are ignored, they can be of any value (i'd recommend to keep responding with 0x02):
+
+Expected successful handshake:
+
+| #MSG | MASTER           | SLAVE                 |
+|------|------------------|-----------------------|
+|1     | 0x01             | 0x00                  |
+|2     | 0x01             | 0x02 (Responds to #1) |
+|3     | ACKNOWLEDGED!    | 0x02 (Responds to #2) |
+|4     | .................| ......................|
+
+Abnormal successful handshake (still valid):
+
+| #MSG | MASTER           | SLAVE                 |
+|------|------------------|-----------------------|
+|1     | 0x01             | 0x00                  |
+|2     | 0x01             | 0x02 (Responds to #1) |
+|3     | ACKNOWLEDGED!    | **0x99** (Responds to #2) |
+|4     | .................| ......................|
+
+Once a handshake is accepted by the master, it acknowledges it by sending **0x00** (a very bad choice for an acknowledge, it is the same as not sending anything!). The slave must also reply with **0x00**, in my tests the acknowledge happends twice (both master and slave send 0x00 two times in a row)
+
+**A complete handshake looks like this:**
+
+| #MSG | MASTER | SLAVE |
+|------|--------|-------|
+|1     | 0x01   | 0x00  |
+|2     | 0x01   | 0x02  |
+|3     | 0x00   | 0x02  |
+|4     | 0x00   | 0x00  |
+|5     | 0x00   | 0x00  |
+
+After a handshake both players are asked to save the game.
+
+<hr>
+<br>
+
+#### Players Ready
+
+The master won't send anything else until the player saves the game, similarly the slave will always reply with 0x00 until its player also saves their game.
+
+Once the master saved its game it will repeatedly send **0x60** (to signal that it's ready) until it receives **0x60** as well. It will abort and disconnect after several seconds of not receiving that same value! (it sends 0x00 before disconnecting)
+
+| #MSG   | MASTER      | SLAVE |
+|--------|-------------|-------|
+|X       | 0x60        | 0x00  |
+|X+1     | 0x60        | 0x00  |
+|X+2     | 0x60        | 0x00  |
+|X+3     | 0x60        | 0x00  |
+|....... | ........... | ..... |
+|X+7679  | 0x60        | 0x00  |
+|X+7680  | ABORT(0x00) | 0x00  |
+
+After saving its game the slave will also abort after some time without any messages coming from the master, but because it cannot send anything on its own it will just disconnect:
+
+| #MSG   | MASTER      | SLAVE                 |
+|--------|-------------|-----------------------|
+|X       | FIRST 0x60  | ALREADY DISCONNECTED  |
+
+<br><br>
+
+If both players are ready on that time window then the slave will be responding with 0x60 everytime it receives that value. This can happen multiple times until the master acknowledges it (sending **0x00**, the default acknowledge message). The slave will also reply the acknowledge message with its own acknowledge (also **0x00**):
+
+| #MSG | MASTER       | SLAVE       |
+|------|--------------|-------------|
+|X     | 0x60 (FIRST) | 0x00        |
+|X+1   | 0x60         | 0x60 (FIRST)|
+|X+2   | 0x60         | 0x60        |
+|X+3   | 0x60         | 0x60        |
+|X+4   | 0x60         | 0x60        |
+|X+5   | 0x60         | 0x60        |
+|..... | ............ | ........... |
+|X+13  | 0x60 (LAST)  | 0x60        |
+|X+14  | 0x00 (ACK)   | 0x60 (LAST) |
+|X+15  | 0x00         | 0x00 (ACK)  |
+|X+16  | 0x00         | 0x00        |
+|X+17  | 0x00         | 0x00        |
+|..... | ............ | ........... |
+|X+24  | 0x00         | 0x00        |
+|X+25  | MENU MSG     | 0x00        |
+
+<hr><br>
+
+#### Room Selection
+
+This is where players select what they want to do: **Trade, Battle (Colosseum), or Cancel**. Both players must select the same option (or cancel at any time).
+
+Both gameboys will continuously send what menu is currently selected, the messages are sent twice and then there's one acknowledge before repeating the loop:
+
+
+| #MSG    | MASTER       | SLAVE       |
+|---------|--------------|-------------|
+|X        | MENU MSG #1  | 0x00        |
+|X+1      | MENU MSG #2  | MENU MSG #1 |
+|X+2      | 0x00         | MENU MSG #2 |
+|X+3      | MENU MSG #1  | 0x00        |
+|X+4      | MENU MSG #2  | MENU MSG #1 |
+|X+5      | 0x00         | MENU MSG #2 |
+|X+6      | MENU MSG #1  | 0x00        |
+|X+7      | MENU MSG #2  | MENU MSG #1 |
+|X+8      | 0x00         | MENU MSG #2 |
+|INFINITY | ............ | ........... |
+
+
+<br>
+
+Menu messages have the following format:
+
+<table>
+  <tr>
+    <td>HEX:</td>
+    <td colspan="4">0xD</td>
+    <td colspan="4">0xY</td>
+  </tr>
+  <tr>
+    <td>Binary:</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>1</td>
+    <td>y</td>
+    <td>y</td>
+    <td>y</td>
+    <td>y</td>
+  </tr>
+  <tr>
+    <td>Meaning:</td>
+    <td colspan="4">PREFIX</td>
+    <td>B</td>
+    <td>A</td>
+    <td colspan="2">#M</td>
+  </tr>
+</table>
+
+<br>
+
+The highest 4 bits of menu messages are always **0xD**.
+
+The lowest 4 bits are the ones describing the action:
+
+| Symbol| Description                   |
+|-------|-------------------------------|
+| B     | 1 if Player pressed "B"       |
+| A     | 1 if Player pressed "A"       |
+| #M    | Menu item number (0, 1, or 2) |
+
+</div>
+
+* #M = 0: Trade, #M = 1: Colosseum, #M = 2: Cancel
+* I haven't tested what #M = 3 does (it shouldn't be a valid message anyways!), it could be considered as a cancel.
+* If both A and B are 0 then #M indicates which item is currently being highlighted.
+* If B is 1 then the player quit the selection menu while #M was being highlighted, it is considered as a cancel. Both gameboys disconnect.
+* B takes priority over A, so if both A and B are 1 then it will also be treated as a cancel (This type of message shouldn't exist under normal circumnstances).
+* If A is 1 then the player selected #M in the menu, the selected items must match or else both gameboys will abort and disconnect.
+  * Menu numbers will be compared after both gameboys select an option (by pressing "A"), otherwise the menu loop will continue.
+  * If A is 1 and #M is 2 then the player chose "Cancel" both gameboys will abort and disconnect right now (it doesn't matter if the other gameboy hasn't made a decision yet).
+ 
+<br>
+
+<div align="center">
+  
+Here's how it looks like when both players select and choose the trade option in the menu (slave chose first!):
+
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0xD0   | 0x00 |
+|X+1      | 0xD0   | 0xD0 |
+|X+2      | 0x00   | 0xD0 |
+|X+3      | 0xD0   | 0x00 |
+|X+4      | 0xD0   | **0xD4** |
+|X+5      | 0x00   | 0xD4 |
+|X+6      | 0xD0   | 0x00 |
+|X+7      | 0xD0   | 0xD4 |
+|X+8      | 0x00   | 0xD4 |
+|X+9      | **0xD4**   | 0x00 |
+|X+10     | 0xD4   | 0xD4 |
+|X+11     | 0x00   | 0xD4 |
+
+</div>
 
 
 
