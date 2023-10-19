@@ -13,6 +13,8 @@
     * [Handshake](#handshake)
     * [Players Ready](#players-ready)
     * [Room Selection](#room-selection)
+    * [Players Ready for Trade](#players-ready-for-trade)
+    * [Seed Exchange](#seed-exchange)
   * [Generation II](#generation-ii)
   * [Time Capsule](#time-capsule)
 
@@ -460,19 +462,20 @@ The lowest 4 bits are the ones describing the action:
 </div>
 
 * #M = 0: Trade, #M = 1: Colosseum, #M = 2: Cancel
-* I haven't tested what #M = 3 does (it shouldn't be a valid message anyways!), it could be considered as a cancel.
+* Colosseum takes priority over Cancel so #M = 3 (1 and 2 at the same time) is considered Colosseum (it shouldn't be a valid message anyways!).
 * If both A and B are 0 then #M indicates which item is currently being highlighted.
 * If B is 1 then the player quit the selection menu while #M was being highlighted, it is considered as a cancel. Both gameboys disconnect.
 * B takes priority over A, so if both A and B are 1 then it will also be treated as a cancel (This type of message shouldn't exist under normal circumnstances).
-* If A is 1 then the player selected #M in the menu, the selected items must match or else both gameboys will abort and disconnect.
-  * Menu numbers will be compared after both gameboys select an option (by pressing "A"), otherwise the menu loop will continue.
-  * If A is 1 and #M is 2 then the player chose "Cancel" both gameboys will abort and disconnect right now (it doesn't matter if the other gameboy hasn't made a decision yet).
+* If A is 1 then the player selected #M in the menu.
+  * If A is 1 and #M is 2 then the player chose "Cancel" both gameboys will abort and disconnect right now.
+* **The first player that selects (or cancels) something will pick that option for both of them!**
+* The selection will be made effective once the master ends an iteration (after sending an acknowledge(0x00)). The selection loop ends there and the master stops communicating (for now).
  
 <br>
 
 <div align="center">
   
-Here's how it looks like when both players select and choose the trade option in the menu (slave chose first!):
+Here's how it looks like when players select and choose the trade option in the menu (slave chose first!):
 
 
 | #MSG    | MASTER | SLAVE|
@@ -482,15 +485,51 @@ Here's how it looks like when both players select and choose the trade option in
 |X+2      | 0x00   | 0xD0 |
 |X+3      | 0xD0   | 0x00 |
 |X+4      | 0xD0   | **0xD4** |
-|X+5      | 0x00   | 0xD4 |
-|X+6      | 0xD0   | 0x00 |
-|X+7      | 0xD0   | 0xD4 |
-|X+8      | 0x00   | 0xD4 |
-|X+9      | **0xD4**   | 0x00 |
-|X+10     | 0xD4   | 0xD4 |
-|X+11     | 0x00   | 0xD4 |
+|X+5      | 0x00   | **0xD4** |
+|X+6      | DONE   | DONE |
+
+<hr><br>
+
+#### Players Ready for Trade
+
+This step is very similar to [Players Ready](#players-ready)
 
 </div>
+
+**Both players are now in the trade room!** Here, they're expected to press "A" facing the trading machine.
+Any other action (walking around) isn't communicated to the other peer! The cable can even be unplugged and nothing will break.
+
+When the master is ready (presses "A"), it will first send a single **0xFE** which means that it doesn't have any remaining data to send (i'm not sure **WHY** it would have something else to send at this point). Followed by an endless stream of **0x60** until it receives several 0x60 from the slave as well. **There isn't a timeout here**. The master will be stuck waiting until the Gameboy is turned off.
+
+The same happens with the slave when it iteracts with the machine: It will wait for the master to communicate (and respond with a single 0xFE at first followed by 0x60 on subsequent transmissions). If the master never communicates then it will be stuck forever until the gameboy is turned off.
+
+<div align="center">
+
+Here's what it looks like when both gameboys are ready (Master was ready first):
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0xFE   | 0x00 |
+|X+1      | 0x60   | 0x00 |
+|X+2      | 0x60   | 0x00 |
+|X+3      | 0x60   | 0x00 |
+| ....... | ...... | .... |
+|X+5000   | 0x60   | 0xFE |
+|X+5001   | 0x60   | 0x60 |
+|X+5002   | 0x60   | 0x60 |
+|X+5003   | 0x60   | 0x60 |
+|X+5004   | 0x60   | 0x60 |
+| ....... | ...... | .... |
+|x+5015   | READY  | READY|
+
+
+<hr><br>
+
+#### Seed Exchange
+
+</div>
+
+
 
 
 
