@@ -503,6 +503,8 @@ When the master is ready (presses "A"), it will first send a single **0xFE** whi
 
 The same happens with the slave when it iteracts with the machine: It will wait for the master to communicate (and respond with a single 0xFE at first followed by 0x60 on subsequent transmissions). If the master never communicates then it will be stuck forever until the gameboy is turned off.
 
+After receiving many successful responses, the master will send a stream of 0x00 before continuing.
+
 <div align="center">
 
 Here's what it looks like when both gameboys are ready (Master was ready first):
@@ -520,13 +522,63 @@ Here's what it looks like when both gameboys are ready (Master was ready first):
 |X+5003   | 0x60   | 0x60 |
 |X+5004   | 0x60   | 0x60 |
 | ....... | ...... | .... |
-|x+5015   | READY  | READY|
-
+|x+5014   | 0x00   | 0x60 |
+|x+5015   | 0x00   | 0x00 |
+|x+5016   | 0x00   | 0x00 |
+|x+5017   | 0x00   | 0x00 |
+| ....... | ...... | .... |
+|x+5022   | 0x00   | 0x00 |
+|x+5023   | READY  | READY|
 
 <hr><br>
 
 #### Seed Exchange
 
+</div>
+
+A random seed is used when battling in order to calculate things like critical hits, misses, etc. However, they are also exchanged when trading even though they have no use there!
+Master and slave will exchange 10 random numbers between 0 and 252 (0xFC)
+
+First the master will send **0xFD** (which is used as a **preamble** before a block of data is exchanged) repeatedly until it receives the same answer from the slave (it needs multiple successful answers before continuing, probably as a sync mechanism).
+
+If the slave never responds with 0xFD, then the master will be stuck waiting forever.
+
+Seed values go grom 0 to 0xFC, so the first different number after the preamble stream (which are multiple 0xFD) is the first seed value so the subsequent 9 values are also expected to be part of the seed (total of 10 bytes).
+
+I haven't tested what happens when sending 0xFD/0xFE/0xFF as part of the seed (which shouldn't happen).
+
+<div align="center">
+
+A normal seed exchange (Master seed: A0-A9, Slave seed: B0-B9)
+
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0xFD   | 0x00 |
+|X+1      | 0xFD   | 0xFD |
+|X+2      | 0xFD   | 0xFD |
+|X+3      | 0xFD   | 0xFD |
+|X+4      | 0xFD   | 0xFD |
+|X+5      | 0xFD   | 0xFD |
+|X+6      | 0xFD   | 0xFD |
+|X+7      | 0xFD   | 0xFD |
+|X+8      | 0xFD   | 0xFD |
+|X+9      | 0xFD   | 0xFD |
+|X+10     | 0xA0   | 0xFD |
+|X+11     | 0xA1   | 0xB0 |
+|X+12     | 0xA2   | 0xB1 |
+|X+13     | 0xA3   | 0xB2 |
+|X+14     | 0xA4   | 0xB3 |
+|X+15     | 0xA5   | 0xB4 |
+|X+16     | 0xA6   | 0xB5 |
+|X+17     | 0xA7   | 0xB6 |
+|X+18     | 0xA8   | 0xB7 |
+|X+19     | 0xA9   | 0xB8 |
+|X+20     | 0xA9   | 0xB8 |
+|X+21     | DONE   | 0xB9 |
+|X+22     | DONE   | DONE |
+
+  
 </div>
 
 
