@@ -15,6 +15,10 @@
     * [Room Selection](#room-selection)
     * [Players Ready for Trade](#players-ready-for-trade)
     * [Seed Exchange](#seed-exchange)
+    * [Party Information Exchange](#party-information-exchange)
+    * [Data Structure](#data-structure)
+      * [Trainer Name](#trainer-name)
+      * [Party Size](#party-size)
   * [Generation II](#generation-ii)
   * [Time Capsule](#time-capsule)
 
@@ -537,13 +541,13 @@ Here's what it looks like when both gameboys are ready (Master was ready first):
 </div>
 
 A random seed is used when battling in order to calculate things like critical hits, misses, etc. However, they are also exchanged when trading even though they have no use there!
-Master and slave will exchange 10 random numbers between 0 and 252 (0xFC)
+Master and slave will exchange 10 random numbers between 1 and 252 (0xFC)
 
 First the master will send **0xFD** (which is used as a **preamble** before a block of data is exchanged) repeatedly until it receives the same answer from the slave (it needs multiple successful answers before continuing, probably as a sync mechanism).
 
 If the slave never responds with 0xFD, then the master will be stuck waiting forever.
 
-Seed values go grom 0 to 0xFC, so the first different number after the preamble stream (which are multiple 0xFD) is the first seed value so the subsequent 9 values are also expected to be part of the seed (total of 10 bytes).
+Seed values go from 1 to 0xFC, so the first number in that range after the preamble stream is considered as the first seed value, and the subsequent 9 values are expected to be the remaining part of the seed (a total of 10 bytes).
 
 I haven't tested what happens when sending 0xFD/0xFE/0xFF as part of the seed (which shouldn't happen).
 
@@ -578,8 +582,103 @@ A normal seed exchange (Master seed: A0-A9, Slave seed: B0-B9)
 |X+21     | DONE   | 0xB9 |
 |X+22     | DONE   | DONE |
 
-  
+<hr><br>
+
+#### Party Information Exchange
+
+
 </div>
+
+This step is almost exactly the same as the seed exchange but with a bigger payload. Immediately after exchanging seeds, the master will start sending several **0xFD** as a preamble, and again, the slave must also reply with 0xFD or else the other side will be stuck waiting forever.
+
+The exchange will start after the first non 0xFD byte appears and a total of **415 bytes** will be exchanged.
+
+There's only one restriction: **The payload must not contain 0xFE**. 0xFE means that there is no more data to be exchanged, i'm not exactly sure how it works internally, but once the exchange ends the other side will just ignore everything after that byte (it's like an end of buffer marker or something like that).
+
+What happens when 0xFE is part of the payload? It needs to be patched (see [Patch Section](#patch-section)). To keep it simple for now: **Each 0xFE byte is replaced with 0xFF before being sent**.
+
+<div align="center">
+
+A normal exchange (Preamble + 415 bytes):
+
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X-10     | 0xFD   | 0x00 |
+|X-9      | 0xFD   | 0xFD |
+|X-8      | 0xFD   | 0xFD |
+| ....... | ...... | .... |
+|X        | 0x80   | 0xFD |
+|X+1      | 0x88   | 0x82 |
+|X+2      | 0x88   | 0x88 |
+|X+3      | 0x95   | 0x90 |
+| ....... | ...... | .... |
+|X+414    | 0x50   | 0x80 |
+|X+415    | END    | 0x50 |
+|X+416    | END    | END  |
+
+</div>
+
+
+<div align="center">
+
+<hr> <br>
+
+#### Data Structure
+
+</div>
+
+
+* This is not part of the protocol per se, but it's important to understand **WHAT** is being exchanged in those 415 bytes as it affects the final result.
+
+* There are many strings within that payload, they use **custom encodings (not ASCII!)**, which depends on the game's language (that's why trading between games of different languages will break their save files!).
+
+* Those encodings are pretty well documented here: [Bulbapedia-> Character Encoding (Generation I)](https://bulbapedia.bulbagarden.net/wiki/Character_encoding_(Generation_I)).
+
+
+
+<div align="center">
+
+A few examples:
+
+| Character | English Encoding | Japanese Encoding |
+|-----------|------------------|-------------------|
+|     A     |       0x80       |        0x60       |
+|     B     |       0x81       |        0x61       |
+|     a     |       0xA0       |   DOES NOT EXIST! |
+|     5     |       0xFB       |        0xFB       |
+|     ポ    |  DOES NOT EXIST! |        0x43       |
+
+<br><br>
+
+##### Trainer Name
+
+</div>
+
+* Bytes [0:10] (first 11 Bytes) correspond with the trainer's name. This name is displayed above each trainer's party.
+* The name itself is actually shorter, up to 10 bytes long, the extra byte is reserved for the string terminator (**0x50** in any encoding).
+* Characters after 0x50 are ignored, they're usually **0x00**.
+* A 3 byte name will have 0x50 at its fourth byte (followed by 0x00 afterwards), whereas a 10 byte name will have 0x50 in the (reserved) eleventh byte.
+* I haven't tested what could happen if no string terminator is present or if we sent a 11 character string.
+* **THIS NAME CANNOT BE PATCHED**. It cannot contain 0xFE (**"8"**), this can't happen without cheats/glitches because the in-game's keyboard doesn't have any numbers! This means you can't give a name with numbers to your player.
+* **IT CAN'T START WITH 0xFD ("7")** as it will be interpreted as part of the preamble, messing up everything that comes after! Same as above, names don't usually contain numbers without cheats/glitches.
+* **IT CAN'T START WITH NULL CHARACTERS (0x00)**. Also an invalid name because not only it's empty, but also its first character isn't 0x50! Anyways, null characters will be interpreted as acknowledges and therefore skipped.
+
+<div align="center">
+
+##### Party Size
+
+</div>
+
+* [11] This is only one byte with a value between 1 and 6. It specifies how many pokemon are there in the trainer's party.
+* It's the only way of telling the other side that your party is smaller than 6, you have to exchange 415 bytes no matter how many pokemon you have! By specifying a smaller party size, the other peer will ignore the extra bytes (corresponding to non existing pokemon).
+* Things i haven't tested:
+  * What happens if party size is 0.
+  * What happens if party size is greater than 6.
+  * What happens if it's exactly 0xFE.
+  * Is this value completely ignored? (See the next item).
+
+
 
 
 
