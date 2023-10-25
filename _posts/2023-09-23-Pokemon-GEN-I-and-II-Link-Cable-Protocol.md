@@ -297,7 +297,7 @@ I'll describe the trading protocol for generation I first, then include how gene
 The first Gameboy to initiate the connection (by talking to the Cable Club NPC at the Pokemon Center) will probe the SCK line and won't find any clock signal there, thus becoming **master**.
 It will repeatedly send **0x01** looking for a response on the other side, the slave gameboy must always reply with **0x02** (everytime it receives 0x01). 
 
-Note that the slave gameboy won't reply to the first 0x01 because it can only reply to what it has already been received, (the master->slave and slave->master transmission happends at the same time!) so the first message will always be replied with 0x00:
+Note that the slave gameboy won't reply to the first 0x01 because it can only reply to what it has already been received, (the master->slave and slave->master transmission happens at the same time!) so the first message will always be replied with 0x00:
 
 | #MSG | MASTER | SLAVE              |
 |------|--------|--------------------|
@@ -337,7 +337,7 @@ Abnormal successful handshake (still valid):
 |3     | ACKNOWLEDGED!    | **0x99** (Responds to #2) |
 |4     | .................| ......................|
 
-Once a handshake is accepted by the master, it acknowledges it by sending **0x00** (a very bad choice for an acknowledge, it is the same as not sending anything!). The slave must also reply with **0x00**, in my tests the acknowledge happends twice (both master and slave send 0x00 two times in a row)
+Once a handshake is accepted by the master, it acknowledges it by sending **0x00** (a very bad choice for an acknowledge, it is the same as not sending anything!). The slave must also reply with **0x00**, in my tests the acknowledge happens twice (both master and slave send 0x00 two times in a row)
 
 **A complete handshake looks like this:**
 
