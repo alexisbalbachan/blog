@@ -20,6 +20,7 @@
       * [Trainer Name](#trainer-name)
       * [Party Size](#party-size)
       * [Pokemon Id List](#pokemon-id-list)
+      * [Pokemon Structure (x6)](#pokemon-structure-x6)
   * [Generation II](#generation-ii)
   * [Time Capsule](#time-capsule)
 
@@ -665,6 +666,7 @@ A few examples:
 * **IT CAN'T START WITH 0xFD ("7")** as it will be interpreted as part of the preamble, messing up everything that comes after! Same as above, names don't usually contain numbers without cheats/glitches.
 * **IT CAN'T START WITH NULL CHARACTERS (0x00)**. Also an invalid name because not only it's empty, but also its first character isn't 0x50! Anyways, null characters will be interpreted as acknowledges and therefore skipped.
 
+<br><br>
 <div align="center">
 
 ##### Party Size
@@ -745,6 +747,15 @@ Same party but with random numbers after the first list terminator (unusual but 
 
 
 </div>
+
+<br><br>
+
+<div align="center">
+
+##### Pokemon Structure (x6)
+
+</div>
+
 
 
 
