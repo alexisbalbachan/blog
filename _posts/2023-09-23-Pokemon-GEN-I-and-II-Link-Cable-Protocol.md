@@ -19,6 +19,7 @@
     * [Data Structure](#data-structure)
       * [Trainer Name](#trainer-name)
       * [Party Size](#party-size)
+      * [Pokemon Id List](#pokemon-id-list)
   * [Generation II](#generation-ii)
   * [Time Capsule](#time-capsule)
 
@@ -670,15 +671,80 @@ A few examples:
 
 </div>
 
-* [11] This is only one byte with a value between 1 and 6. It specifies how many pokemon are there in the trainer's party.
+* Byte [11]. This is only one byte with a value between 1 and 6. It specifies how many pokemon are there in the trainer's party.
 * It's the only way of telling the other side that your party is smaller than 6, you have to exchange 415 bytes no matter how many pokemon you have! By specifying a smaller party size, the other peer will ignore the extra bytes (corresponding to non existing pokemon).
+* [Glitch] if its bigger than expected (e.g: 6 when we only have 3 pokemon), the empty/random data corresponding to non existing party members will be interpreted as pokemon too!
 * Things i haven't tested:
   * What happens if party size is 0.
   * What happens if party size is greater than 6.
   * What happens if it's exactly 0xFE.
-  * Is this value completely ignored? (See the next item).
+ 
+<br><br>
+ 
+<div align="center">
+
+##### Pokemon Id List
+
+</div>
+
+* Bytes [12:19]. This is a fixed length list which contains up to 6 elements plus a terminator.
+* It contains the id numbers of each pokemon in the party. The first id corresponds to the first pokemon in the party, the second id to the second pokemon, and so on..
+* **Id numbers are NOT the same as pokedex numbers**. Pokemon in generation I have a hidden id number.
+* A list of pokemon with their corresponding id numbers can be found here: [Bulbapedia -> List of Pokemon by index number (Generation I)](https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_index_number_(Generation_I)).
+* Note: Starting from generation II those hidden pokemon ids were replaced by the actual pokedex numbers (which makes more sense!).
+
+<br>
+  
+* The list terminator (**0xFF**) goes after the id of last pokemon in the party.
+* Parties with fewer than 6 pokemon will complete the list with that same terminator (0xFF).
+* Values after the first list terminator are **ignored**, so it's not strictly necessary to keep sending 0xFF, any value will do **except 0xFE** (Time Capsule in Gen II fills the remaining bytes with 0x00!).
+* The statement above is only valid if the [party size](#party-size) matches whatever is being sent here (e.g: a party of 3 should have 0xFF at the fourth byte).
+  * The [party size](#party-size) indicates how many bytes have to be read from the list **no matter what**, so with an abnormally large party size the list terminator will be interpreted as another pokemon (and the bytes that follow it too!).
+  * [Glitch] If a pokemon with 0xFF as its id is being traded then **it will become invisible** (because 0xFF actually indicates the end of the list, which seems to be used when rendering pokemon names in the trade menu). However it is still selectable! (the selection cursor is able to go below the last displayed pokemon and ends up pointing at the corresponding blank space).
+    * Every pokemon below the one with 0xFF as its id will also become **invisible but selectable** (same reason, 0xFF indicates the end of the list)!
+  * [Glitch] Pokemon with 0xFE as their id will completely mess up the trade data, shifting it by one byte (for each 0xFE).
+* **THIS LIST CANNOT BE PATCHED**. So 0xFE shouldn't be sent (see above). That's ok because there isn't a valid pokemon whose id is 0xFE.
+
+<br>
+
+<div align="center">
+
+Some examples:
+
+<br>
+
+A full party (Venasaur, Rhydon, Seel, Mewtwo, Mew, Charmander):
+
+| Byte  |  0 |  1 |  2 |  3 |  4 |  5 |  6 |
+|-------|----|----|----|----|----|----|----|
+| Value |0x9A|0x01|0x58|0x83|0x15|0x80|0xFF|
+
+<br>
+
+Party with a single pokemon (Bulbasaur):
+
+| Byte  |  0 |  1 |  2 |  3 |  4 |  5 |  6 |
+|-------|----|----|----|----|----|----|----|
+| Value |0x99|0xFF|0xFF|0xFF|0xFF|0xFF|0xFF|
+
+<br>
+
+Same party but with random numbers after the first list terminator (unusual but still valid):
+
+| Byte  |  0 |  1 |  2 |  3 |  4 |  5 |  6 |
+|-------|----|----|----|----|----|----|----|
+| Value |0x99|**0xFF**|0xDE|0xCA|0xF0|0xFA|0xDE|
+
+<br>
+
+[Glitch] Party of 3 with 2 invisible pokemon (Bulbasaur, [invisible] **'M**, [invisible] Bulbasaur ):
+
+| Byte  |  0 |  1 |  2 |  3 |  4 |  5 |  6 |
+|-------|----|----|----|----|----|----|----|
+| Value |0x99|0xFF|0x99|**0xFF**|0xFF|0xFF|0xFF|
 
 
+</div>
 
 
 
