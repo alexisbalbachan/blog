@@ -756,6 +756,38 @@ Same party but with random numbers after the first list terminator (unusual but 
 
 </div>
 
+Bytes [20:284] are 6 contiguous data structures (44 bytes long each). The structure itself describes the attributes of a single pokemon, so naturally there's a structure for every pokemon in the player's party.
+
+A summary of the structure's fields can be found here: [Bulbapedia -> Pokemon data structure (Generation I)](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_data_structure_(Generation_I)).
+
+I'll also describe them here:
+
+* [0] **Pokemon species Id**: As mentioned in [Pokemon Id List](#pokemon-id-list) each gen I pokemon has a hidden id which is different from its pokedex number (gen II just uses pokedex numbers). **This byte will be overriden by the id specified in [Pokemon Id List](#pokemon-id-list)** (they shouldn't be different under normal circumstances). So you could theoretically put any value here (except 0xFE of course!).
+* [1:2] **Current HP** (2 bytes, big endian, unsigned). Its value goes from 0 to 65535, **it can even be higher than the pokemon's max HP without any problem**.
+* [3] **Level**: From 0 to 255. Any level is valid (remember MissigNo!).
+* [4] **Status Condition**: Each bit represents a status, i could only find information on the meaning of 5 out of 8 bits (SLP, PSN, BRN, FRZ, PAR. Check the Bulbapedia link above) and i don't know what happens when multiple statuses are present at the same time.
+* [5] and [6] **Type 1** and **Type 2**:
+  * Pokemon with only one type will have both types set to the same value.
+  * **Types are overriden by the default type of the pokemon species**. So if you tried to send a fire/psychic type Bulbasaur, the other gameboy will just ignore those bytes and just show a grass/poison Bulbasaur. It's not a display bug, this change is permanent! When trading back that same Bulbasaur we will see that the typing bytes were reverted to their default values.
+  * There are 255 available types, most of which are glitch types. Some glitch types share the same name as valid types!
+  * The only way to obtain a glitch type pokemon by trading is to receive a glitch pokemon that coincidentaly has a glitch type by default. (Non default types are ignored, read above)
+  * A complete list of **valid** types can be found on the [Bulbapedia link](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_data_structure_(Generation_I)).
+* [7] **Catch Rate**: From 0 to 255, every pokemon species has a fixed catch rate, this value won't change even when that pokemon evolves. It represents an item in gen II so by modifying this value you could trade a pokemon holding (almost) any item to a gen II game.
+* [8], [9], [10], [11]: Id of moves 1, 2, 3, and 4. Gen I only has 165 valid moves (1-165). Id 0 means EMPTY. Ids > 165 are glitch moves.
+  * [Glitch] Sending a pokemon with any moves AFTER an empty move will cause the game to recognize that empty id as a glitch move! Normally empty moves are at the end of the move menu, here we're forcing an empty move to go above a non empty move.
+  * Pokemon with no moves can be traded.
+  * Pokemon with repeated moves can be traded.
+  * Moves have hardcoded types, categories(physical/special/status), power, accuracy, and max PP depending on the id.
+  * A complete list of valid moves for each generation can be found here: [Bulbapedia -> List of moves](https://bulbapedia.bulbagarden.net/wiki/List_of_moves).
+* [12:13] **Original Trainer ID** (2 bytes, big endian, unsigned): This is the id of the trainer which caught this pokemon, it is used to check whether you're the original owner of it or not (it may not obey you depending on lvl/badges obtained). Pokemon belonging to other trainers also gain more experience per battle.
+* [14:16] **Experience Points** (3 bytes, big endian, unsigned): Total experience gained, goes from 0 to 16777215. Pokemon need to reach a certain amount of experience in order to level up, having a higher amount of experience than required for that level may prevent your pokemon from leveling entirely (i haven't tested it yet).
+  * Experience points necessary to level up depend on the experience category of the pokemon species: [Bulbapedia -> List of Pokemon by experience type](https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_experience_type).
+  * Experience formulas can be found here: [Bulbapedia -> Experience -> Relation to level](https://bulbapedia.bulbagarden.net/wiki/Experience#Relation_to_level)
+* [17:18], [19:20], [21:22], [23:24], [25:26]: Effort Values (**EV**) for Health, Attack, Defense, Speed, Special (2 bytes each, big endian, unsigned).
+  * They're basically experience points for each stat. The final value of the stats will slightly increase when their EV's are high enough.
+  * They're gained when defeating other pokemon (based on its stats).
+  * **EVs are ignored on traded pokemon until you deposit and withraw them**. This forces the game to recalculate pokemon stats. (see [Bulbapedia -> Box Trick](https://bulbapedia.bulbagarden.net/wiki/Box_trick)).
+
 
 
 
