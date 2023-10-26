@@ -655,7 +655,7 @@ A few examples:
 
 </div>
 
-* Bytes [0:10] (first 11 Bytes) correspond with the trainer's name. This name is displayed above each trainer's party.
+* Bytes [0:10] (first 11 Bytes) correspond with the trainer's name which is displayed on the trade menu.
 * The name itself is actually shorter, up to 10 bytes long, the extra byte is reserved for the string terminator (**0x50** in any encoding).
 * Characters after 0x50 are ignored, they're usually **0x00**.
 * A 3 byte name will have 0x50 at its fourth byte (followed by 0x00 afterwards), whereas a 10 byte name will have 0x50 in the (reserved) eleventh byte.
