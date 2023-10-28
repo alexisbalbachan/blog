@@ -919,6 +919,7 @@ An example PP Value:
   * Once the pokemon is stored and then withrawn from a PC box, its stats will be recalculated, overriding any previous value. Pokemon Stadium will also recalculate stats when registering pokemon into a team.
   * It's better to modify EVs and IVs to obtain higher (and valid!) stats.
 
+<br><br>
 
 <div align="center">
 
@@ -936,7 +937,7 @@ An example PP Value:
 
 
 
-
+<br><br>
 <div align="center">
 
 ##### Pokemon Nickname (x6)
