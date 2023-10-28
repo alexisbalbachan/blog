@@ -758,6 +758,8 @@ Same party but with random numbers after the first list terminator (unusual but 
 
 Bytes [20:284] are 6 contiguous data structures (44 bytes long each). The structure itself describes the attributes of a single pokemon, so naturally there's a structure for every pokemon in the player's party.
 
+If the player has less than 6 Pokemon, the remaining structures will be copies of the previous ones (E.G: A party of 2 will still have 6 structures but the last one will be repeated 4 times to replace the 4 missing pokemon: 1, 2, 2, 2, 2, 2). Those structures will be ignored anyway, so there's no real need to repeat the last structure (any value will do).
+
 A summary of the structure's fields can be found here: [Bulbapedia -> Pokemon data structure (Generation I)](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_data_structure_(Generation_I)).
 
 I'll also describe them here:
@@ -783,10 +785,136 @@ I'll also describe them here:
 * [14:16] **Experience Points** (3 bytes, big endian, unsigned): Total experience gained, goes from 0 to 16777215. Pokemon need to reach a certain amount of experience in order to level up, having a higher amount of experience than required for that level may prevent your pokemon from leveling entirely (i haven't tested it yet).
   * Experience points necessary to level up depend on the experience category of the pokemon species: [Bulbapedia -> List of Pokemon by experience type](https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_experience_type).
   * Experience formulas can be found here: [Bulbapedia -> Experience -> Relation to level](https://bulbapedia.bulbagarden.net/wiki/Experience#Relation_to_level)
-* [17:18], [19:20], [21:22], [23:24], [25:26]: Effort Values (**EV**) for Health, Attack, Defense, Speed, Special (2 bytes each, big endian, unsigned).
+* [17:18], [19:20], [21:22], [23:24], [25:26]: **Effort Values (EVs)** for Health, Attack, Defense, Speed, and Special (2 bytes each, big endian, unsigned).
   * They're basically experience points for each stat. The final value of the stats will slightly increase when their EV's are high enough.
   * They're gained when defeating other pokemon (based on its stats).
   * **EVs are ignored on traded pokemon until you deposit and withraw them**. This forces the game to recalculate pokemon stats. (see [Bulbapedia -> Box Trick](https://bulbapedia.bulbagarden.net/wiki/Box_trick)).
+* [27:28]: **Individual Values (IVs)** for Attack, Defense, Speed, and Special. They're hidden values from 0 to 15 which are also used to calculate the final value of a pokemon's stats. A higher IV results in higher stats. IV values are randomized when encountering wild pokemon and there's no way to change them (without glitches/cheats). **Pokemon are shiny if they have specific IV values** (although they'll still look normal in gen I games). a pokemon's gender is also determined by IVs (depending on its species).
+  * Each stat IV consists in 4 bits, so naturally the 4 IV stats will occupy 16 bits / 2 bytes.
+  * Health IV is calculated from the IVs of the other stats. Specifically, the last bit of each stat.
+
+<div align="center">
+
+Here's an example:
+
+<table>
+  <tr>
+    <td>Bits:</td>
+    <td>15</td>
+    <td>14</td>
+    <td>13</td>
+    <td><b>12</b></td>
+    <td>11</td>
+    <td>10</td>
+    <td>9</td>
+    <td><b>8</b></td>
+    <td>7</td>
+    <td>6</td>
+    <td>5</td>
+    <td><b>4</b></td>
+    <td>3</td>
+    <td>2</td>
+    <td>1</td>
+    <td><b>0</b></td>
+  </tr>
+  <tr>
+    <td>IV Stat:</td>
+    <td colspan="4">Attack</td>
+    <td colspan="4">Defense</td>
+    <td colspan="4">Speed</td>
+    <td colspan="4">Special</td>
+  </tr>
+  <tr>
+    <td>Values:</td>
+    <td>1</td>
+    <td>1</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td>0</td>
+    <td>1</td>
+    <td>0</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+  </tr>
+  <tr>
+    <td>Decimal:</td>
+    <td colspan="4">15</td>
+    <td colspan="4">0</td>
+    <td colspan="4">10</td>
+    <td colspan="4">12</td>
+  </tr>
+</table>
+
+</div>
+
+<br>
+
+* Note that Health IV is calculated by concatenating bits 12, 8, 4, 0. In the example above we have: 1, 0, 0, 0, therefore Health IV = 1000 = 8
+  * To be shiny, a Pokemon's Defense, Speed, and Special IVs must be 10, its Attack IV can be any of the following values: 2, 3, 6, 7, 10, 11, 14 or 15. [Bulbapedia -> Shiny Pokemon (Generation II)](https://bulbapedia.bulbagarden.net/wiki/Shiny_Pok%C3%A9mon#Generation_II)
+  * Their gender will depend on their Attack IV and the male to female ratio of their species: [Bulbapedia -> Gender (Generation II)](https://bulbapedia.bulbagarden.net/wiki/Gender#Generation_II)
+* [29], [30], [31], [32]: **PP values for Moves 1, 2, 3, 4**. The 2 most significant bits represent the amount of PP UPs used on that move (0, 1, 2, or 3). The lowest 6 bits represent the current amount of PP for that move (from 0 to 63).
+  * This Value shouldn't matter for empty moves (id 0)
+  * [Glitch] Glitched empty moves (id 0 with non-empty moves below them) will honor this value!
+  * Remaining PP can actually be higher than the move's MAX PP (which shouldn't happen under normal circumstances).
+  * A move's MAX PP depends on their base PP (which is hardcoded) and how much PP UPs they have: [Bulbapedia -> PP UP](https://bulbapedia.bulbagarden.net/wiki/PP_Up).
+  
+ 
+<div align="center">
+  
+An example PP Value:
+
+<table>
+  <tr>
+    <td>Bits:</td>
+    <td>7</td>
+    <td>6</td>
+    <td>5</td>
+    <td>4</td>
+    <td>3</td>
+    <td>2</td>
+    <td>1</td>
+    <td>0</td>
+  </tr>
+  <tr>
+    <td>Meaning:</td>
+    <td colspan="2">PP UPs</td>
+    <td colspan="6">Remaining PP</td>
+  </tr>
+  <tr>
+    <td>Values:</td>
+    <td>1</td>
+    <td>0</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td>0</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>Decimal:</td>
+    <td colspan="2">2</td>
+    <td colspan="6">37</td>
+  </tr>
+</table>
+
+</div>
+
+<br>
+
+* [33] **Level**: This is the *real* level value (as opposed to the box level [3]). It ranges from 0 to 255, although levels 0, 1 and levels above 100 can only be reached through glitches ('member missingNo?):
+  * A pokemon should have enough experience points ([14:16]) to reach its level, otherwise it won't level up until it does: A level 99 pokemon with 0 experience will have to grind the same amount of experience as a level 1 pokemon to reach level 100!
+* [34:35], [36:37], [38:39], [40:41], [42:43]: **Stat Values** for Health (i.e. maximum health), Attack, Defense, Speed, Special. They can be anywhere between 0 and 65535, however their **real value** is calculated using the pokemon's base stats (hardcoded), level, EVs and IVs: [Bulbapedia -> Stat (Generations I and II)](https://bulbapedia.bulbagarden.net/wiki/Stat#Generations_I_and_II)
+  * Once the pokemon is stored and then withrawn from a PC box, its stats will be recalculated, overriding any previous value. Pokemon Stadium will also recalculate stats when registering pokemon into a team.
+  * It's better to modify EVs and IVs to obtain higher (and valid!) stats.
+
 
 
 
