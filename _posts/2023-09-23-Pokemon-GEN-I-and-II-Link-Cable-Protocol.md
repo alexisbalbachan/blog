@@ -924,6 +924,8 @@ An example PP Value:
 
 ##### Original Owner (x6)
 
+</div>
+
 * This is the name of the trainer who caught this pokemon (that's why it's named *original* owner). It's used along with the Original Trainer's ID in order to determine if the current player is the original owner of this pokemon. There're some advantages to being the original owner of a pokemon (it will obey you no matter what!) and a disadvantage (they will gain xp at a standard rate while not owned pokemon will get bonus xp per battle).
 * It's a string, so it's almost the same as [Trainer Name](#trainer-name): Uses custom a encoding (not ASCII), 11 bytes, max length of 10, terminates with 0x50, bytes following 0x50 are usually 0x00:
   * It cannot contain 0xFE but this time it **CAN BE PATCHED**.
@@ -932,12 +934,14 @@ An example PP Value:
 * If the party is smaller than 6, the remaining fields will be a copy of the last one (if there's only 1 pokemon, then all of the 6 fields will be the same!).
   * It shouldn't really matter because extra fields are ignored. They could have any value.
 
-</div>
+
 
 
 <div align="center">
 
 ##### Pokemon Nickname (x6)
+
+</div>
 
 * This is the pokemon's nickname if it has one. Otherwise the name **must** match the name of the pokemon species (E.G. A Bulbasaur with no nickname should have "BULBASAUR" on this field)
 * Also 11 bytes long, terminated with 0x50, uses the same encoding.
@@ -945,7 +949,7 @@ An example PP Value:
 * Same behaviour if the party is less than 6 (repeats last name until 6 fields are sent)
 * The only difference is that every character after 0x50 is also 0x50 (i'm no sure why, maybe an oversight).
 
-</div>
+
 
 
 
