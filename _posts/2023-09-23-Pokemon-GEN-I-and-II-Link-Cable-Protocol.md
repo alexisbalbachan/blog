@@ -772,6 +772,18 @@ I'll also describe them here:
 * [1:2] **Current HP** (2 bytes, big endian, unsigned). Its value goes from 0 to 65535, **it can even be higher than the pokemon's max HP without any problem**.
 * \[3] **Box Level**: From 0 to 255. This is NOT the actual pokemon level, i think that it's the level value displayed when browsing pokemon on Bill's PC. It can be completely ignored.
 * \[4] **Status Condition**: Each bit represents a status, i could only find information on the meaning of 5 out of 8 bits (SLP, PSN, BRN, FRZ, PAR. Check the Bulbapedia link above) and i don't know what happens when multiple statuses are present at the same time.
+  * I suspect the missing statuses are confusion, badly poisoned, and leech seeded (which cannot happen outside battles).
+  
+<div align="center">
+
+
+| Bits  | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
+|-------|---|---|---|---|---|---|---|---|
+| Value |PAR|FRZ|BRN|PSN|SLP|???|???|???|
+
+
+</div>
+
 * \[5] and \[6] **Type 1** and **Type 2**:
   * Pokemon with only one type will have both types set to the same value.
   * **Types are overriden by the default type of the pokemon species**. So if you tried to send a fire/psychic type Bulbasaur, the other gameboy will just ignore those bytes and just show a grass/poison Bulbasaur. It's not a display bug, this change is permanent! When trading back that same Bulbasaur we will see that the typing bytes were reverted to their default values.
