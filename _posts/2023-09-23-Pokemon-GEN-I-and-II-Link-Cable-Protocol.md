@@ -930,10 +930,39 @@ An example PP Value:
 * This is the name of the trainer who caught this pokemon (that's why it's named *original* owner). It's used along with the Original Trainer's ID in order to determine if the current player is the original owner of this pokemon. There're some advantages to being the original owner of a pokemon (it will obey you no matter what!) and a disadvantage (they will gain xp at a standard rate while not owned pokemon will get bonus xp per battle).
 * It's a string, so it's almost the same as [Trainer Name](#trainer-name): Uses custom a encoding (not ASCII), 11 bytes, max length of 10, terminates with 0x50, bytes following 0x50 are usually 0x00:
   * It cannot contain 0xFE but this time it **CAN BE PATCHED**.
-  * Something interesting that i have found is that the encoding allows some words to be encoded as one byte. For example 0x5D represents the stirng "TRAINER", so its possible to have names longer than 10 if we use those special words: 0x5D5D5D5D5D5D5D5D5D5D50 is a *valid* name as it only occupies 10 bytes, but it's actually 70 characters long!
+  * Something interesting that i have found is that the encoding allows some words to be encoded as one byte. For example 0x5D represents the string "TRAINER", so its possible to have names longer than 10 if we use those special words: 0x5D5D5D5D5D5D5D5D5D5D50 is a *valid* name as it only occupies 10 bytes, but it's actually 70 characters long!
   * There's one in-game trade which gives you a Mr.Mime nicknamed "Marcel", its original owner's name is "TRAINER" encoded as a single 0x5D (followed by the 0x50 terminator)!
 * If the party is smaller than 6, the remaining fields will be a copy of the last one (if there's only 1 pokemon, then all of the 6 fields will be the same!).
   * It shouldn't really matter because extra fields are ignored. They could have any value.
+
+<div align="center">
+
+Examples:
+  
+| Byte  |  10 |  9 |  8 |  7 |  6 |  5 |  4 |  3 |  2 |  1 |  0 |
+|-------|-----|----|----|----|----|----|----|----|----|----|----|
+| Value |0x80 |0x8B|0x84|0x97|0x88|0x92|0x50|0x00|0x00|0x00|0x00|
+| Char  |  A  | L  | E  | X  | I  | S  | \0 |NULL|NULL|NULL|NULL|
+
+<br>
+
+Using the maximum length (10 bytes)
+
+| Byte  |  10 |  9 |  8 |  7 |  6 |  5 |  4 |  3 |  2 |  1 |  0 |
+|-------|-----|----|----|----|----|----|----|----|----|----|----|
+| Value |0x80 |0x8B|0x84|0x97|0x88|0x92|0x80|0x8B|0x84|0x97|0x50|
+| Char  |  A  | L  | E  | X  | I  | S  | A  | L  | E  | X  | \0 |
+
+<br>
+
+Word encoded in a single byte:
+
+| Byte  |  10 |  9 |  8 |  7 |  6 |  5 |  4 |  3 |  2 |  1 |  0 |
+|-------|-----|----|----|----|----|----|----|----|----|----|----|
+| Value |0x5D |0x50|0x00|0x00|0x00|0x00|0x00|0x00|0x00|0x00|0x00|
+| Char  |TRAINER|\0|NULL|NULL|NULL|NULL|NULL|NULL|NULL|NULL|NULL|
+
+</div>
 
 
 
@@ -948,9 +977,40 @@ An example PP Value:
 * Also 11 bytes long, terminated with 0x50, uses the same encoding.
 * It can also be patched.
 * Same behaviour if the party is less than 6 (repeats last name until 6 fields are sent)
-* The only difference is that every character after 0x50 is also 0x50 (i'm no sure why, maybe an oversight).
+* The only difference is that every character after 0x50 is also 0x50 (i'm no sure why, maybe an oversight or a way to differentiate a nickname from the species name).
 
+<div align="center">
 
+Examples:
+
+Pokemon name using 0x50 after the first 0x50 (NO NICKNAME)
+
+| Byte  |  10 |  9 |  8 |  7 |  6 |  5 |  4 |  3 |  2 |  1 |  0 |
+|-------|-----|----|----|----|----|----|----|----|----|----|----|
+| Value |0x8C |0x84|0x96|0x50|0x50|0x50|0x50|0x50|0x50|0x50|0x50|
+| Char  |  M  | E  | W  | \0 | \0 | \0 | \0 | \0 | \0 | \0 | \0 |
+
+<br>
+
+Pokemon name using all the available bytes (NO NICKNAME)
+
+| Byte  |  10 |  9 |  8 |  7 |  6 |  5 |  4 |  3 |  2 |  1 |  0 |
+|-------|-----|----|----|----|----|----|----|----|----|----|----|
+| Value |0x81 |0x94|0x93|0x93|0x84|0x91|0x85|0x91|0x84|0x84|0x50|
+| Char  |  B  | U  | T  | T  | E  | R  | F  | R  | E  | E  | \0 |
+
+<br>
+
+A nickname
+
+| Byte  |  10 |  9 |  8 |  7 |  6 |  5 |  4 |  3 |  2 |  1 |  0 |
+|-------|-----|----|----|----|----|----|----|----|----|----|----|
+| Value |0x80 |0x8B|0x84|0x97|0x88|0x92|0x50|0x00|0x00|0x00|0x00|
+| Char  |  A  | L  | E  | X  | I  | S  | \0 |NULL|NULL|NULL|NULL|
+
+<br>
+
+</div>
 
 
 
