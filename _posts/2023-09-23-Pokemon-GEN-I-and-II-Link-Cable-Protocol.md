@@ -922,7 +922,7 @@ An example PP Value:
 
 <div align="center">
 
-##### Original Owner (x6)
+##### Original Owner Name (x6)
 
 </div>
 
