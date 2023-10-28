@@ -21,6 +21,8 @@
       * [Party Size](#party-size)
       * [Pokemon Id List](#pokemon-id-list)
       * [Pokemon Structure (x6)](#pokemon-structure-x6)
+      * [Original Owner Name (x6)](#original-owner-name-x6)
+      * [Pokemon Nickname (x6)](#pokemon-nickname-x6)
   * [Generation II](#generation-ii)
   * [Time Capsule](#time-capsule)
 
@@ -760,6 +762,8 @@ Bytes [20:284] are 6 contiguous data structures (44 bytes long each). The struct
 
 If the player has less than 6 Pokemon, the remaining structures will be copies of the previous ones (E.G: A party of 2 will still have 6 structures but the last one will be repeated 4 times to replace the 4 missing pokemon: 1, 2, 2, 2, 2, 2). Those structures will be ignored anyway, so there's no real need to repeat the last structure (any value will do).
 
+Structures cannot contain **0xFE**. but it **CAN BE PATCHED** (and it will be replaced by 0xFF).
+
 A summary of the structure's fields can be found here: [Bulbapedia -> Pokemon data structure (Generation I)](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_data_structure_(Generation_I)).
 
 I'll also describe them here:
@@ -916,7 +920,32 @@ An example PP Value:
   * It's better to modify EVs and IVs to obtain higher (and valid!) stats.
 
 
+<div align="center">
 
+##### Original Owner (x6)
+
+* This is the name of the trainer who caught this pokemon (that's why it's named *original* owner). It's used along with the Original Trainer's ID in order to determine if the current player is the original owner of this pokemon. There're some advantages to being the original owner of a pokemon (it will obey you no matter what!) and a disadvantage (they will gain xp at a standard rate while not owned pokemon will get bonus xp per battle).
+* It's a string, so it's almost the same as [Trainer Name](#trainer-name): Uses custom a encoding (not ASCII), 11 bytes, max length of 10, terminates with 0x50, bytes following 0x50 are usually 0x00:
+  * It cannot contain 0xFE but this time it **CAN BE PATCHED**.
+  * Something interesting that i have found is that the encoding allows some words to be encoded as one byte. For example 0x5D represents the stirng "TRAINER", so its possible to have names longer than 10 if we use those special words: 0x5D5D5D5D5D5D5D5D5D5D50 is a *valid* name as it only occupies 10 bytes, but it's actually 70 characters long!
+  * There's one in-game trade which gives you a Mr.Mime nicknamed "Marcel", its original owner's name is "TRAINER" encoded as a single 0x5D (followed by the 0x50 terminator)!
+* If the party is smaller than 6, the remaining fields will be a copy of the last one (if there's only 1 pokemon, then all of the 6 fields will be the same!).
+  * It shouldn't really matter because extra fields are ignored. They could have any value.
+
+</div>
+
+
+<div align="center">
+
+##### Pokemon Nickname (x6)
+
+* This is the pokemon's nickname if it has one. Otherwise the name **must** match the name of the pokemon species (E.G. A Bulbasaur with no nickname should have "BULBASAUR" on this field)
+* Also 11 bytes long, terminated with 0x50, uses the same encoding.
+* It can also be patched.
+* Same behaviour if the party is less than 6 (repeats last name until 6 fields are sent)
+* The only difference is that every character after 0x50 is also 0x50 (i'm no sure why, maybe an oversight).
+
+</div>
 
 
 
