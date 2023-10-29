@@ -666,7 +666,7 @@ A few examples:
 * Characters after 0x50 are ignored, they're usually **0x00**.
 * A 3 byte name will have 0x50 at its fourth byte (followed by 0x00 afterwards), whereas a 10 byte name will have 0x50 in the (reserved) eleventh byte.
 * I haven't tested what could happen if no string terminator is present or if we sent a 11 character string.
-* **THIS NAME CANNOT BE PATCHED**. It cannot contain 0xFE (**"8"**), this can't happen without cheats/glitches because the in-game's keyboard doesn't have any numbers! This means you can't give a name with numbers to your player.
+* **THIS NAME CANNOT BE PATCHED**. It cannot contain 0xFE (**"8"**), this can't happen without cheats/glitches because the in-game's keyboard doesn't have any numbers! This means you can't give a name with numbers to your player. (see [Patch Section](#patch-section))
 * **IT CAN'T START WITH 0xFD ("7")** as it will be interpreted as part of the preamble, messing up everything that comes after! Same as above, names don't usually contain numbers without cheats/glitches.
 * **IT CAN'T START WITH NULL CHARACTERS (0x00)**. Also an invalid name because not only it's empty, but also its first character isn't 0x50! Anyways, null characters will be interpreted as acknowledges and therefore skipped.
 
@@ -709,7 +709,7 @@ A few examples:
   * [Glitch] If a pokemon with 0xFF as its id is being traded then **it will become invisible** (because 0xFF actually indicates the end of the list, which seems to be used when rendering pokemon names in the trade menu). However it is still selectable! (the selection cursor is able to go below the last displayed pokemon and ends up pointing at the corresponding blank space).
     * Every pokemon below the one with 0xFF as its id will also become **invisible but selectable** (same reason, 0xFF indicates the end of the list)!
   * [Glitch] Pokemon with 0xFE as their id will completely mess up the trade data, shifting it by one byte (for each 0xFE).
-* **THIS LIST CANNOT BE PATCHED**. So 0xFE shouldn't be sent (see above). That's ok because there isn't a valid pokemon whose id is 0xFE.
+* **THIS LIST CANNOT BE PATCHED**. So 0xFE shouldn't be sent (see above). That's ok because there isn't a valid pokemon whose id is 0xFE.  (see [Patch Section](#patch-section))
 
 <br>
 
@@ -764,7 +764,7 @@ Bytes [20:284] are 6 contiguous data structures (44 bytes long each). The struct
 
 If the player has less than 6 Pokemon, the remaining structures will be copies of the previous ones (E.G: A party of 2 will still have 6 structures but the last one will be repeated 4 times to replace the 4 missing pokemon: 1, 2, 2, 2, 2, 2). Those structures will be ignored anyway, so there's no real need to repeat the last structure (any value will do).
 
-Structures cannot contain **0xFE**. but it **CAN BE PATCHED** (and it will be replaced by 0xFF).
+Structures cannot contain **0xFE**. but it **CAN BE PATCHED** (and it will be replaced by 0xFF).  (see [Patch Section](#patch-section))
 
 A summary of the structure's fields can be found here: [Bulbapedia -> Pokemon data structure (Generation I)](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_data_structure_(Generation_I)).
 
@@ -943,7 +943,7 @@ An example PP Value:
 
 * This is the name of the trainer who caught this pokemon (that's why it's named *original* owner). It's used along with the Original Trainer's ID in order to determine if the current player is the original owner of this pokemon. There're some advantages to being the original owner of a pokemon (it will obey you no matter what!) and a disadvantage (they will gain xp at a standard rate while not owned pokemon will get bonus xp per battle).
 * It's a string, so it's almost the same as [Trainer Name](#trainer-name): Uses custom a encoding (not ASCII), 11 bytes, max length of 10, terminates with 0x50, bytes following 0x50 are usually 0x00:
-  * It cannot contain 0xFE but this time it **CAN BE PATCHED**.
+  * It cannot contain 0xFE but this time it **CAN BE PATCHED**.  (see [Patch Section](#patch-section))
   * Something interesting that i have found is that the encoding allows some words to be encoded as one byte. For example 0x5D represents the string "TRAINER", so its possible to have names longer than 10 if we use those special words: 0x5D5D5D5D5D5D5D5D5D5D50 is a *valid* name as it only occupies 10 bytes, but it's actually 70 characters long!
   * There's one in-game trade which gives you a Mr.Mime nicknamed "Marcel", its original owner's name is "TRAINER" encoded as a single 0x5D (followed by the 0x50 terminator)!
 * If the party is smaller than 6, the remaining fields will be a copy of the last one (if there's only 1 pokemon, then all of the 6 fields will be the same!).
@@ -989,7 +989,7 @@ Word encoded in a single byte:
 
 * This is the pokemon's nickname if it has one. Otherwise the name **must** match the name of the pokemon species (E.G. A Bulbasaur with no nickname should have "BULBASAUR" on this field)
 * Also 11 bytes long, terminated with 0x50, uses the same encoding.
-* It can also be patched.
+* It can also be patched.  (see [Patch Section](#patch-section))
 * Same behaviour if the party is less than 6 (repeats last name until 6 fields are sent)
 * The only difference is that every character after 0x50 is also 0x50 (i'm no sure why, maybe an oversight or a way to differentiate a nickname from the species name).
 
