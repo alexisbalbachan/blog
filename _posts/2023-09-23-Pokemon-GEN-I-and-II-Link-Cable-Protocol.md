@@ -23,6 +23,8 @@
       * [Pokemon Structure (x6)](#pokemon-structure-x6)
       * [Original Owner Name (x6)](#original-owner-name-x6)
       * [Pokemon Nickname (x6)](#pokemon-nickname-x6)
+      * [Mystery Bytes](#mystery-bytes)
+    * [**Patch Section**](#patch-section)
   * [Generation II](#generation-ii)
   * [Time Capsule](#time-capsule)
 
@@ -1023,6 +1025,28 @@ A nickname
 <br>
 
 </div>
+
+<br><br>
+<div align="center">
+
+##### Mystery Bytes
+
+</div>
+
+There're **3 more bytes** before the patch section. I have no idea what their purpose is as any value is accepted (except 0xFE) without any visible effect in the trade. 
+
+They don't seem to be a checksum because changing the party data won't affect their values, which remain constant throughout different trade sessions.
+
+Maybe they're some kind of hidden id. Different players will send different values, but those values won't ever change. Please let me know if you discover what are they for.
+
+<hr>
+<br>
+<div align="center">
+
+#### Patch Section
+
+</div>
+
 
 
 
