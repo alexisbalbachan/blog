@@ -30,7 +30,7 @@
 
 
 ## Motivation
-I grew up in the midst of the pokemon craze in the 90s, in my school the series became popular first, and soon after everyone was bringing in their gameboys to play the Pokemon games on breaks.
+I grew up in the midst of the pokemon craze in the 90s, in my school the TV series became popular first, and soon after everyone was bringing in their gameboys to play the Pokemon games on breaks.
 
 Eventually my parents got me a brand new Gameboy Color alongside a Pokemon Red cartridge, so my quest for catching 'em all began! 
 
