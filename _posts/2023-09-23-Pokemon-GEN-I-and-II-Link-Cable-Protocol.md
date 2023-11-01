@@ -1047,6 +1047,29 @@ Maybe they're some kind of hidden id. Different players will send different valu
 
 </div>
 
+At this point both players have already transfered their payloads (which contained information about them and their pokemon). Those payloads **couldn't contain 0xFE** as this byte signals the premature end of the stream (the other side will basically ignore everything received after that!).
+
+As you may have seen in the previous section [Data Structure](#data-structure), some (if not all) pokemon properties **can end up containing that value**, some examples are:
+
+<br>
+
+* Current/Max HP being 254 (0x00**FE**), 510 (0x01**FE**), 766 (0x02**FE**), 1022 (0x03**FE**), and so on. Also any value above 65024 (0x**FE**00), which can only be obtained by cheating.
+* Same with stats EVs (which are basically experience points for stats, 2 bytes each).
+* Same with Attack/Defense/Speed/Special stats but their values are usually lower than 254.
+* Trainer ID: It's randomly generated when starting the game so you could end up with any of the values above.
+* Experience points, 254, 510, 766, 1022... any value between 65024 (0x00**FE**00) and 65279 (0x00**FE**FF), also 65790 (0x0100**FE**), anything above 16646144 (0x**FE**0000), etc.
+* Stats IVs: Attack IV = 15 and Defense IV = 14 (1111 1110 = 0xFE), or Speed IV = 15 and Special IV = 14.
+* Level: 254 but can only be reached with cheats/glitches.
+
+Some properties **can** contain 0xFE in their values, but are restricted by in-game mechanics from doing so. I think that those restrictions were intentionally implemented for this purpose. Otherwise they don't make any sense:
+* PP Values: Can theoretically reach 0xFE (3 PP ups and 62 PP remaining 11|111110, 3|62 = 0xFE) **BUT** the games restrict max PP values to 61.
+* Names (Original Trainer / Pokemon Nicknames): 0xFE represents the character '**8**' which cannot be legally present (in-game keyboards do not have numbers!).
+
+<br>
+
+Players need to send their payloads even if they contain 0xFE, so they **patch** them: First, every instance of **0xFE is replaced with 0xFF** (unless specified otherwise in [Data Structure](#data-structure)) before being sent. Now, both players will send a list of **offsets** that specify which bytes need to be changed back into 0xFE.
+
+
 
 
 
