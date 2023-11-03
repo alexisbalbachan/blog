@@ -1114,7 +1114,7 @@ What a normal patch section preamble looks like:
 
 A patch list should indicate which bytes in the *party information* payload ([Party Information Exchange](#party-information-exchange)) are actually **0xFE**, that value couldn't be sent due to restrictions in the protocol (it is a control byte) so it was replaced with **0xFF** and now needs to be changed back!
 
-The simplest solution would be to send a **lists of offsets**, each one pointing to a byte in the payload, and that byte would need to be changed back into 0xFE.
+The simplest solution would be to send a **list of offsets**, each one pointing to a byte in the payload, and that byte would need to be changed back into 0xFE.
 
 Now, remember that the payload is 415 bytes long. 1 byte per offset is not enough (goes from 0 to 255) so to represent any offset within the payload we would need 2 bytes which are way overkill as they can represent any value between 0 to 65535. It also wastes a lot of memory and increases the transfer time (due to bigger list items).
 
