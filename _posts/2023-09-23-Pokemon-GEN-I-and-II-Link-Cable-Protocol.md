@@ -25,6 +25,8 @@
       * [Pokemon Nickname (x6)](#pokemon-nickname-x6)
       * [Mystery Bytes](#mystery-bytes)
     * [**Patch Section**](#patch-section)
+      * [Preamble](#preamble)
+      * [Stages](#stages)
   * [Generation II](#generation-ii)
   * [Time Capsule](#time-capsule)
 
@@ -1056,7 +1058,7 @@ As you may have seen in the previous section [Data Structure](#data-structure), 
 * Current/Max HP being 254 (0x00**FE**), 510 (0x01**FE**), 766 (0x02**FE**), 1022 (0x03**FE**), and so on. Also any value above 65024 (0x**FE**00), which can only be obtained by cheating.
 * Same with stats EVs (which are basically experience points for stats, 2 bytes each).
 * Same with Attack/Defense/Speed/Special stats but their values are usually lower than 254.
-* Trainer ID: It's randomly generated when starting the game so you could end up with any of the values above.
+* Trainer ID: It's randomly generated when starting a new game so you could end up with any of the values above.
 * Experience points, 254, 510, 766, 1022... any value between 65024 (0x00**FE**00) and 65279 (0x00**FE**FF), also 65790 (0x0100**FE**), anything above 16646144 (0x**FE**0000), etc.
 * Stats IVs: Attack IV = 15 and Defense IV = 14 (1111 1110 = 0xFE), or Speed IV = 15 and Special IV = 14.
 * Level: 254 but can only be reached with cheats/glitches.
@@ -1068,6 +1070,291 @@ Some properties **can** contain 0xFE in their values, but are restricted by in-g
 <br>
 
 Players need to send their payloads even if they contain 0xFE, so they **patch** them: First, every instance of **0xFE is replaced with 0xFF** (unless specified otherwise in [Data Structure](#data-structure)) before being sent. Now, both players will send a list of **offsets** that specify which bytes need to be changed back into 0xFE.
+
+<br>
+<br>
+
+<div align="center">
+  
+##### Preamble
+
+</div>
+
+
+Just as in [Seed Exchange](#seed-exchange) and [Party Information Exchange](#party-information-exchange), a preamble consisting in multiple 0xFD bytes is sent (usually 6 bytes), after that another stream of bytes is exchanged, this time it's 0x00. The first non 0x00 byte marks the start of the patch list.
+
+<div align="center">
+
+What a normal patch section preamble looks like:
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0xFD   | 0x00 |
+|X+1      | 0xFD   | 0xFD |
+|X+2      | 0xFD   | 0xFD |
+|X+3      | 0xFD   | 0xFD |
+|X+4      | 0xFD   | 0xFD |
+|X+5      | 0xFD   | 0xFD |
+|X+6      | 0x00   | 0xFD |
+|X+7      | 0x00   | 0x00 |
+|X+8      | 0x00   | 0x00 |
+|X+9      | 0x00   | 0x00 |
+|X+10     | 0x00   | 0x00 |
+|X+11     | 0x00   | 0x00 |
+|X+12     | 0x00   | 0x00 |
+|X+13     | PATCH  | 0x00 |
+|X+14     | PATCH  | PATCH |
+
+<br>
+<br>
+
+##### Stages
+
+</div>
+
+A patch list should indicate which bytes in the *party information* payload ([Party Information Exchange](#party-information-exchange)) are actually **0xFE**, that value couldn't be sent due to restrictions in the protocol (it is a control byte) so it was replaced with **0xFF** and now needs to be changed back!
+
+The simplest solution would be to send a **lists of offsets**, each one pointing to a byte in the payload, and that byte would need to be changed back into 0xFE.
+
+Now, remember that the payload is 415 bytes long. 1 byte per offset is not enough (goes from 0 to 255) so to represent any offset within the payload we would need 2 bytes which are way overkill as they can represent any value between 0 to 65535. It also wastes a lot of memory and increases the transfer time (due to bigger list items).
+
+The games solve this issue by **logically spliting the payload in 2, and then sending 2 patch lists**, each one containing byte sized offsets which point to either the first or second half of the payload.
+
+* The first list, which points to the first half of the payload is considered **Stage 1** of the patch section, while the second list (pointing to the second half) will be **Stage 2**.
+* The byte **0xFF** is used to mark the end of the lists. So an empty list will be just [0xFF], and a list with only one element will be [0xYY, 0xFF].
+* Lists cannot contain:
+  * 0x00: Represents NULL data, sent after the end of the list (as a fill-byte).
+  * 0xFD: Control byte. [Preamble](#preamble).
+  * 0xFE: Control byte. Indicates that there's nothing to send (or not ready).
+  * 0xFF: Control byte. Indicates the end of the list.
+* This leaves us with a range of **1-252 (0xFC)**, so offsets **start at 1 (not 0)**.
+* Stage 1 offsets start at the first byte of the first pokemon in the party (Byte 19 of the payload) ([Pokemon Structure (x6)](#pokemon-structure-x6)). **That's why anything before that couldn't be patched**
+* Stage 2 offsets start exactly 252 bytes after that (Byte 271 of the payload). At the sixth pokemon's 4th move's PP values.
+
+<br> <br>
+  
+Here's a complete payload, byte values represent their corresponding offset. **||** Separates stage 1 and 2. Bytes marked as **XX** are unpatchable.
+
+````
+
+0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX,   # Trainer Name
+0xXX,                                                               # Party Size
+0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX,                                 # Party Species list
+0xXX,                                                               # List terminator
+
+
+           # ----------------- POKEMON 1 -----------------
+0x01,                                                               # Species
+0x02, 0x03,                                                         # Current HP
+0x04,                                                               # Box Level
+0x05,                                                               # Statuses (bit array)
+0x06,                                                               # Type 1
+0x07,                                                               # Type 2
+0x08,                                                               # Catch Rate / Held Item
+0x09,                                                               # Move 1
+0x0A,                                                               # Move 2
+0x0B,                                                               # Move 3
+0x0C,                                                               # Move 4
+
+0x0D, 0x0E,                                                         # Original Trainer ID
+0x0F, 0x10, 0x11,                                                   # Experience Points
+0x12, 0x13,                                                         # Health EV
+0x14, 0x15,                                                         # Attack EV
+0x16, 0x17,                                                         # Defense EV
+0x18, 0x19,                                                         # Speed EV
+0x1A, 0x1B,                                                         # Special EV
+0x1C, 0x1D,                                                         # IV Data
+0x1E,                                                               # Move 1 PP
+0x1F,                                                               # Move 2 PP
+0x20,                                                               # Move 3 PP
+0x21,                                                               # Move 4 PP
+0x22,                                                               # Level
+0x23, 0x24,                                                         # Max HP
+0x25, 0x26,                                                         # Attack
+0x27, 0x28,                                                         # Defense
+0x29, 0x2A,                                                         # Speed
+0x2B, 0x2C,                                                         # Special
+
+           # ----------------- POKEMON 2 -----------------
+0x2D,                                                               # Species
+0x2E, 0x2F,                                                         # Current HP
+0x30,                                                               # Box Level
+0x31,                                                               # Statuses (bit array)
+0x32,                                                               # Type 1
+0x33,                                                               # Type 2
+0x34,                                                               # Catch Rate / Held Item
+0x35,                                                               # Move 1
+0x36,                                                               # Move 2
+0x37,                                                               # Move 3
+0x38,                                                               # Move 4
+
+0x39, 0x3A,                                                         # Original Trainer ID
+0x3B, 0x3C, 0x3D,                                                   # Experience Points
+0x3E, 0x3F,                                                         # Health EV
+0x40, 0x41,                                                         # Attack EV
+0x42, 0x43,                                                         # Defense EV
+0x44, 0x45,                                                         # Speed EV
+0x46, 0x47,                                                         # Special EV
+0x48, 0x49,                                                         # IV Data
+0x4A,                                                               # Move 1 PP
+0x4B,                                                               # Move 2 PP
+0x4C,                                                               # Move 3 PP
+0x4D,                                                               # Move 4 PP
+0x4E,                                                               # Level
+0x4F, 0x50,                                                         # Max HP
+0x51, 0x52,                                                         # Attack
+0x53, 0x54,                                                         # Defense
+0x55, 0x56,                                                         # Speed
+0x57, 0x58,                                                         # Special
+
+           # ----------------- POKEMON 3 -----------------
+0x59,                                                               # Species
+0x5A, 0x5B,                                                         # Current HP
+0x5C,                                                               # Box Level
+0x5D,                                                               # Statuses (bit array)
+0x5E,                                                               # Type 1
+0x5F,                                                               # Type 2
+0x60,                                                               # Catch Rate / Held Item
+0x61,                                                               # Move 1
+0x62,                                                               # Move 2
+0x63,                                                               # Move 3
+0x64,                                                               # Move 4
+
+0x65, 0x66,                                                         # Original Trainer ID
+0x67, 0x68, 0x69,                                                   # Experience Points
+0x6A, 0x6B,                                                         # Health EV
+0x6C, 0x6D,                                                         # Attack EV
+0x6E, 0x6F,                                                         # Defense EV
+0x70, 0x71,                                                         # Speed EV
+0x72, 0x73,                                                         # Special EV
+0x74, 0x75,                                                         # IV Data
+0x76,                                                               # Move 1 PP
+0x77,                                                               # Move 2 PP
+0x78,                                                               # Move 3 PP
+0x79,                                                               # Move 4 PP
+0x7A,                                                               # Level
+0x7B, 0x7C,                                                         # Max HP
+0x7D, 0x7E,                                                         # Attack
+0x7F, 0x80,                                                         # Defense
+0x81, 0x82,                                                         # Speed
+0x83, 0x84,                                                         # Special
+
+           # ----------------- POKEMON 4 -----------------
+0x85,                                                               # Species
+0x86, 0x87,                                                         # Current HP
+0x88,                                                               # Box Level
+0x89,                                                               # Statuses (bit array)
+0x8A,                                                               # Type 1
+0x8B,                                                               # Type 2
+0x8C,                                                               # Catch Rate / Held Item
+0x8D,                                                               # Move 1
+0x8E,                                                               # Move 2
+0x8F,                                                               # Move 3
+0x90,                                                               # Move 4
+
+0x91, 0x92,                                                         # Original Trainer ID
+0x93, 0x94, 0x95,                                                   # Experience Points
+0x96, 0x97,                                                         # Health EV
+0x98, 0x99,                                                         # Attack EV
+0x9A, 0x9B,                                                         # Defense EV
+0x9C, 0x9D,                                                         # Speed EV
+0x9E, 0x9F,                                                         # Special EV
+0xA0, 0xA1,                                                         # IV Data
+0xA2,                                                               # Move 1 PP
+0xA3,                                                               # Move 2 PP
+0xA4,                                                               # Move 3 PP
+0xA5,                                                               # Move 4 PP
+0xA6,                                                               # Level
+0xA7, 0xA8,                                                         # Max HP
+0xA9, 0xAA,                                                         # Attack
+0xAB, 0xAC,                                                         # Defense
+0xAD, 0xAE,                                                         # Speed
+0xAF, 0xB0,                                                         # Special
+
+           # ----------------- POKEMON 5 -----------------
+0xB1,                                                               # Species
+0xB2, 0xB3,                                                         # Current HP
+0xB4,                                                               # Box Level
+0xB5,                                                               # Statuses (bit array)
+0xB6,                                                               # Type 1
+0xB7,                                                               # Type 2
+0xB8,                                                               # Catch Rate / Held Item
+0xB9,                                                               # Move 1
+0xBA,                                                               # Move 2
+0xBB,                                                               # Move 3
+0xBC,                                                               # Move 4
+
+0xBD, 0xBE,                                                         # Original Trainer ID
+0xBF, 0xC0, 0xC1,                                                   # Experience Points
+0xC2, 0xC3,                                                         # Health EV
+0xC4, 0xC5,                                                         # Attack EV
+0xC6, 0xC7,                                                         # Defense EV
+0xC8, 0xC9,                                                         # Speed EV
+0xCA, 0xCB,                                                         # Special EV
+0xCC, 0xCD,                                                         # IV Data
+0xCE,                                                               # Move 1 PP
+0xCF,                                                               # Move 2 PP
+0xD0,                                                               # Move 3 PP
+0xD1,                                                               # Move 4 PP
+0xD2,                                                               # Level
+0xD3, 0xD4,                                                         # Max HP
+0xD5, 0xD6,                                                         # Attack
+0xD7, 0xD8,                                                         # Defense
+0xD9, 0xDA,                                                         # Speed
+0xDB, 0xDC,                                                         # Special
+
+           # ----------------- POKEMON 6 -----------------
+0xDD,                                                               # Species
+0xDE, 0xDF,                                                         # Current HP
+0xE0,                                                               # Box Level
+0xE1,                                                               # Statuses (bit array)
+0xE2,                                                               # Type 1
+0xE3,                                                               # Type 2
+0xE4,                                                               # Catch Rate / Held Item
+0xE5,                                                               # Move 1
+0xE6,                                                               # Move 2
+0xE7,                                                               # Move 3
+0xE8,                                                               # Move 4
+
+0xE9, 0xEA,                                                         # Original Trainer ID
+0xEB, 0xEC, 0xED,                                                   # Experience Points
+0xEE, 0xEF,                                                         # Health EV
+0xF0, 0xF1,                                                         # Attack EV
+0xF2, 0xF3,                                                         # Defense EV
+0xF4, 0xF5,                                                         # Speed EV
+0xF6, 0xF7,                                                         # Special EV
+0xF8, 0xF9,                                                         # IV Data
+0xFA,                                                               # Move 1 PP
+0xFB,                                                               # Move 2 PP
+0xFC,                                                               # Move 3 PP
+|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||  # STAGE 2
+0x01,                                                               # Move 4 PP
+0x02,                                                               # Level
+0x03, 0x04,                                                         # Max HP
+0x05, 0x06,                                                         # Attack
+0x07, 0x08,                                                         # Defense
+0x09, 0x0A,                                                         # Speed
+0x0B, 0x0C,                                                         # Special
+
+
+
+0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,   # Pokemon 1 Original Trainer Name
+0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22,   # Pokemon 2 Original Trainer Name
+0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D,   # Pokemon 3 Original Trainer Name
+0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,   # Pokemon 4 Original Trainer Name
+0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0x42, 0x43,   # Pokemon 5 Original Trainer Name
+0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E,   # Pokemon 6 Original Trainer Name
+
+0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59,   # Pokemon 1 Nickname
+0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60, 0x61, 0x62, 0x63, 0x64,   # Pokemon 2 Nickname
+0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F,   # Pokemon 3 Nickname
+0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A,   # Pokemon 4 Nickname
+0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x80, 0x81, 0x82, 0x83, 0x84, 0x85,   # Pokemon 5 Nickname
+0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F, 0x90,   # Pokemon 6 Nickname
+
+0x91, 0x92, 0x93                                                    # Mystery Bytes (Patchable?)
+
+````
 
 
 
