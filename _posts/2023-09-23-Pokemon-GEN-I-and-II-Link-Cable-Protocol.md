@@ -27,6 +27,7 @@
     * [**Patch Section**](#patch-section)
       * [Preamble](#preamble)
       * [Stages](#stages)
+      * 
   * [Generation II](#generation-ii)
   * [Time Capsule](#time-capsule)
 
@@ -1122,7 +1123,7 @@ The games solve this issue by **logically spliting the payload in 2, and then se
 
 * The first list, which points to the first half of the payload is considered **Stage 1** of the patch section, while the second list (pointing to the second half) will be **Stage 2**.
 * The byte **0xFF** is used to mark the end of the lists. So an empty list will be just [0xFF], and a list with only one element will be [0xYY, 0xFF].
-* Lists cannot contain:
+* Lists cannot contain offsets with the following values:
   * 0x00: Represents NULL data, sent after the end of the list (as a fill-byte).
   * 0xFD: Control byte. [Preamble](#preamble).
   * 0xFE: Control byte. Indicates that there's nothing to send (or not ready).
@@ -1394,7 +1395,7 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 
 
 
-
+##### Stages
 
 
 ### Generation II
