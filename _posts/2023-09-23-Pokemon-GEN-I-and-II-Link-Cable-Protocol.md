@@ -27,7 +27,7 @@
     * [**Patch Section**](#patch-section)
       * [Preamble](#preamble)
       * [Stages](#stages)
-      * 
+      * [Restrictions](#restrictions)
   * [Generation II](#generation-ii)
   * [Time Capsule](#time-capsule)
 
@@ -1394,8 +1394,29 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 ````
 
 
+<br> <br>
+<div align="center">
+  
+##### Restrictions
 
-##### Stages
+</div>
+
+* The entire patch section (list 1 + list 2, including list terminators) has to be shorter than 190 bytes, that means that only 188 bytes can be patched without breaking the protocol:
+  * You **can** send only one list containing 190 offsets without a list terminator and the other side will allow it! (it does break the protocol but no one thought about this case).
+  * Furthermore, the second list terminator is entirely optional! Only the first one is used (to discriminate between the first and second stage).
+* Realistically, games wouldn't be able to reach the 188 patch limit:
+  * A pokemon species cannot be 0xFE (Glitch pokemon 'M)
+  * I don't think that their max HP (and current HP) can reach values higher than 250 (and assuming they did, then only one of the lowest of the 2 HP bytes can contain 0xFE).
+  * Level and box level are capped at 100 (without glitches).
+  * Statuses could never be 0xFE (legally).
+  * Types 1 are 2 cannot be 0xFE (it is a glitch type).
+  * There isn't any pokemon with a catch rate of 254, and 254 is an invalid item index (glitch item HM12).
+  * Move indexes only reach 165 (gen I) and 251 (gen I) so 254 is a glitch move.
+  * Moves PP values cannot reach 254 (would mean a 62 PP move with 3 PP UPs but the game caps PP at 61).
+  * Only the lowest byte of pokemon stats can reach 254 (without cheats).
+  * Trainer Names can't contain numbers ('8' is encoded as 254).
+  * Nicknames can't contain numbers ('8' is encoded as 254).
+* I did a rough calculation, and at worst, we would need 180 bytes.
 
 
 ### Generation II
