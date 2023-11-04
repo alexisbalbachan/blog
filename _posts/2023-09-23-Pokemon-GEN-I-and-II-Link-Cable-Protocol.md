@@ -1037,9 +1037,9 @@ A nickname
 
 There're **3 more bytes** before the patch section. I have no idea what their purpose is as any value is accepted (except 0xFE) without any visible effect in the trade. 
 
-They don't seem to be a checksum because changing the party data won't affect their values, which remain constant throughout different trade sessions.
+They don't seem to be a checksum because changing the party data won't affect their values, which remain constant throughout different trade sessions. They seem to change occasionally, but not in a consistent manner.
 
-Maybe they're some kind of hidden id. Different players will send different values, but those values won't ever change. Please let me know if you discover what are they for.
+0xFE can be sent in this section, so i'm assuming that this part doesn't need to be patched? Please let me know if you discover what are these bytes for.
 
 <hr>
 <br>
@@ -1151,6 +1151,7 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 0x06,                                                               # Type 1
 0x07,                                                               # Type 2
 0x08,                                                               # Catch Rate / Held Item
+
 0x09,                                                               # Move 1
 0x0A,                                                               # Move 2
 0x0B,                                                               # Move 3
@@ -1158,17 +1159,22 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 
 0x0D, 0x0E,                                                         # Original Trainer ID
 0x0F, 0x10, 0x11,                                                   # Experience Points
+
 0x12, 0x13,                                                         # Health EV
 0x14, 0x15,                                                         # Attack EV
 0x16, 0x17,                                                         # Defense EV
 0x18, 0x19,                                                         # Speed EV
 0x1A, 0x1B,                                                         # Special EV
+
 0x1C, 0x1D,                                                         # IV Data
+
 0x1E,                                                               # Move 1 PP
 0x1F,                                                               # Move 2 PP
 0x20,                                                               # Move 3 PP
 0x21,                                                               # Move 4 PP
+
 0x22,                                                               # Level
+
 0x23, 0x24,                                                         # Max HP
 0x25, 0x26,                                                         # Attack
 0x27, 0x28,                                                         # Defense
@@ -1183,6 +1189,7 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 0x32,                                                               # Type 1
 0x33,                                                               # Type 2
 0x34,                                                               # Catch Rate / Held Item
+
 0x35,                                                               # Move 1
 0x36,                                                               # Move 2
 0x37,                                                               # Move 3
@@ -1190,17 +1197,22 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 
 0x39, 0x3A,                                                         # Original Trainer ID
 0x3B, 0x3C, 0x3D,                                                   # Experience Points
+
 0x3E, 0x3F,                                                         # Health EV
 0x40, 0x41,                                                         # Attack EV
 0x42, 0x43,                                                         # Defense EV
 0x44, 0x45,                                                         # Speed EV
 0x46, 0x47,                                                         # Special EV
+
 0x48, 0x49,                                                         # IV Data
+
 0x4A,                                                               # Move 1 PP
 0x4B,                                                               # Move 2 PP
 0x4C,                                                               # Move 3 PP
 0x4D,                                                               # Move 4 PP
+
 0x4E,                                                               # Level
+
 0x4F, 0x50,                                                         # Max HP
 0x51, 0x52,                                                         # Attack
 0x53, 0x54,                                                         # Defense
@@ -1215,6 +1227,7 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 0x5E,                                                               # Type 1
 0x5F,                                                               # Type 2
 0x60,                                                               # Catch Rate / Held Item
+
 0x61,                                                               # Move 1
 0x62,                                                               # Move 2
 0x63,                                                               # Move 3
@@ -1222,17 +1235,22 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 
 0x65, 0x66,                                                         # Original Trainer ID
 0x67, 0x68, 0x69,                                                   # Experience Points
+
 0x6A, 0x6B,                                                         # Health EV
 0x6C, 0x6D,                                                         # Attack EV
 0x6E, 0x6F,                                                         # Defense EV
 0x70, 0x71,                                                         # Speed EV
 0x72, 0x73,                                                         # Special EV
+
 0x74, 0x75,                                                         # IV Data
+
 0x76,                                                               # Move 1 PP
 0x77,                                                               # Move 2 PP
 0x78,                                                               # Move 3 PP
 0x79,                                                               # Move 4 PP
+
 0x7A,                                                               # Level
+
 0x7B, 0x7C,                                                         # Max HP
 0x7D, 0x7E,                                                         # Attack
 0x7F, 0x80,                                                         # Defense
@@ -1247,6 +1265,7 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 0x8A,                                                               # Type 1
 0x8B,                                                               # Type 2
 0x8C,                                                               # Catch Rate / Held Item
+
 0x8D,                                                               # Move 1
 0x8E,                                                               # Move 2
 0x8F,                                                               # Move 3
@@ -1254,17 +1273,22 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 
 0x91, 0x92,                                                         # Original Trainer ID
 0x93, 0x94, 0x95,                                                   # Experience Points
+
 0x96, 0x97,                                                         # Health EV
 0x98, 0x99,                                                         # Attack EV
 0x9A, 0x9B,                                                         # Defense EV
 0x9C, 0x9D,                                                         # Speed EV
 0x9E, 0x9F,                                                         # Special EV
+
 0xA0, 0xA1,                                                         # IV Data
+
 0xA2,                                                               # Move 1 PP
 0xA3,                                                               # Move 2 PP
 0xA4,                                                               # Move 3 PP
 0xA5,                                                               # Move 4 PP
+
 0xA6,                                                               # Level
+
 0xA7, 0xA8,                                                         # Max HP
 0xA9, 0xAA,                                                         # Attack
 0xAB, 0xAC,                                                         # Defense
@@ -1279,6 +1303,7 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 0xB6,                                                               # Type 1
 0xB7,                                                               # Type 2
 0xB8,                                                               # Catch Rate / Held Item
+
 0xB9,                                                               # Move 1
 0xBA,                                                               # Move 2
 0xBB,                                                               # Move 3
@@ -1286,17 +1311,22 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 
 0xBD, 0xBE,                                                         # Original Trainer ID
 0xBF, 0xC0, 0xC1,                                                   # Experience Points
+
 0xC2, 0xC3,                                                         # Health EV
 0xC4, 0xC5,                                                         # Attack EV
 0xC6, 0xC7,                                                         # Defense EV
 0xC8, 0xC9,                                                         # Speed EV
 0xCA, 0xCB,                                                         # Special EV
+
 0xCC, 0xCD,                                                         # IV Data
+
 0xCE,                                                               # Move 1 PP
 0xCF,                                                               # Move 2 PP
 0xD0,                                                               # Move 3 PP
 0xD1,                                                               # Move 4 PP
+
 0xD2,                                                               # Level
+
 0xD3, 0xD4,                                                         # Max HP
 0xD5, 0xD6,                                                         # Attack
 0xD7, 0xD8,                                                         # Defense
@@ -1311,6 +1341,7 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 0xE2,                                                               # Type 1
 0xE3,                                                               # Type 2
 0xE4,                                                               # Catch Rate / Held Item
+
 0xE5,                                                               # Move 1
 0xE6,                                                               # Move 2
 0xE7,                                                               # Move 3
@@ -1318,18 +1349,23 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 
 0xE9, 0xEA,                                                         # Original Trainer ID
 0xEB, 0xEC, 0xED,                                                   # Experience Points
+
 0xEE, 0xEF,                                                         # Health EV
 0xF0, 0xF1,                                                         # Attack EV
 0xF2, 0xF3,                                                         # Defense EV
 0xF4, 0xF5,                                                         # Speed EV
 0xF6, 0xF7,                                                         # Special EV
+
 0xF8, 0xF9,                                                         # IV Data
+
 0xFA,                                                               # Move 1 PP
 0xFB,                                                               # Move 2 PP
 0xFC,                                                               # Move 3 PP
 |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||  # STAGE 2
 0x01,                                                               # Move 4 PP
+
 0x02,                                                               # Level
+
 0x03, 0x04,                                                         # Max HP
 0x05, 0x06,                                                         # Attack
 0x07, 0x08,                                                         # Defense
