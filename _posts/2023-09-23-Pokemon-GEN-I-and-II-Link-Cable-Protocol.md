@@ -23,7 +23,7 @@
       * [Pokemon Structure (x6)](#pokemon-structure-x6)
       * [Original Owner Name (x6)](#original-owner-name-x6)
       * [Pokemon Nickname (x6)](#pokemon-nickname-x6)
-      * [Owned Pokemon (x3)](#owned-pokemon)
+      * [Owned Pokemon Bytes (x3)](#owned-pokemon-bytes-x3)
     * [**Patch Section**](#patch-section)
       * [Preamble](#preamble)
       * [Stages](#stages)
@@ -1034,7 +1034,7 @@ A nickname
 <br><br>
 <div align="center">
 
-##### Owned Pokemon (x3)
+##### Owned Pokemon Bytes (x3)
 
 </div>
 
