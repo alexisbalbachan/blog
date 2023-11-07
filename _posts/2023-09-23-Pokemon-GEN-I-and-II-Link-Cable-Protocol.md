@@ -1432,7 +1432,7 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 
 * Anytime 0xFE is found in the payload its offset will be recorded in the patch buffer and that buffer's index will be increased by 1. The buffer's size is 200 but its index starts at 10, resulting in **190 available bytes for recording offsets**.
 
-* If we manage to have **more than 190 bytes to patch** then the games will increase the buffer's index beyond its maximum size, writing the extra offsets in unexpected memory regions (i think that the next 200 bytes belong to the enemy's patch list, not sure what's after that). The game's code doesn't check the index size, and there's no memory protection!
+* If we manage to have **more than 190 bytes to patch** then the games will increase the buffer's index beyond its maximum size, writing the extra offsets in unexpected memory regions (i think that the next 200 bytes belong to the enemy's patch list, not sure what's after that). The game's code doesn't validate index values, and there's no memory protection!
 
 * We can potentially write **225 bytes**, their values can be anything between 1 and 253, but we're restricted to write strictly increasing sequences of values (one sequence per patch stage, the lowest value for the first sequence being 191).
 
