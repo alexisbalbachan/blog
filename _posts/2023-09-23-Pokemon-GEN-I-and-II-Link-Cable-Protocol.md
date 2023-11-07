@@ -1593,7 +1593,14 @@ Master using the entire patch area! (186 offsets in section 1, 3 offsets in sect
 * The slave gameboy will have to wait for the master to make a choice (because slaves can't initiate an exchange on their own). If the slave chooses something first it'll keep waiting for the master (there's not timeout).
 
 * Once the master offers a pokemon (or exits the menu) it will repeatedly send that action until the slave also chooses to do something (there's no timeout).
+  
 * When both players select an action the master will send 0x00 to acknowledge the selections. The slave will also respond with an acknowledge.
+  
+* Actions are encoded as **0x6X**, where X is the **party index** of the selected pokemon (0 to 5).
+  
+* **0x6F** represents the **exit menu** action, **players will return to the [[Players Ready for Trade](#players-ready-for-trade)] stage**.
+
+Examples:
 
 <div align="center">
 
@@ -1614,13 +1621,6 @@ Master keeps sending its action for a long time until the slave chooses what to 
 
 
 </div>
-<br>
-<br>
-
-* Actions are encoded as **0x6X**, where X is the **party index** of the selected pokemon (0 to 5).
-* **0x6F** represents the **exit menu** action, **players will return to the [[Players Ready for Trade](#players-ready-for-trade)] stage**.
-
-<br>
 
 
 <div align="center">
