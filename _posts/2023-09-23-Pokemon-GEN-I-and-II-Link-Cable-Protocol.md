@@ -1044,7 +1044,7 @@ A nickname
 
 * The owned pokemon array starts immediately after the player's party data.
 
-* When exchanging party data, for some reason (**probably a mistake**) 3 extra bytes are sent, these belong to the first 3 bytes of the player's owned pokemon array:
+* When exchanging party data, for some reason (**probably a mistake**) 3 extra bytes are sent, which belong to the first 3 bytes of the player's owned pokemon array:
   * To be precise, those bytes indicate if the player owns (or not) the first 24 pokemon of the pokedex.
     
 * 0xFE can be sent in this section, so i'm assuming that this part doesn't need to be patched (or the game doesn't care about it).
