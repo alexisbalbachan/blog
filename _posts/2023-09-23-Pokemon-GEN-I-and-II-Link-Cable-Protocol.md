@@ -1430,11 +1430,11 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 
 </div>
 
-Anytime 0xFE is found in the payload its offset will be recorded in the patch buffer and the buffer's index will increase by 1. The buffer's size is 200 but its index starts at 10, resulting in 190 available bytes for recording offsets.
+* Anytime 0xFE is found in the payload its offset will be recorded in the patch buffer and that buffer's index will be increased by 1. The buffer's size is 200 but its index starts at 10, resulting in **190 available bytes for recording offsets**.
 
-If we manage to have more than 190 bytes to patch then the games will increase the buffer's index beyond its maximum size, so the games will write those offsets in unexpected memory regions (i think that the next 200 bytes belong to the enemy's patch list, not sure what's after that). The game's code doesn't check the index size, and there's no memory protection!
+* If we manage to have **more than 190 bytes to patch** then the games will increase the buffer's index beyond its maximum size, writing the extra offsets in unexpected memory regions (i think that the next 200 bytes belong to the enemy's patch list, not sure what's after that). The game's code doesn't check the index size, and there's no memory protection!
 
-We can potentially write 225 bytes, their values can be anything between 1 and 253, but we're restricted to write strictly increasing sequences of values (one sequence per patch stage, the lowest value for the first sequence being 191).
+* We can potentially write **225 bytes**, their values can be anything between 1 and 253, but we're restricted to write strictly increasing sequences of values (one sequence per patch stage, the lowest value for the first sequence being 191).
 
 Note: Another thing we could do is to force the other player to write 0xFE in a memory region which doesn't belong to their received payload: The second patch list can have any offset value between 1 and 253 but the actual patchable payload is 147 bytes long (which is the remaining second half, take a look at the offsets at the [Stages](#stages) section). If we sent a malicious patch list with offsets higher than 0x93, then the other gameboy will happily write 0xFE in a memory area which is beyond the payload to be patched. 106 Bytes after the payload area can be written (offsets 0x94 to 0xFC).
 
