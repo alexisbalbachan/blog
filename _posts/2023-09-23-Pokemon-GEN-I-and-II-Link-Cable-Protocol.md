@@ -28,6 +28,8 @@
       * [Preamble](#preamble)
       * [Stages](#stages)
       * [Restrictions](#restrictions)
+      * [Buffer Overflow](#buffer-overflow)
+      * [Examples](#examples)
   * [Generation II](#generation-ii)
   * [Time Capsule](#time-capsule)
 
@@ -1404,9 +1406,10 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 * The entire patch section (list 1 + list 2, including list terminators) has to be shorter than 190 bytes, that means that only 188 bytes can be patched without breaking the protocol:
   * You **can** send only one list containing 190 offsets without a list terminator and the other side will allow it! (it does break the protocol but no one thought about this case).
   * Furthermore, the second list terminator is entirely optional! Only the first one is used (to discriminate between the first and second stage).
+  * Note: The code actually uses a 200 byte buffer for the patch lists but for some reason the first 10 bytes are skipped (index starts at 10).
 * Realistically, games wouldn't be able to reach the 188 patch limit:
-  * A pokemon species cannot be 0xFE (Glitch pokemon 'M)
-  * I don't think that their max HP (and current HP) can reach values higher than 250 (and assuming they did, then only one of the lowest of the 2 HP bytes can contain 0xFE).
+  * A pokemon species cannot be 0xFE (Glitch pokemon 'M).
+  * Their max HP (and current HP) can reach 254 (0x00FE) but not anywhere near 65024 (0xFE00), so only the lowest of the 2 HP bytes can contain 0xFE.
   * Level and box level are capped at 100 (without glitches).
   * Statuses could never be 0xFE (legally).
   * Types 1 are 2 cannot be 0xFE (it is a glitch type).
@@ -1416,7 +1419,149 @@ Here's a complete payload, byte values represent their corresponding offset. **|
   * Only the lowest byte of pokemon stats can reach 254 (without cheats).
   * Trainer Names can't contain numbers ('8' is encoded as 254).
   * Nicknames can't contain numbers ('8' is encoded as 254).
-* I did a rough calculation, and at worst, we would need 180 bytes.
+* Doing a rough (and generous) estimate, the games would need 180 bytes at the absolute worst case (without any glitches).
+* **Any offset after the patch limit is reached (188) will be ignored**:
+  * **Games are hardcoded to always exchange the 190 bytes of the patch buffer** even if there's nothing to patch (0x00 is sent repeatedly in those cases).
+
+<br> <br>
+<div align="center">
+  
+##### Buffer Overflow
+
+</div>
+
+Anytime 0xFE is found in the payload its offset will be recorded in the patch buffer and the buffer's index will increase by 1. The buffer's size is 200 but its index starts at 10, resulting in 190 available bytes for recording offsets.
+
+If we manage to have more than 190 bytes to patch then the games will increase the buffer's index beyond its maximum size, so the games will write those offsets in unexpected memory regions (i think that the next 200 bytes belong to the enemy's patch list, not sure what's after that). The game's code doesn't check the index size, and there's no memory protection!
+
+We can potentially write 225 bytes, their values can be anything between 1 and 253, but we're restricted to write strictly increasing sequences of values (one sequence per patch stage, the lowest value for the first sequence being 191).
+
+Note: Another thing we could do is to force the other player to write 0xFE in a memory region which doesn't belong to their received payload: The second patch list can have any offset value between 1 and 253 but the actual patchable payload is 147 bytes long (which is the remaining second half, take a look at the offsets at the [Stages](#stages) section). If we sent a malicious patch list with offsets higher than 0x93, then the other gameboy will happily write 0xFE in a memory area which is beyond the payload to be patched. 106 Bytes after the payload area can be written (offsets 0x94 to 0xFC).
+
+<br> <br>
+<div align="center">
+  
+##### Examples
+
+<br>
+
+Empty patch list for both master and slave:
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0xFF   | 0x00 |
+|X+1      | 0xFF   | 0xFF |
+|X+2      | 0x00   | 0xFF |
+|X+3      | 0x00   | 0x00 |
+|X+4      | 0x00   | 0x00 |
+|X+5      | 0x00   | 0x00 |
+|X+6      | 0x00   | 0x00 |
+|.........|........|......|
+|X+184    | 0x00   | 0x00 |
+|X+185    | 0x00   | 0x00 |
+|X+186    | 0x00   | 0x00 |
+|X+187    | 0x00   | 0x00 |
+|X+188    | 0x00   | 0x00 |
+|X+189    | 0x00   | 0x00 |
+|X+190    | 0x00   | 0x00 |
+
+<br>
+
+Master patching 3 bytes of the first stage (offsets 0x01, 0x95, 0xFC), slave has nothing to patch:
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0x01   | 0x00 |
+|X+1      | 0x95   | 0xFF |
+|X+2      | 0xFC   | 0xFF |
+|X+3      | 0xFF   | 0x00 |
+|X+4      | 0xFF   | 0x00 |
+|X+5      | 0x00   | 0x00 |
+|X+6      | 0x00   | 0x00 |
+|.........|........|......|
+|X+184    | 0x00   | 0x00 |
+|X+185    | 0x00   | 0x00 |
+|X+186    | 0x00   | 0x00 |
+|X+187    | 0x00   | 0x00 |
+|X+188    | 0x00   | 0x00 |
+|X+189    | 0x00   | 0x00 |
+|X+190    | 0x00   | 0x00 |
+
+<br>
+
+Master patching 5 bytes of the second stage, slave patching a single byte from the first stage:
+
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0xFF   | 0x00 |
+|X+1      | 0x02   | 0xFF |
+|X+2      | 0x46   | 0xAA |
+|X+3      | 0x67   | 0xFF |
+|X+4      | 0x8A   | 0x00 |
+|X+5      | 0x8F   | 0x00 |
+|X+6      | 0xFF   | 0x00 |
+|.........|........|......|
+|X+184    | 0x00   | 0x00 |
+|X+185    | 0x00   | 0x00 |
+|X+186    | 0x00   | 0x00 |
+|X+187    | 0x00   | 0x00 |
+|X+188    | 0x00   | 0x00 |
+|X+189    | 0x00   | 0x00 |
+|X+190    | 0x00   | 0x00 |
+
+
+<br>
+
+Master patching 1 byte of each stage (note the **0x02** in both sections, they belong to different parts of the payload), slave patching 2 bytes of each stage:
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0xFF   | 0x00 |
+|X+1      | 0x02   | 0xAA |
+|X+2      | 0xFF   | 0xBB |
+|X+3      | 0x02   | 0xFF |
+|X+4      | 0xFF   | 0x01 |
+|X+5      | 0x00   | 0x02 |
+|X+6      | 0x00   | 0xFF |
+|.........|........|......|
+|X+184    | 0x00   | 0x00 |
+|X+185    | 0x00   | 0x00 |
+|X+186    | 0x00   | 0x00 |
+|X+187    | 0x00   | 0x00 |
+|X+188    | 0x00   | 0x00 |
+|X+189    | 0x00   | 0x00 |
+|X+190    | 0x00   | 0x00 |
+
+<br>
+
+Master using the entire patch area! (186 offsets in section 1, 3 offsets in section 2).
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0x01   | 0x00 |
+|X+1      | 0x02   | 0xFF |
+|X+2      | 0x03   | 0xFF |
+|X+3      | 0x04   | 0x00 |
+|X+4      | 0x05   | 0x00 |
+|X+5      | 0x06   | 0x00 |
+|X+6      | 0x07   | 0x00 |
+|.........|........|......|
+|X+184    | 0xB7   | 0x00 |
+|X+185    | 0xB8   | 0x00 |
+|X+186    | 0xFF   | 0x00 |
+|X+187    | 0x01   | 0x00 |
+|X+188    | 0x02   | 0x00 |
+|X+189    | 0x03   | 0x00 |
+|X+190    | 0xFF   | 0x00 |
+
+</div>
+
+
+
+
+
+
 
 
 ### Generation II
