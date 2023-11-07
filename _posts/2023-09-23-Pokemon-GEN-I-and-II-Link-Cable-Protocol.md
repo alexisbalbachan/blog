@@ -1616,7 +1616,7 @@ Master keeps sending its action for a long time until the slave chooses what to 
 </div>
 
 * Actions are encoded as **0x6X**, where X is the **party index** of the selected pokemon (0 to 5).
-* **0x6F** represents the **exit menu** action.
+* **0x6F** represents the **exit menu** action, **players will return to the [[Players Ready for Trade](#players-ready-for-trade)] stage**.
 
 
 <div align="center">
