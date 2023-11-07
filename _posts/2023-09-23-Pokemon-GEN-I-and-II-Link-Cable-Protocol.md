@@ -1049,7 +1049,18 @@ A nickname
     
 * 0xFE can be sent in this section, so i'm assuming that this part doesn't need to be patched (or the game doesn't care about it).
  
-As an example, if the player owned only Bulbasaur, Metapod, and Spearrow, then the first 3 bytes would be: |00000001|00000100|00010000|...|...| (|0x01|0x04|0x10|...|...|)
+
+
+<div align="center">
+
+As an example, if the player only owned Bulbasaur, Metapod, and Spearrow, then those 3 bytes would be:
+
+| Byte  |    1     |     2    |     3    |
+|-------|----------|----------|----------|
+| Bin   | 00000001 | 00000100 | 00010000 |
+| Hex   |   0x01   |   0x04   |   0x10   |
+
+</div>
 
 <hr>
 <br>
