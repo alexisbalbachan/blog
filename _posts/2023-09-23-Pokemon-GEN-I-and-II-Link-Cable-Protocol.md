@@ -1517,11 +1517,11 @@ Master patching 1 byte of each stage (note the **0x02** in both sections, they b
 
 | #MSG    | MASTER | SLAVE|
 |---------|--------|------|
-|X        | 0xFF   | 0x00 |
-|X+1      | 0x02   | 0xAA |
-|X+2      | 0xFF   | 0xBB |
-|X+3      | 0x02   | 0xFF |
-|X+4      | 0xFF   | 0x01 |
+|X        | 0x02   | 0x00 |
+|X+1      | 0xFF   | 0xAA |
+|X+2      | 0x02   | 0xBB |
+|X+3      | 0xFF   | 0xFF |
+|X+4      | 0x00   | 0x01 |
 |X+5      | 0x00   | 0x02 |
 |X+6      | 0x00   | 0xFF |
 |.........|........|......|
