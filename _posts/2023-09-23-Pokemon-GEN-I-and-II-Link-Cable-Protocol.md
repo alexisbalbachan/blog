@@ -30,6 +30,8 @@
       * [Restrictions](#restrictions)
       * [Buffer Overflow](#buffer-overflow)
       * [Examples](#examples)
+    * [Trade Request](#trade-request)
+    * [Trade Confirmation](#trade-confirmation)
   * [Generation II](#generation-ii)
   * [Time Capsule](#time-capsule)
 
@@ -1576,6 +1578,87 @@ Master using the entire patch area! (186 offsets in section 1, 3 offsets in sect
 </div>
 
 
+<hr>
+<br>
+<div align="center">
+
+#### Trade Request
+
+</div>
+
+* Here, both players are in the trade menu, they can see the properties of each pokemon (in both parties) and may offer to send any of their pokemon to the opposing player. They may also exit the menu at any moment.
+
+* Seeing pokemon properties won't trigger any exchange as the entire party data had already been exchanged.
+
+* The slave gameboy will have to wait for the master to make a choice (because slaves can't initiate an exchange on their own). If the slave chooses something first it'll keep waiting for the master (there's not timeout).
+
+* Once the master offers a pokemon (or exits the menu) it will repeatedly send that action until the slave also chooses to do something (there's no timeout).
+* When both players select an action the master will send 0x00 to acknowledge the selections. The slave will also respond with an acknowledge.
+
+<div align="center">
+
+Master keeps sending its action for a long time until the slave chooses what to do:
+  
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | ACTION | 0x00 |
+|X+1      | ACTION | 0x00 |
+|X+2      | ACTION | 0x00 |
+| ....... | ...... | .... |
+|X+400000 | ACTION | 0x00 |
+|X+400001 | ACTION | 0x00 |
+|X+400002 | ACTION | 0x00 |
+|X+400003 | ACTION | ACTION |
+|X+400004 | 0x00   | ACTION |
+|X+400005 | 0x00   | 0x00   |
+
+
+</div>
+
+* Actions are encoded as **0x6X**, where X is the **party index** of the selected pokemon (0 to 5).
+* **0x6F** represents the **exit menu** action.
+
+
+<div align="center">
+  
+Master chooses to trade its 4th pokemon but slave exits the menu:
+  
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0x63  | 0x00  |
+|X+1      | 0x63  | 0x00  |
+|X+2      | 0x63  | 0x6F  |
+|X+3      | 0x00  | 0x6F  |
+|X+4      | 0x00  | 0x00  |
+|X+5      | LOBBY | LOBBY |
+
+<br>
+
+Master chooses to trade its 2nd pokemon, slave chooses its 3rd pokemon:
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0x61  | 0x00 |
+|X+1      | 0x61  | 0x62 |
+|X+1      | 0x00  | 0x62 |
+|X+1      | 0x00  | 0x00 |
+|X+2      | CONFIRMATION | CONFIRMATION |
+
+
+</div>
+
+
+
+
+
+
+<hr>
+<br>
+<div align="center">
+
+#### Trade Confirmation
+
+</div>
 
 
 
