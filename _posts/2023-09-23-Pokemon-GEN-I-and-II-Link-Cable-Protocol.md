@@ -23,7 +23,7 @@
       * [Pokemon Structure (x6)](#pokemon-structure-x6)
       * [Original Owner Name (x6)](#original-owner-name-x6)
       * [Pokemon Nickname (x6)](#pokemon-nickname-x6)
-      * [Mystery Bytes](#mystery-bytes)
+      * [Owned Pokemon (x3)](#owned-pokemon)
     * [**Patch Section**](#patch-section)
       * [Preamble](#preamble)
       * [Stages](#stages)
@@ -1034,15 +1034,22 @@ A nickname
 <br><br>
 <div align="center">
 
-##### Mystery Bytes
+##### Owned Pokemon (x3)
 
 </div>
 
-There're **3 more bytes** before the patch section. I have no idea what their purpose is as any value is accepted (except 0xFE) without any visible effect in the trade. 
+* There're **3 more bytes** before the patch section. **They're basically useless** as they represent incomplete data and have nothing to do with the trade itself!
 
-They don't seem to be a checksum because changing the party data won't affect their values, which remain constant throughout different trade sessions. They seem to change occasionally, but not in a consistent manner.
+* The games store pokedex data (owned pokemon and seen pokemon) as an array of bytes, each bit representing a pokemon. When a bit is set to 1 then that pokemon is owned (or seen).
 
-0xFE can be sent in this section, so i'm assuming that this part doesn't need to be patched? Please let me know if you discover what are these bytes for.
+* The owned pokemon array starts immediately after the player's party data.
+
+* When exchanging party data, for some reason (**probably a mistake**) 3 extra bytes are sent, these belong to the first 3 bytes of the player's owned pokemon array:
+  * To be precise, those bytes indicate if the player owns (or not) the first 24 pokemon of the pokedex.
+    
+* 0xFE can be sent in this section, so i'm assuming that this part doesn't need to be patched (or the game doesn't care about it).
+ 
+As an example, if the player owned only Bulbasaur, Metapod, and Spearrow, then the first 3 bytes would be: |00000001|00000100|00010000|...|...| (|0x01|0x04|0x10|...|...|)
 
 <hr>
 <br>
@@ -1391,7 +1398,7 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 0x7B, 0x7C, 0x7D, 0x7E, 0x7F, 0x80, 0x81, 0x82, 0x83, 0x84, 0x85,   # Pokemon 5 Nickname
 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F, 0x90,   # Pokemon 6 Nickname
 
-0x91, 0x92, 0x93                                                    # Mystery Bytes (Patchable?)
+0x91, 0x92, 0x93                                                    # Owned Pokemon Bytes (Patchable?)
 
 ````
 
