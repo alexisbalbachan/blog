@@ -32,6 +32,7 @@
       * [Examples](#examples)
     * [Trade Request](#trade-request)
     * [Trade Confirmation](#trade-confirmation)
+    * [Trade Sequence](#trade-sequence)
   * [Generation II](#generation-ii)
   * [Time Capsule](#time-capsule)
 
