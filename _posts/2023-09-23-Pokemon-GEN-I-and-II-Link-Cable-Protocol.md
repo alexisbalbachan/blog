@@ -373,6 +373,8 @@ The master won't send anything else until the player saves the game, similarly t
 
 Once the master saved its game it will repeatedly send **0x60** (to signal that it's ready) until it receives **0x60** as well. It will abort and disconnect after several seconds of not receiving that same value! (it sends 0x00 before disconnecting)
 
+Note: The games actually check that the **highest nibble (4 bits) is 6**, so any response between 0x60 and 0x6F is accepted. Gen II games use this feature to identify themselves when using the [Time Capsule](#time-capsule) (only gen I <--> gen II trades are allowed, not gen II <--> gen II).
+
 | #MSG   | MASTER      | SLAVE |
 |--------|-------------|-------|
 |X       | 0x60        | 0x00  |
@@ -521,6 +523,8 @@ When the master is ready (presses "A"), it will first send a single **0xFE** whi
 The same happens with the slave when it iteracts with the machine: It will wait for the master to communicate (and respond with a single 0xFE at first followed by 0x60 on subsequent transmissions). If the master never communicates then it will be stuck forever until the gameboy is turned off.
 
 After receiving many successful responses, the master will send a stream of 0x00 before continuing.
+
+Note: Just as with the initial [Handshake](#handshake), the only thing that games care about 0x60 is its highest nibble (6), so valid values are 0x60 to 0x6F (only 0x60 is used in both gen I and gen II games).
 
 <div align="center">
 
@@ -1594,11 +1598,17 @@ Master using the entire patch area! (186 offsets in section 1, 3 offsets in sect
 
 * Once the master offers a pokemon (or exits the menu) it will repeatedly send that action until the slave also chooses to do something (there's no timeout).
   
-* When both players select an action the master will send 0x00 to acknowledge the selections. The slave will also respond with an acknowledge.
+* When both players select an action the master will send several **0x00** to acknowledge the selections. The slave will also respond with an acknowledge.
   
 * Actions are encoded as **0x6X**, where X is the **party index** of the selected pokemon (0 to 5).
   
-* **0x6F** represents the **exit menu** action, **players will return to the [[Players Ready for Trade](#players-ready-for-trade)] stage**.
+* **0x6F** represents the **exit menu** action, **if both players choose that option they'll return to the [[Players Ready for Trade](#players-ready-for-trade)] stage**.
+  
+* If only one player chooses to exit while the other one chose to trade something, then the selection process will reset and both players will have to make a new choice.
+
+* **GLITCH**: Players can send indexes higher than their party sizes (e.g index 3 on a party of size 2, or even **index 14 (0x6E)**). If the index is less than 6 then players will interpret it as the last pokemon of the sender's party (the last pokemon is repeated until 6 pokemon structures are sent). Indexes higher than 5 will trigger an **out of bounds memory read** which will interpret those random 44 bytes as a pokemon.
+  * For example, an index of 10 will read 44 bytes starting at index **440** (10*44). This invalid memory read happens in both games.
+  * I'm not sure what would happend if that glitch "pokemon" was traded (the bytes at that memory location will be copied/moved, and overwritten!), it may break both games.
 
 Examples:
 
@@ -1616,8 +1626,18 @@ Master keeps sending its action for a long time until the slave chooses what to 
 |X+400001 | ACTION | 0x00 |
 |X+400002 | ACTION | 0x00 |
 |X+400003 | ACTION | ACTION |
-|X+400004 | 0x00   | ACTION |
-|X+400005 | 0x00   | 0x00   |
+|X+400004 | ACTION | ACTION |
+|X+400005 | ACTION | ACTION |
+|X+400006 | ACTION | ACTION |
+| ....... | ...... | .... |
+|X+400016 | ACTION | ACTION |
+|X+400017 | 0x00   | ACTION |
+|X+400018 | 0x00   | 0x00   |
+|X+400019 | 0x00   | 0x00   |
+|X+400020 | 0x00   | 0x00   |
+|X+400021 | 0x00   | 0x00   |
+|X+400022 | 0x00   | 0x00   |
+|X+400023 | CONFIRMATION | CONFIRMATION |
 
 
 </div>
@@ -1632,9 +1652,14 @@ Master chooses to trade its 4th pokemon but slave exits the menu:
 |X        | 0x63  | 0x00  |
 |X+1      | 0x63  | 0x00  |
 |X+2      | 0x63  | 0x6F  |
-|X+3      | 0x00  | 0x6F  |
-|X+4      | 0x00  | 0x00  |
-|X+5      | LOBBY | LOBBY |
+|X+3      | 0x63  | 0x6F  |
+| ....... | ...... | .... |
+|X+15     | 0x63  | 0x6F  |
+|X+16     | 0x00  | 0x6F  |
+|X+17     | 0x00  | 0x00  |
+| ....... | ...... | .... |
+|X+24     | 0x00  | 0x00  |
+|X+25     | AT TRADE MENU | AT TRADE MENU |
 
 <br>
 
@@ -1644,15 +1669,19 @@ Master chooses to trade its 2nd pokemon, slave chooses its 3rd pokemon:
 |---------|--------|------|
 |X        | 0x61  | 0x00 |
 |X+1      | 0x61  | 0x62 |
-|X+1      | 0x00  | 0x62 |
-|X+1      | 0x00  | 0x00 |
-|X+2      | CONFIRMATION | CONFIRMATION |
+|X+2      | 0x61  | 0x62 |
+|X+3      | 0x61  | 0x62 |
+| ....... | ...... | .... |
+|X+14     | 0x61  | 0x62  |
+|X+15     | 0x00  | 0x62  |
+|X+16     | 0x00  | 0x00 |
+|X+17     | 0x00  | 0x00 |
+| ....... | ...... | .... |
+|X+24     | 0x00  | 0x00 |
+|X+25     | CONFIRMATION | CONFIRMATION |
 
 
 </div>
-
-
-
 
 
 
@@ -1665,9 +1694,150 @@ Master chooses to trade its 2nd pokemon, slave chooses its 3rd pokemon:
 </div>
 
 
+* Once both players chose to send one of their pokemon, a confirmation dialog will appear. They can either start the trade or cancel:
+
+  * (Slave only) 0x00 is sent when still deciding what to do.
+  * **0x61** is sent when cancelling the trade.
+  * **0x62** is sent when confirming the trade.
+ 
+* The master will repeatedly send its choice until the slave also chooses something, otherwise it'll respond with 0x00. There's no timeout.
+* If the master hasn't decided yet, the slave will wait for it forever (there's no timeout).
+* Once both players have decided, they'll keep sending their choices (usually 14 times), followed by a stream of 0x00 (usually 9 times).
+
+* If either one cancels the trade while the other one confirmed it, then both will return to the trade menu and pick a new pokemon to send (or exit).
+
+* When both players confirm the trade, the trading process will start, and after that both players return to [Players Ready for Trade](#players-ready-for-trade).
+
+<div align="center">
+  
+Some examples:
+
+
+Master (CANCEL) waited a long time for the slave to decide (CONFIRM)
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0x61  | 0x00 |
+|X+1      | 0x61  | 0x00 |
+|X+2      | 0x61  | 0x00 |
+|X+3      | 0x61  | 0x00 |
+| ....... | ..... | .... |
+|X+49999  | 0x61  | 0x00 |
+|X+50000  | 0x61  | 0x62 |
+|X+50001  | 0x61  | 0x62 |
+| ....... | ..... | .... |
+|X+50014  | 0x61  | 0x62 |
+|X+50015  | 0x00  | 0x62 |
+|X+50016  | 0x00  | 0x00 |
+|X+50017  | 0x00  | 0x00 |
+|X+50018  | TRADE MENU | TRADE MENU |
+
+<br>
+
+Both players confirmed immediately:
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0x62  | 0x00 |
+|X+1      | 0x62  | 0x62 |
+|X+2      | 0x62  | 0x62 |
+|X+3      | 0x62  | 0x62 |
+| ....... | ..... | .... |
+|X+14     | 0x62  | 0x62 |
+|X+15     | 0x00  | 0x62 |
+|X+16     | 0x00  | 0x00 |
+|X+17     | 0x00  | 0x00 |
+| ....... | ..... | .... |
+|X+23     | 0x00  | 0x00 |
+|X+24     | TRADE SEQUENCE | TRADE SEQUENCE |
+
+</div>
 
 
 
+<hr>
+<br>
+<div align="center">
+
+#### Trade Sequence
+
+</div>
+
+* Both players will see the trade animation, **nothing is sent during that sequence** (maybe because gameboys need some time to process the exchange).
+  * Evolutions are hardcoded, if a Kadabra, Machoke, Haunter or Graveler is traded both gameboys will independently start their evolve animation.
+  * **I think developers decided this to avoid complicating the protocol**.
+  * Just sending the player's input (pressing 'B') to the other side won't work:
+    * Players have a limited time to cancel evolutions, pressing 'B' at the last millisecond could cause the games to become out of sync.
+    * Nothing else has a limited time to send an input (not even in battles).
+  * A possible solution could be 'pausing' the evolution animation indefinitely and wait for the player's 'B' input (if any).
+  * Anyway, **this is why players can't cancel trade evolutions**. Also the reason why everstones were introduced!
+
+* Once it ends, the master will repeatedly send 0x62 (14 times) followed by a stream of 0x00 (9 times), the slave returns this same sequence.
+  
+* That exchange happens two times ((14) 0x62, (9) 0x00, (14) 0x62, (9) 0x00).
+
+* **I haven't tested what happens if unexpected sequences are sent** (sorry!), so what i just described is only the normal exchange.
+  
+* After all this, players return to [Seed Exchange](#seed-exchange). Players need to exchange their party data once more (because their party just changed!)
+
+<br>
+
+<div align="center">
+  
+A COMPLETE Trade sequence confirmation
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0x62  | 0x00 |
+|X+1      | 0x62  | 0x62 |
+|X+2      | 0x62  | 0x62 |
+|X+3      | 0x62  | 0x62 |
+|X+4      | 0x62  | 0x62 |
+|X+5      | 0x62  | 0x62 |
+|X+6      | 0x62  | 0x62 |
+|X+7      | 0x62  | 0x62 |
+|X+8      | 0x62  | 0x62 |
+|X+9      | 0x62  | 0x62 |
+|X+10     | 0x62  | 0x62 |
+|X+11     | 0x62  | 0x62 |
+|X+12     | 0x62  | 0x62 |
+|X+13     | 0x62  | 0x62 |
+|X+14     | 0x00  | 0x62 |
+|X+15     | 0x00  | 0x00 |
+|X+16     | 0x00  | 0x00 |
+|X+17     | 0x00  | 0x00 |
+|X+18     | 0x00  | 0x00 |
+|X+19     | 0x00  | 0x00 |
+|X+20     | 0x00  | 0x00 |
+|X+21     | 0x00  | 0x00 |
+|X+22     | 0x00  | 0x00 |
+|X+23     | 0x62  | 0x00 |
+|X+24     | 0x62  | 0x62 |
+|X+25     | 0x62  | 0x62 |
+|X+26     | 0x62  | 0x62 |
+|X+27     | 0x62  | 0x62 |
+|X+28     | 0x62  | 0x62 |
+|X+29     | 0x62  | 0x62 |
+|X+30     | 0x62  | 0x62 |
+|X+31     | 0x62  | 0x62 |
+|X+32     | 0x62  | 0x62 |
+|X+33     | 0x62  | 0x62 |
+|X+34     | 0x62  | 0x62 |
+|X+35     | 0x62  | 0x62 |
+|X+36     | 0x62  | 0x62 |
+|X+37     | 0x00  | 0x62 |
+|X+38     | 0x00  | 0x00 |
+|X+39     | 0x00  | 0x00 |
+|X+40     | 0x00  | 0x00 |
+|X+41     | 0x00  | 0x00 |
+|X+42     | 0x00  | 0x00 |
+|X+43     | 0x00  | 0x00 |
+|X+44     | 0x00  | 0x00 |
+|X+45     | 0x00  | 0x00 |
+|X+46     | SEED EXCHANGE PRAMBLE  | 0x00 |
+|X+47     | SEED EXCHANGE PRAMBLE  | SEED EXCHANGE PRAMBLE |
+
+<br>
 
 ### Generation II
 
