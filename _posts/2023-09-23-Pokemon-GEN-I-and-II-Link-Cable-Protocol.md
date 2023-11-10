@@ -1440,7 +1440,7 @@ Here's a complete payload, byte values represent their corresponding offset. **|
   * Trainer Names can't contain numbers ('8' is encoded as 254).
   * Nicknames can't contain numbers ('8' is encoded as 254).
 * Doing a rough (and generous) estimate, the games would need 180 bytes at the absolute worst case (without any glitches).
-* **Any offset after the patch limit is reached (188) will be ""ignored""** (see [Buffer Overflow](#buffer-overflow)):
+* **Any offset after the patch limit is reached (188) won't be sent** (but could affect things on YOUR side, see [Buffer Overflow](#buffer-overflow)):
   * **Games are hardcoded to always exchange the 190 bytes of the patch buffer** even if there's nothing to patch (0x00 is sent repeatedly in those cases).
 
 <br> <br>
