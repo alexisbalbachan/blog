@@ -1707,7 +1707,7 @@ Master chooses to trade its 2nd pokemon, slave chooses its 3rd pokemon:
 
 * If either one cancels the trade while the other one confirmed it, then both will return to the trade menu and pick a new pokemon to send (or exit).
 
-* When both players confirm the trade, the trading process will start, and after that both players return to [Players Ready for Trade](#players-ready-for-trade).
+* When both players confirm the trade, the trading process will start.
 
 <div align="center">
   
