@@ -1771,7 +1771,7 @@ Both players confirmed immediately:
     * Players have a limited time to cancel evolutions, pressing 'B' at the last millisecond could cause the games to become out of sync.
     * Nothing else has a limited time to send an input (not even in battles).
   * A possible solution could be 'pausing' the evolution animation indefinitely and wait for the player's 'B' input (if any).
-  * Anyway, **this is why players can't cancel trade evolutions**. Also probably the reason why everstones were introduced!
+  * Anyway, **this is why players can't cancel cancel evolutions**. Also probably the reason why everstones were introduced!
 
 * Once it ends, the master will repeatedly send 0x62 (14 times) followed by a stream of 0x00 (9 times), the slave returns this same sequence.
   
@@ -1785,7 +1785,7 @@ Both players confirmed immediately:
 
 <div align="center">
   
-A COMPLETE Trade sequence confirmation
+A COMPLETE Trade confirmation
 
 | #MSG    | MASTER | SLAVE|
 |---------|--------|------|
