@@ -2159,23 +2159,13 @@ Same as in Gen I
 ##### Zeros (x3)
 
 </div>
-<br><br>
+
 
 * In Gen I these 3 bytes were the first bytes of the player's pokedex data (which were a bit field of owned pokemon). They were probably being transmitted by mistake.
 * It seems that Gen II fixed this issue and now will only send 3 **0x00** no matter what happens in the player's pokedex. I'm not sure why they weren't removed entirely.
 
 
-A summary of the structure's fields can be found here: [Bulbapedia -> Pokemon data structure (Generation I)](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_data_structure_(Generation_I)).
-
-
-    * [Data Structure](#data-structure-1)
-      * [**Trainer ID**](#trainer-id)
-      * [Pokemon Structure (x6)](#pokemon-structure-x6)
-      * [Original Owner Name (x6)](#original-owner-name-x6)
-      * [Pokemon Nickname (x6)](#pokemon-nickname-x6)
-      * [**Zeros (x3)**](#zeros-x3)
-
-
+<br><br>
 
 ### Time Capsule
   
