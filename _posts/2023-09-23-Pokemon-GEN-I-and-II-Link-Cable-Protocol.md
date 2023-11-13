@@ -2019,7 +2019,7 @@ Exactly the same as in Gen I: [\[Gen I\] Seed Exchange](#seed-exchange)
 
 * At least in english, the Gen II character encoding is compatible with Gen I, only glitched characters differ.
 
-* As with Gen I encodings are well documented here: [Bulbapedia-> Character Encoding (Generation II)](https://bulbapedia.bulbagarden.net/wiki/Character_encoding_(Generation_II)).
+* As with Gen I, encodings are well documented here: [Bulbapedia-> Character Encoding (Generation II)](https://bulbapedia.bulbagarden.net/wiki/Character_encoding_(Generation_II)).
 
 <hr>
 <br>
