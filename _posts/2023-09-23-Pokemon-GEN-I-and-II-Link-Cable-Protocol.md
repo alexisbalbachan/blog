@@ -34,6 +34,10 @@
     * [Trade Confirmation](#trade-confirmation)
     * [Trade Sequence](#trade-sequence)
   * [Generation II](#generation-ii)
+    * [Handshake](#handshake-1)
+    * [Players Ready](#players-ready-1)
+    * [Room Selection](#room-selection-1)
+    * [Players Ready for Trade](#players-ready-for-trade-1)
   * [Time Capsule](#time-capsule)
 
 
@@ -1839,8 +1843,143 @@ A COMPLETE Trade confirmation
 |X+47     | SEED EXCHANGE PRAMBLE  | SEED EXCHANGE PRAMBLE |
 
 <br>
+</div>
 
 ### Generation II
+
+<hr>
+<br>
+<div align="center">
+
+#### Handshake
+
+
+Exactly the same as in Gen I: [\[Gen I\] Handshake](#handshake)
+
+</div>
+
+
+<hr>
+<br>
+<div align="center">
+
+#### Players Ready
+
+</div>
+
+* Works like in Gen I ([\[Gen I\] Players Ready](#players-ready)) but with a different ready signal: It is **0x61** instead of 0x60.
+
+* This difference allows Gen II games to detect Gen I games at a very early stage (they'll send 0x60). If that was the case Gen II games will abort the connection at the next stage, players will see the message: "*You can't link to the past here.*".
+
+* Gen I games will accept any ready message as long as its highest nibble is 6 (0x**6**X).
+
+
+<hr>
+<br>
+<div align="center">
+
+#### Room Selection
+
+</div>
+
+* Gen II games don't have to select a room because players are required to head to different physical locations depending on whether they want to trade or to battle.
+* HOWEVER, **room selection is still part of the protocol**, this time the games will handle this part automatically.
+* Messages are almost the same as in Gen I: [\[Gen I\] Room Selection)](#room-selection):
+  * MENU MSG prefix stays the same, its first nibble has to be *0xD*
+  * The following nibble is similar to Gen I with some differences:
+    * Now it doesn't make sense to press A/B or to cancel the room selection (Room is already decided when talking to the corresponding NPC):
+      * **0xD1**: Trade (In Gen I it was 0xD4).
+      * 0xD2: Battle (In Gen I it was 0xD5).
+      * 0xD**Y** (Y being Anything else): Players will be disconnected (with a message that says the other player chose a different room).
+* When Gen II games detected that the other player is trying to connect from a Gen I game (see previous section), they'll send **0xDE**:
+  * By Gen I standards it means that both 'A' and 'B' are pressed and that cancel was being selected, it's basically a double cancel.
+  * Games will disconnect after that.
+
+<hr>
+<br>
+<div align="center">
+
+#### Players Ready for Trade
+
+</div>
+
+* Serves the same purpose as in Gen I but **messages are different**:
+  * Master sends a stream of **0x75** (usually 14 times), followed by 0x00 (10 times). The same sequence is expected from the slave.
+  * Master then sends a stream of **0x76** (also 14 times) followed by 0x00. Slave has to mirror this as well.
+ 
+<br>
+
+<div align="center">
+  
+<details>
+  <summary>
+  Full Example:
+  </summary>
+  
+
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0x75  | 0x00 |
+|X+1      | 0x75  | 0x75 |
+|X+2      | 0x75  | 0x75 |
+|X+3      | 0x75  | 0x75 |
+|X+4      | 0x75  | 0x75 |
+|X+5      | 0x75  | 0x75 |
+|X+6      | 0x75  | 0x75 |
+|X+7      | 0x75  | 0x75 |
+|X+8      | 0x75  | 0x75 |
+|X+9      | 0x75  | 0x75 |
+|X+10     | 0x75  | 0x75 |
+|X+11     | 0x75  | 0x75 |
+|X+12     | 0x75  | 0x75 |
+|X+13     | 0x75  | 0x75 |
+|X+14     | 0x00  | 0x75 |
+|X+15     | 0x00  | 0x00 |
+|X+16     | 0x00  | 0x00 |
+|X+17     | 0x00  | 0x00 |
+|X+18     | 0x00  | 0x00 |
+|X+19     | 0x00  | 0x00 |
+|X+20     | 0x00  | 0x00 |
+|X+21     | 0x00  | 0x00 |
+|X+22     | 0x00  | 0x00 |
+|X+23     | 0x00  | 0x00 |
+|X+24     | 0x76  | 0x00 |
+|X+25     | 0x76  | 0x76 |
+|X+26     | 0x76  | 0x76 |
+|X+27     | 0x76  | 0x76 |
+|X+28     | 0x76  | 0x76 |
+|X+29     | 0x76  | 0x76 |
+|X+30     | 0x76  | 0x76 |
+|X+31     | 0x76  | 0x76 |
+|X+32     | 0x76  | 0x76 |
+|X+33     | 0x76  | 0x76 |
+|X+34     | 0x76  | 0x76 |
+|X+35     | 0x76  | 0x76 |
+|X+36     | 0x76  | 0x76 |
+|X+37     | 0x76  | 0x76 |
+|X+38     | 0x00  | 0x76 |
+|X+39     | 0x00  | 0x00 |
+|X+40     | 0x00  | 0x00 |
+|X+41     | 0x00  | 0x00 |
+|X+42     | 0x00  | 0x00 |
+|X+43     | 0x00  | 0x00 |
+|X+44     | 0x00  | 0x00 |
+|X+45     | 0x00  | 0x00 |
+|X+46     | 0x00  | 0x00 |
+|X+47     | 0x00  | 0x00 |
+|X+48     | 0x00  | 0x00 |
+|X+49     | 0x00  | 0x00 |
+|X+50     | SEED PREAMBLE  | 0x00 |
+|X+51     | SEED PREAMBLE  | SEED PREAMBLE |
+
+</details>
+</div>
+
+
+
+
+
 
 ### Time Capsule
   
