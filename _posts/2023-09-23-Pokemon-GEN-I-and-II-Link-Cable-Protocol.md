@@ -38,6 +38,17 @@
     * [Players Ready](#players-ready-1)
     * [Room Selection](#room-selection-1)
     * [Players Ready for Trade](#players-ready-for-trade-1)
+    * [Seed Exchange](#seed-exchange-1)
+    * [Party Information Exchange](#party-information-exchange-1)
+    * [Data Structure](#data-structure-1)
+      * [Trainer Name](#trainer-name-1)
+      * [Party Size](#party-size-1)
+      * [Pokemon Id List (EGGS!)](#pokemon-id-list-eggs)
+      * [**Trainer Id**](#trainer-id)
+      * [Pokemon Structure (x6)](#pokemon-structure-x6-1)
+      * [Original Owner Name (x6)](#original-owner-name-x6-1)
+      * [Pokemon Nickname (x6)](#pokemon-nickname-x6-1)
+      * [**Zeros (x3)**](#zeros-x3)
   * [Time Capsule](#time-capsule)
 
 
@@ -1976,8 +1987,193 @@ Exactly the same as in Gen I: [\[Gen I\] Handshake](#handshake)
 </details>
 </div>
 
+<hr>
+<br>
+<div align="center">
+
+#### Seed Exchange
+
+Exactly the same as in Gen I: [\[Gen I\] Seed Exchange](#seed-exchange)
+
+</div>
+
+<hr>
+<br>
+<div align="center">
+
+#### Party Information Exchange
+
+</div>
+
+* It's the same as in Gen I ([\[Gen I\] Party Information Exchange](#party-information-exchange)) but with a bigger payload: It is now **441 bytes long** (instead of 415 bytes in Gen I).
+* Same restrictions apply (no 0xFE inside the payload or i'll break things).
+* As with Gen I, 0xFE is patched (See [Patch Section](#patch-section-1)).
+
+<hr>
+<br>
+<div align="center">
+
+#### Data Structure
+
+</div>
+
+* At least in english, the Gen II character encoding is compatible with Gen I, only glitched characters differ.
+
+* As with Gen I encodings are well documented here: [Bulbapedia-> Character Encoding (Generation II)](https://bulbapedia.bulbagarden.net/wiki/Character_encoding_(Generation_II)).
+
+<hr>
+<br>
+<div align="center">
+
+##### Trainer Name
+
+Same as in Gen I
+
+</div>
+
+<br><br>
+
+<div align="center">
+
+##### Party Size
+
+Same as in Gen I
+
+</div>
+
+<br><br>
+
+<div align="center">
+
+##### Pokemon Id List (EGGS)!
+
+</div>
+
+* Same purpose as in Gen I.
+* Pokemon ids are now their pokedex number (no more hidden ids!).
+* **Now it's also used for eggs!**:
+  * When a pokemon is still an egg its ID will be **0xFD** here, this is a reserved pokemon id. This is the **only** difference between an egg and a normal pokemon.
+  * The type of pokemon that will hatch from this egg is specified in their [Pokemon Structure](#pokemon-structure-x6-1).
+  * This is the only (valid) case where an ID in this list should not match the corresponding pokemon's ID.
+
+<br><br>
 
 
+<div align="center">
+
+##### Trainer Id
+
+</div>
+
+* **This field was added in Gen II**
+* Specifies the Trainer ID of the player that is currently trading (i don't recall it being shown anywhere, so it may be useless).
+* This is the first field that **can be patched**.
+
+<br><br>
+
+<div align="center">
+
+##### Pokemon Structure (x6)
+
+</div>
+
+* This structure is 48 bytes long (instead of 44 bytes in Gen I).
+* The structure is somewhat documented here: [Bulbapedia -> Pokemon Data Structure (Generation II)](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_data_structure_(Generation_II))
+* The fields for Type 1 and Type 2 were removed, they're calculated based on the pokemon species (Gen I also did this so those fields were essentially useless).
+  
+* Most of the remaining fields are the same as in Gen I, so'll just mention the differences:
+  * ID Number: It's now the pokedex index of this pokemon (instead of a hidden ID).
+  * Held Item ID: The item which the current pokemon is holding, most of them can be found here: [Bulbapedia -> List of items by index number](https://bulbapedia.bulbagarden.net/wiki/List_of_items_by_index_number_(Generation_II)).
+    * Some invalid items are converted into valid ones (hardcoded rules, most of those ids correspond to common catch rates in Gen I).
+    * More information can be found on [The Cutting Room Floor -> Pokemon Gold & Silver -> Items](https://tcrf.net/Development:Pok%C3%A9mon_Gold_and_Silver/Items) and [Glitch City -> Obtaining arbitrary items in G/S/C through Time Capsule](https://archives.glitchcity.info/forums/board-108/thread-6719/page-0.html)
+    * This is the list of convertion rules:
+      * 25: Leftovers (instead of 0x19 Teru-sama).
+      * 45: Bitter Berry (instead of 0x2D Teru-sama).
+      * 50: Gold Berry (instead of 0x32 Teru-sama).
+      * 90: Berry (instead of 0x5A Teru-sama).
+      * 100: Berry (instead of 0x64 Teru-sama).
+      * 120: Berry (instead of 0x78 Teru-sama).
+      * 127: Berry (instead of 0x7F Card Key).
+      * 135: Berry (instead of 0x87 Teru-sama).
+      * 190: Berry (instead of 0xBE Teru-sama).
+      * 195: Berry (instead of 0xC3 dummy TM04).
+      * 220: Berry (instead of 0xDC dummy TM28).
+      * 250: Berry (instead of 0xFA HM08).
+      * 255: Berry (instead of 0xFF HM13).
+  * Indexes of moves 1 to 4: Same as Gen I, new moves were added in Gen II, so more move Ids are available.
+  * Original Trainer ID number: Same as in Gen I.
+  * Experience Points: Same as in Gen I.
+  * EV Data (HP, Attack, Defense, Speed, Special): Same as in Gen I. Special EV is shared between special Attack and special Defense.
+  * IV Data: Same as in Gen I.
+  * PP Values of moves 1 to 4: Same as in Gen I.
+  * **Friendship / Remaining Egg Cycles** (1 byte):
+    * If not an egg (Id in Id list is NOT 0xFD) then the value will be interpreted as friendship, otherwise its the cycles remaining for the egg to hatch.
+    * **A pokemon's friendship value will reset to its base value when trading it, even if it's traded back!**. Base values can be found here: [Bulbapedia -> List of Pokemon by Base Friendship](https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_base_friendship)
+    * Even if friendship resets when trading, it's nice to actually be able to see this value!
+    * An egg cycle represents **256 steps**, once the player walks that many steps the cycle count will decrease by 1, if it reaches 0 the egg will hatch.
+    * I haven't tested if this value resets as well.
+  * **Pokerus** (1 byte):  Highest nibble is the strain of the virus, lowest nibble stores the remaining days for the pokemon to become cured. If a pokemon has or had pokerus, then i'll earn double EVs after battle.
+    * If strain and remaining days are not zero, then the pokemon is currently infected.
+    * If strain is not zero but remaining days is zero then the pokemon is cured, it can't be infected again.
+    * Remaining days decrease by one after midnight.
+    * Trading a pokemon to Gen I and back will erase this information, curing it or allowing it to get infected once more.
+    * More information: [Bulbapedia -> Pokerus -> Technical Information](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9rus#Technical_information).
+  * **Caught Data** (2 bytes):
+    * Pokemon caught in Gen I or in Gold/Silver will have 0x00 in this field.
+    * In Pokemon Crystal it stores information about their capture:
+      * The first 2 bits record the time of day (1: Morning, 2: Day, 3: Night)
+      * The 6 following bits record their level (up to 63).
+      * The first bit of the second bite stores the Original Trainer's gender (0: Male, 1: Female)
+      * The last 7 bits stores where it was captured. A list of locations can be found here: [Bulbapedia -> List of Locations by Index Number](https://bulbapedia.bulbagarden.net/wiki/List_of_locations_by_index_number_(Generation_II))
+  * Level: Same as in Gen I.
+  * Status Condition: Same as in Gen I.
+  * **Unused Byte**: Always 0x00.
+  * Current HP: Same as in Gen I.
+  * Stats (HP, Attack, Defense, Speed, Special Attack, Special Defense): Special stat was split into Special Attack and Special Defense, they share the same EV and IV. Base values may differ and depend on each species.
+
+<br><br>
+
+
+<div align="center">
+
+##### Original Owner Name (x6)
+
+Same as in Gen I
+
+</div>
+<br><br>
+
+
+<div align="center">
+
+##### Pokemon Nickname (x6)
+
+Same as in Gen I
+
+</div>
+<br><br>
+
+
+<div align="center">
+
+##### Zeros (x3)
+
+</div>
+<br><br>
+
+* In Gen I these 3 bytes were the first bytes of the player's pokedex data (which were a bit field of owned pokemon). They were probably being transmitted by mistake.
+* It seems that Gen II fixed this issue and now will only send 3 **0x00** no matter what happens in the player's pokedex. I'm not sure why they weren't removed entirely.
+
+
+A summary of the structure's fields can be found here: [Bulbapedia -> Pokemon data structure (Generation I)](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_data_structure_(Generation_I)).
+
+
+    * [Data Structure](#data-structure-1)
+      * [**Trainer ID**](#trainer-id)
+      * [Pokemon Structure (x6)](#pokemon-structure-x6)
+      * [Original Owner Name (x6)](#original-owner-name-x6)
+      * [Pokemon Nickname (x6)](#pokemon-nickname-x6)
+      * [**Zeros (x3)**](#zeros-x3)
 
 
 
