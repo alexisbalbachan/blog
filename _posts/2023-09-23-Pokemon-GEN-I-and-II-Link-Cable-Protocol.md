@@ -1917,6 +1917,8 @@ Exactly the same as in Gen I: [\[Gen I\] Handshake](#handshake)
 * Serves the same purpose as in Gen I but **messages are different**:
   * Master sends a stream of **0x75** (usually 14 times), followed by 0x00 (10 times). The same sequence is expected from the slave.
   * Master then sends a stream of **0x76** (also 14 times) followed by 0x00. Slave has to mirror this as well.
+  * Slave can delay its response by some time (by sending anything else, usually 0x00), but now **there is a timeout**, several seconds for 0x75 and just a few seconds for 0x76.
+  * I haven't tested if slaves also have a timeout while waiting for their master to transmit this sequence.
  
 <br>
 
@@ -2017,9 +2019,10 @@ Exactly the same as in Gen I: [\[Gen I\] Seed Exchange](#seed-exchange)
 
 </div>
 
-* At least in english, the Gen II character encoding is compatible with Gen I, only glitched characters differ.
-
-* As with Gen I, encodings are well documented here: [Bulbapedia-> Character Encoding (Generation II)](https://bulbapedia.bulbagarden.net/wiki/Character_encoding_(Generation_II)).
+* This structure contains almost the same information as in Gen I, some fields were added, while others were moved to different offsets, a few useless fields were removed. I'll describe everything below.
+  
+* Strings: At least in english, the Gen II character encoding is compatible with Gen I, only glitched characters differ.
+  * As with Gen I, encodings are well documented here: [Bulbapedia-> Character Encoding (Generation II)](https://bulbapedia.bulbagarden.net/wiki/Character_encoding_(Generation_II)).
 
 <hr>
 <br>
@@ -2080,26 +2083,36 @@ Same as in Gen I
 * This structure is 48 bytes long (instead of 44 bytes in Gen I).
 * The structure is somewhat documented here: [Bulbapedia -> Pokemon Data Structure (Generation II)](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_data_structure_(Generation_II))
 * The fields for Type 1 and Type 2 were removed, they're calculated based on the pokemon species (Gen I also did this so those fields were essentially useless).
+* Box level was also removed (it was also useless).
   
 * Most of the remaining fields are the same as in Gen I, so'll just mention the differences:
-  * ID Number: It's now the pokedex index of this pokemon (instead of a hidden ID).
-  * Held Item ID: The item which the current pokemon is holding, most of them can be found here: [Bulbapedia -> List of items by index number](https://bulbapedia.bulbagarden.net/wiki/List_of_items_by_index_number_(Generation_II)).
+  * Id Number: It's now the pokedex index of this pokemon (instead of a hidden ID).
+  * Held Item Id: The item which the current pokemon is holding, most of them can be found here: [Bulbapedia -> List of items by index number](https://bulbapedia.bulbagarden.net/wiki/List_of_items_by_index_number_(Generation_II)).
     * Some invalid items are converted into valid ones (hardcoded rules, most of those ids correspond to common catch rates in Gen I).
     * More information can be found on [The Cutting Room Floor -> Pokemon Gold & Silver -> Items](https://tcrf.net/Development:Pok%C3%A9mon_Gold_and_Silver/Items) and [Glitch City -> Obtaining arbitrary items in G/S/C through Time Capsule](https://archives.glitchcity.info/forums/board-108/thread-6719/page-0.html)
     * This is the list of convertion rules:
-      * 25: Leftovers (instead of 0x19 Teru-sama).
-      * 45: Bitter Berry (instead of 0x2D Teru-sama).
-      * 50: Gold Berry (instead of 0x32 Teru-sama).
-      * 90: Berry (instead of 0x5A Teru-sama).
-      * 100: Berry (instead of 0x64 Teru-sama).
-      * 120: Berry (instead of 0x78 Teru-sama).
-      * 127: Berry (instead of 0x7F Card Key).
-      * 135: Berry (instead of 0x87 Teru-sama).
-      * 190: Berry (instead of 0xBE Teru-sama).
-      * 195: Berry (instead of 0xC3 dummy TM04).
-      * 220: Berry (instead of 0xDC dummy TM28).
-      * 250: Berry (instead of 0xFA HM08).
-      * 255: Berry (instead of 0xFF HM13).
+   
+    <div align="center">
+      
+    | Item Id |     Name      | Converted to |
+    |---------|---------------|--------------|
+    |  0x19   | Teru-sama     | Leftovers    |
+    |  0x2d   | Teru-sama     | Bitter Berry |
+    |  0x32   | Teru-sama     | Gold Berry   |
+    |  0x5A   | Teru-sama     | Berry        |
+    |  0x64   | Teru-sama     | Berry        |
+    |  0x78   | Teru-sama     | Berry        |
+    |  0x7F   | Card Key      | Berry        |
+    |  0x87   | Teru-sama     | Berry        |
+    |  0x8E   | Teru-sama     | Berry        |
+    |  0xC3   | TM04 (Glitch) | Berry        |
+    |  0xDC   | TM28 (Glitch) | Berry        |
+    |  0xFA   | HM08          | Berry        |
+    |  0xFF   | HM13          | Berry        |
+ 
+    </div>
+
+* Moving on:
   * Indexes of moves 1 to 4: Same as Gen I, new moves were added in Gen II, so more move Ids are available.
   * Original Trainer ID number: Same as in Gen I.
   * Experience Points: Same as in Gen I.
@@ -2107,7 +2120,7 @@ Same as in Gen I
   * IV Data: Same as in Gen I.
   * PP Values of moves 1 to 4: Same as in Gen I.
   * **Friendship / Remaining Egg Cycles** (1 byte):
-    * If not an egg (Id in Id list is NOT 0xFD) then the value will be interpreted as friendship, otherwise its the cycles remaining for the egg to hatch.
+    * If not an egg (Id in [Pokemon Id List](#pokemon-id-list-eggs) is NOT 0xFD) then the value will be interpreted as friendship, otherwise its the cycles remaining for the egg to hatch.
     * **A pokemon's friendship value will reset to its base value when trading it, even if it's traded back!**. Base values can be found here: [Bulbapedia -> List of Pokemon by Base Friendship](https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_base_friendship)
     * Even if friendship resets when trading, it's nice to actually be able to see this value!
     * An egg cycle represents **256 steps**, once the player walks that many steps the cycle count will decrease by 1, if it reaches 0 the egg will hatch.
