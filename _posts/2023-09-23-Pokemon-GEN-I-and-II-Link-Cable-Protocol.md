@@ -1902,7 +1902,7 @@ Exactly the same as in Gen I: [\[Gen I\] Handshake](#handshake)
       * **0xD1**: Trade (In Gen I it was 0xD4).
       * 0xD2: Battle (In Gen I it was 0xD5).
       * 0xD**Y** (Y being Anything else): Players will be disconnected (with a message that says the other player chose a different room).
-* When Gen II games detected that the other player is trying to connect from a Gen I game (see previous section), they'll send **0xDE**:
+* When Gen II games detect that the other player is trying to connect from a Gen I game (see previous section), they'll send **0xDE**:
   * By Gen I standards it means that both 'A' and 'B' are pressed and that cancel was being selected, it's basically a double cancel.
   * Games will disconnect after that.
 
