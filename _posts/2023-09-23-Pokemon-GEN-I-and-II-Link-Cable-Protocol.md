@@ -2242,12 +2242,12 @@ Here's the updated list of offsets for Gen II, **||** Separates stage 1 and 2. B
 0x24,               # Unused
 
 0x25, 0x26,         # Current HP
-0x27, 0x28,         # STAT Health
-0x29, 0x2A,         # STAT Attack
-0x2B, 0x2C,         # STAT Defense
-0x2D, 0x2E,         # STAT Speed
-0x2F, 0x30,         # STAT Special Attack
-0x31, 0x32,         # STAT Special Defense
+0x27, 0x28,         # Max HP
+0x29, 0x2A,         # Attack
+0x2B, 0x2C,         # Defense
+0x2D, 0x2E,         # Speed
+0x2F, 0x30,         # Special Attack
+0x31, 0x32,         # Special Defense
 
 # ----------------- POKEMON 2 -----------------
 0x33,               # Species
@@ -2283,12 +2283,12 @@ Here's the updated list of offsets for Gen II, **||** Separates stage 1 and 2. B
 0x54,               # Unused
 
 0x55, 0x56,         # Current HP
-0x57, 0x58,         # STAT Health
-0x59, 0x5A,         # STAT Attack
-0x5B, 0x5C,         # STAT Defense
-0x5D, 0x5E,         # STAT Speed
-0x5F, 0x60,         # STAT Special Attack
-0x61, 0x62,         # STAT Special Defense
+0x57, 0x58,         # Max HP
+0x59, 0x5A,         # Attack
+0x5B, 0x5C,         # Defense
+0x5D, 0x5E,         # Speed
+0x5F, 0x60,         # Special Attack
+0x61, 0x62,         # Special Defense
 
 # ----------------- POKEMON 3 -----------------
 0x63,               # Species
@@ -2324,12 +2324,12 @@ Here's the updated list of offsets for Gen II, **||** Separates stage 1 and 2. B
 0x84,               # Unused
 
 0x85, 0x86,         # Current HP
-0x87, 0x88,         # STAT Health
-0x89, 0x8A,         # STAT Attack
-0x8B, 0x8C,         # STAT Defense
-0x8D, 0x8E,         # STAT Speed
-0x8F, 0x90,         # STAT Special Attack
-0x91, 0x92,         # STAT Special Defense
+0x87, 0x88,         # Max HP
+0x89, 0x8A,         # Attack
+0x8B, 0x8C,         # Defense
+0x8D, 0x8E,         # Speed
+0x8F, 0x90,         # Special Attack
+0x91, 0x92,         # Special Defense
 
 # ----------------- POKEMON 4 -----------------
 0x93,               # Species
@@ -2365,12 +2365,12 @@ Here's the updated list of offsets for Gen II, **||** Separates stage 1 and 2. B
 0xB4,               # Unused
 
 0xB5, 0xB6,         # Current HP
-0xB7, 0xB8,         # STAT Health
-0xB9, 0xBA,         # STAT Attack
-0xBB, 0xBC,         # STAT Defense
-0xBD, 0xBE,         # STAT Speed
-0xBF, 0xC0,         # STAT Special Attack
-0xC1, 0xC2,         # STAT Special Defense
+0xB7, 0xB8,         # Max HP
+0xB9, 0xBA,         # Attack
+0xBB, 0xBC,         # Defense
+0xBD, 0xBE,         # Speed
+0xBF, 0xC0,         # Special Attack
+0xC1, 0xC2,         # Special Defense
 
 # ----------------- POKEMON 5 -----------------
 0xC3,               # Species
@@ -2406,12 +2406,12 @@ Here's the updated list of offsets for Gen II, **||** Separates stage 1 and 2. B
 0xE4,               # Unused
 
 0xE5, 0xE6,         # Current HP
-0xE7, 0xE8,         # STAT Health
-0xE9, 0xEA,         # STAT Attack
-0xEB, 0xEC,         # STAT Defense
-0xED, 0xEE,         # STAT Speed
-0xEF, 0xF0,         # STAT Special Attack
-0xF1, 0xF2,         # STAT Special Defense
+0xE7, 0xE8,         # Max HP
+0xE9, 0xEA,         # Attack
+0xEB, 0xEC,         # Defense
+0xED, 0xEE,         # Speed
+0xEF, 0xF0,         # Special Attack
+0xF1, 0xF2,         # Special Defense
 
 
 # ----------------- POKEMON 6 -----------------
@@ -2448,12 +2448,12 @@ Here's the updated list of offsets for Gen II, **||** Separates stage 1 and 2. B
 0x18,               # Unused
 
 0x19, 0x1A,         # Current HP
-0x1B, 0x1C,         # STAT Health
-0x1D, 0x1E,         # STAT Attack
-0x1F, 0x20,         # STAT Defense
-0x21, 0x22,         # STAT Speed
-0x23, 0x24,         # STAT Special Attack
-0x25, 0x26,         # STAT Special Defense
+0x1B, 0x1C,         # Max HP
+0x1D, 0x1E,         # Attack
+0x1F, 0x20,         # Defense
+0x21, 0x22,         # Speed
+0x23, 0x24,         # Special Attack
+0x25, 0x26,         # Special Defense
 
 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31,   # Pokemon 1 Original Trainer Name
 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C,   # Pokemon 2 Original Trainer Name
