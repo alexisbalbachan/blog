@@ -49,6 +49,7 @@
       * [Original Owner Name (x6)](#original-owner-name-x6-1)
       * [Pokemon Nickname (x6)](#pokemon-nickname-x6-1)
       * [**Zeros (x3)**](#zeros-x3)
+    * [Patch Section](#patch-section-1) 
   * [Time Capsule](#time-capsule)
 
 
@@ -2120,12 +2121,12 @@ Same as in Gen I
   * IV Data: Same as in Gen I.
   * PP Values of moves 1 to 4: Same as in Gen I.
   * **Friendship / Remaining Egg Cycles** (1 byte):
-    * If not an egg (Id in [Pokemon Id List](#pokemon-id-list-eggs) is NOT 0xFD) then the value will be interpreted as friendship, otherwise its the cycles remaining for the egg to hatch.
+    * If not an egg (Id in [Pokemon Id List](#pokemon-id-list-eggs) is NOT 0xFD) then the value will be interpreted as friendship, otherwise it's the cycles remaining for the egg to hatch.
     * **A pokemon's friendship value will reset to its base value when trading it, even if it's traded back!**. Base values can be found here: [Bulbapedia -> List of Pokemon by Base Friendship](https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_base_friendship)
     * Even if friendship resets when trading, it's nice to actually be able to see this value!
     * An egg cycle represents **256 steps**, once the player walks that many steps the cycle count will decrease by 1, if it reaches 0 the egg will hatch.
     * I haven't tested if this value resets as well.
-  * **Pokerus** (1 byte):  Highest nibble is the strain of the virus, lowest nibble stores the remaining days for the pokemon to become cured. If a pokemon has or had pokerus, then i'll earn double EVs after battle.
+  * **Pokerus** (1 byte):  Highest nibble is the strain of the virus, lowest nibble stores the remaining days for the pokemon to become cured. If a pokemon has or had pokerus, then it'll earn double EVs after battles.
     * If strain and remaining days are not zero, then the pokemon is currently infected.
     * If strain is not zero but remaining days is zero then the pokemon is cured, it can't be infected again.
     * Remaining days decrease by one after midnight.
@@ -2138,6 +2139,7 @@ Same as in Gen I
       * The 6 following bits record their level (up to 63).
       * The first bit of the second bite stores the Original Trainer's gender (0: Male, 1: Female)
       * The last 7 bits stores where it was captured. A list of locations can be found here: [Bulbapedia -> List of Locations by Index Number](https://bulbapedia.bulbagarden.net/wiki/List_of_locations_by_index_number_(Generation_II))
+      * Trading a pokemon to Gen I and back will erase this information.
   * Level: Same as in Gen I.
   * Status Condition: Same as in Gen I.
   * **Unused Byte**: Always 0x00.
@@ -2151,7 +2153,7 @@ Same as in Gen I
 
 ##### Original Owner Name (x6)
 
-Same as in Gen I
+Similar to Gen I, but names end with an extra terminator (0x50) instead of one. Nothing happens if a name has only a single terminator.
 
 </div>
 <br><br>
@@ -2161,7 +2163,7 @@ Same as in Gen I
 
 ##### Pokemon Nickname (x6)
 
-Same as in Gen I
+Same as in Gen I, Egg names are always "EGG" followed by a single string terminator (0x50) and then zeros (instead of only string terminators as with other pokemon names). Nothing happens if the egg's name is not EGG.
 
 </div>
 <br><br>
@@ -2178,7 +2180,299 @@ Same as in Gen I
 * It seems that Gen II fixed this issue and now will only send 3 **0x00** no matter what happens in the player's pokedex. I'm not sure why they weren't removed entirely.
 
 
-<br><br>
+
+<hr>
+<br>
+<div align="center">
+
+#### Patch Section
+
+</div>
+
+* Same principle as in Gen I: [\[Gen I\] Patch Section](#patch-section)
+* Stage 2 is a little longer (because the total payload is 26 bytes longer (441 instead of 415).
+* The patch limit stays at 190 (buffer is still 200):
+  * The source code for Gen II games made me realize that those first 10 bytes were probably reserved for patching seeds but this was later discarded: [Pokegold -> Link.asm#L590](https://github.com/pret/pokegold/blob/5140706094cd39bdfcd50f2e9eab33c25b03ad12/engine/link/link.asm#L590)
+  * **The buffer overflow was fixed**: [Pokegold -> Link.asm#L593-597](https://github.com/pret/pokegold/blob/5140706094cd39bdfcd50f2e9eab33c25b03ad12/engine/link/link.asm#L593-L597)
+  * The other game can still send offsets beyond the patch area forcing it to write 0xFE at those offsets: [Pokegold -> Link.asm#L297-318](https://github.com/pret/pokegold/blob/5140706094cd39bdfcd50f2e9eab33c25b03ad12/engine/link/link.asm#L297-L318)
+
+
+Here's the updated list of offsets for Gen II, **||** Separates stage 1 and 2. Bytes marked as **XX** are unpatchable.: 
+
+````
+
+0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX,   # Trainer Name
+0xXX,                                                               # Party Size
+0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX,                                 # Party Species list
+0xXX,                                                               # List Terminator
+
+0x01, 0x02,                                                         # Trainer ID
+
+# ----------------- POKEMON 1 -----------------
+0x03,               # Species
+0x04,               # Held Item
+
+0x05,               # Move 1
+0x06,               # Move 2
+0x07,               # Move 3
+0x08,               # Move 4
+
+0x09, 0x0A,         # Original Trainer ID
+0x0B, 0x0C, 0x0D,   # Experience Points
+
+0x0E, 0x0F,         # Health EV
+0x10, 0x11,         # Attack EV
+0x12, 0x13,         # Defense EV
+0x14, 0x15,         # Speed EV
+0x16, 0x17,         # Special (ATK + DEF) EV
+
+0x18, 0x19,         # IV DATA
+
+0x1A,               # PP MOVE 1
+0x1B,               # PP MOVE 2
+0x1C,               # PP MOVE 3
+0x1D,               # PP MOVE 4
+
+0x1E,               # Friendship
+0x1F,               # Pokerus bits
+0x20, 0x21,         # Caught data (Crystal only)
+
+0x22,               # Level
+0x23,               # Status bits
+0x24,               # Unused
+
+0x25, 0x26,         # Current HP
+0x27, 0x28,         # STAT Health
+0x29, 0x2A,         # STAT Attack
+0x2B, 0x2C,         # STAT Defense
+0x2D, 0x2E,         # STAT Speed
+0x2F, 0x30,         # STAT Special Attack
+0x31, 0x32,         # STAT Special Defense
+
+# ----------------- POKEMON 2 -----------------
+0x33,               # Species
+0x34,               # Held Item
+
+0x35,               # Move 1
+0x36,               # Move 2
+0x37,               # Move 3
+0x38,               # Move 4
+
+0x39, 0x3A,         # Original Trainer ID
+0x3B, 0x3C, 0x3D,   # Experience Points
+
+0x3E, 0x3F,         # Health EV
+0x40, 0x41,         # Attack EV
+0x42, 0x43,         # Defense EV
+0x44, 0x45,         # Speed EV
+0x46, 0x47,         # Special (ATK + DEF) EV
+
+0x48, 0x49,         # IV DATA
+
+0x4A,               # PP MOVE 1
+0x4B,               # PP MOVE 2
+0x4C,               # PP MOVE 3
+0x4D,               # PP MOVE 4
+
+0x4E,               # Friendship
+0x4F,               # Pokerus bits
+0x50, 0x51,         # Caught data (Crystal only)
+
+0x52,               # Level
+0x53,               # Status bits
+0x54,               # Unused
+
+0x55, 0x56,         # Current HP
+0x57, 0x58,         # STAT Health
+0x59, 0x5A,         # STAT Attack
+0x5B, 0x5C,         # STAT Defense
+0x5D, 0x5E,         # STAT Speed
+0x5F, 0x60,         # STAT Special Attack
+0x61, 0x62,         # STAT Special Defense
+
+# ----------------- POKEMON 3 -----------------
+0x63,               # Species
+0x64,               # Held Item
+
+0x65,               # Move 1
+0x66,               # Move 2
+0x67,               # Move 3
+0x68,               # Move 4
+
+0x69, 0x6A,         # Original Trainer ID
+0x6B, 0x6C, 0x6D,   # Experience Points
+
+0x6E, 0x6F,         # Health EV
+0x70, 0x71,         # Attack EV
+0x72, 0x73,         # Defense EV
+0x74, 0x75,         # Speed EV
+0x76, 0x77,         # Special (ATK + DEF) EV
+
+0x78, 0x79,         # IV DATA
+
+0x7A,               # PP MOVE 1
+0x7B,               # PP MOVE 2
+0x7C,               # PP MOVE 3
+0x7D,               # PP MOVE 4
+
+0x7E,               # Friendship
+0x7F,               # Pokerus bits
+0x80, 0x81,         # Caught data (Crystal only)
+
+0x82,               # Level
+0x83,               # Status bits
+0x84,               # Unused
+
+0x85, 0x86,         # Current HP
+0x87, 0x88,         # STAT Health
+0x89, 0x8A,         # STAT Attack
+0x8B, 0x8C,         # STAT Defense
+0x8D, 0x8E,         # STAT Speed
+0x8F, 0x90,         # STAT Special Attack
+0x91, 0x92,         # STAT Special Defense
+
+# ----------------- POKEMON 4 -----------------
+0x93,               # Species
+0x94,               # Held Item
+
+0x95,               # Move 1
+0x96,               # Move 2
+0x97,               # Move 3
+0x98,               # Move 4
+
+0x99, 0x9A,         # Original Trainer ID
+0x9B, 0x9C, 0x9D,   # Experience Points
+
+0x9E, 0x9F,         # Health EV
+0xA0, 0xA1,         # Attack EV
+0xA2, 0xA3,         # Defense EV
+0xA4, 0xA5,         # Speed EV
+0xA6, 0xA7,         # Special (ATK + DEF) EV
+
+0xA8, 0xA9,         # IV DATA
+
+0xAA,               # PP MOVE 1
+0xAB,               # PP MOVE 2
+0xAC,               # PP MOVE 3
+0xAD,               # PP MOVE 4
+
+0xAE,               # Friendship
+0xAF,               # Pokerus bits
+0xB0, 0xB1,         # Caught data (Crystal only)
+
+0xB2,               # Level
+0xB3,               # Status bits
+0xB4,               # Unused
+
+0xB5, 0xB6,         # Current HP
+0xB7, 0xB8,         # STAT Health
+0xB9, 0xBA,         # STAT Attack
+0xBB, 0xBC,         # STAT Defense
+0xBD, 0xBE,         # STAT Speed
+0xBF, 0xC0,         # STAT Special Attack
+0xC1, 0xC2,         # STAT Special Defense
+
+# ----------------- POKEMON 5 -----------------
+0xC3,               # Species
+0xC4,               # Held Item
+
+0xC5,               # Move 1
+0xC6,               # Move 2
+0xC7,               # Move 3
+0xC8,               # Move 4
+
+0xC9, 0xCA,         # Original Trainer ID
+0xCB, 0xCC, 0xCD,   # Experience Points
+
+0xCE, 0xCF,         # Health EV
+0xD0, 0xD1,         # Attack EV
+0xD2, 0xD3,         # Defense EV
+0xD4, 0xD5,         # Speed EV
+0xD6, 0xD7,         # Special (ATK + DEF) EV
+
+0xD8, 0xD9,         # IV DATA
+
+0xDA,               # PP MOVE 1
+0xDB,               # PP MOVE 2
+0xDC,               # PP MOVE 3
+0xDD,               # PP MOVE 4
+
+0xDE,               # Friendship
+0xDF,               # Pokerus bits
+0xE0, 0xE1,         # Caught data (Crystal only)
+
+0xE2,               # Level
+0xE3,               # Status bits
+0xE4,               # Unused
+
+0xE5, 0xE6,         # Current HP
+0xE7, 0xE8,         # STAT Health
+0xE9, 0xEA,         # STAT Attack
+0xEB, 0xEC,         # STAT Defense
+0xED, 0xEE,         # STAT Speed
+0xEF, 0xF0,         # STAT Special Attack
+0xF1, 0xF2,         # STAT Special Defense
+
+
+# ----------------- POKEMON 6 -----------------
+0xF3,               # Species
+0xF4,               # Held Item
+
+0xF5,               # Move 1
+0xF6,               # Move 2
+0xF7,               # Move 3
+0xF8,               # Move 4
+
+0xF9, 0xFA,         # Original Trainer ID
+0xFB, 0xFC, |||||||||||||||||||||||||||||||||||||||||||| STAGE 2 |||||||||||||| 0x01 # Experience Points
+
+0x02, 0x03,         # Health EV
+0x04, 0x05,         # Attack EV
+0x06, 0x07,         # Defense EV
+0x08, 0x09,         # Speed EV
+0x0A, 0x0B,         # Special (ATK + DEF) EV
+
+0x0C, 0x0D,         # IV DATA
+
+0x0E,               # PP MOVE 1
+0x0F,               # PP MOVE 2
+0x10,               # PP MOVE 3
+0x11,               # PP MOVE 4
+
+0x12,               # Friendship
+0x13,               # Pokerus bits
+0x14, 0x15,         # Caught data (Crystal only)
+
+0x16,               # Level
+0x17,               # Status bits
+0x18,               # Unused
+
+0x19, 0x1A,         # Current HP
+0x1B, 0x1C,         # STAT Health
+0x1D, 0x1E,         # STAT Attack
+0x1F, 0x20,         # STAT Defense
+0x21, 0x22,         # STAT Speed
+0x23, 0x24,         # STAT Special Attack
+0x25, 0x26,         # STAT Special Defense
+
+0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31,   # Pokemon 1 Original Trainer Name
+0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C,   # Pokemon 2 Original Trainer Name
+0x3D, 0x3E, 0x3F, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,   # Pokemon 3 Original Trainer Name
+0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52,   # Pokemon 4 Original Trainer Name
+0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D,   # Pokemon 5 Original Trainer Name
+0x5E, 0x5F, 0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,   # Pokemon 6 Original Trainer Name
+
+0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72, 0x73,   # Pokemon 1 Nickname
+0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E,   # Pokemon 2 Nickname
+0x7F, 0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89,   # Pokemon 3 Nickname
+0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F, 0x90, 0x91, 0x92, 0x93, 0x94,   # Pokemon 4 Nickname
+0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F,   # Pokemon 5 Nickname
+0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA,   # Pokemon 6 Nickname
+
+0xAB, 0xAC, 0xAD,    # Zeros (Patchable?)
+
+````
+
 
 ### Time Capsule
   
