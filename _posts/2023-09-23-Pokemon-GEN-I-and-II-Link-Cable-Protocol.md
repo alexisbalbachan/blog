@@ -2226,12 +2226,12 @@ Here's the updated list of offsets for Gen II, **||** Separates stage 1 and 2. B
 0x14, 0x15,         # Speed EV
 0x16, 0x17,         # Special (ATK + DEF) EV
 
-0x18, 0x19,         # IV DATA
+0x18, 0x19,         # IV Data
 
-0x1A,               # PP MOVE 1
-0x1B,               # PP MOVE 2
-0x1C,               # PP MOVE 3
-0x1D,               # PP MOVE 4
+0x1A,               # Move 1 PP
+0x1B,               # Move 2 PP
+0x1C,               # Move 3 PP
+0x1D,               # Move 3 PP
 
 0x1E,               # Friendship
 0x1F,               # Pokerus bits
@@ -2267,12 +2267,12 @@ Here's the updated list of offsets for Gen II, **||** Separates stage 1 and 2. B
 0x44, 0x45,         # Speed EV
 0x46, 0x47,         # Special (ATK + DEF) EV
 
-0x48, 0x49,         # IV DATA
+0x48, 0x49,         # IV Data
 
-0x4A,               # PP MOVE 1
-0x4B,               # PP MOVE 2
-0x4C,               # PP MOVE 3
-0x4D,               # PP MOVE 4
+0x4A,               # Move 1 PP
+0x4B,               # Move 2 PP
+0x4C,               # Move 3 PP
+0x4D,               # Move 3 PP
 
 0x4E,               # Friendship
 0x4F,               # Pokerus bits
@@ -2308,12 +2308,12 @@ Here's the updated list of offsets for Gen II, **||** Separates stage 1 and 2. B
 0x74, 0x75,         # Speed EV
 0x76, 0x77,         # Special (ATK + DEF) EV
 
-0x78, 0x79,         # IV DATA
+0x78, 0x79,         # IV Data
 
-0x7A,               # PP MOVE 1
-0x7B,               # PP MOVE 2
-0x7C,               # PP MOVE 3
-0x7D,               # PP MOVE 4
+0x7A,               # Move 1 PP
+0x7B,               # Move 2 PP
+0x7C,               # Move 3 PP
+0x7D,               # Move 4 PP
 
 0x7E,               # Friendship
 0x7F,               # Pokerus bits
@@ -2349,12 +2349,12 @@ Here's the updated list of offsets for Gen II, **||** Separates stage 1 and 2. B
 0xA4, 0xA5,         # Speed EV
 0xA6, 0xA7,         # Special (ATK + DEF) EV
 
-0xA8, 0xA9,         # IV DATA
+0xA8, 0xA9,         # IV Data
 
-0xAA,               # PP MOVE 1
-0xAB,               # PP MOVE 2
-0xAC,               # PP MOVE 3
-0xAD,               # PP MOVE 4
+0xAA,               # Move 1 PP
+0xAB,               # Move 2 PP
+0xAC,               # Move 3 PP
+0xAD,               # Move 4 PP
 
 0xAE,               # Friendship
 0xAF,               # Pokerus bits
@@ -2390,12 +2390,12 @@ Here's the updated list of offsets for Gen II, **||** Separates stage 1 and 2. B
 0xD4, 0xD5,         # Speed EV
 0xD6, 0xD7,         # Special (ATK + DEF) EV
 
-0xD8, 0xD9,         # IV DATA
+0xD8, 0xD9,         # IV Data
 
-0xDA,               # PP MOVE 1
-0xDB,               # PP MOVE 2
-0xDC,               # PP MOVE 3
-0xDD,               # PP MOVE 4
+0xDA,               # Move 1 PP
+0xDB,               # Move 2 PP
+0xDC,               # Move 3 PP
+0xDD,               # Move 3 PP
 
 0xDE,               # Friendship
 0xDF,               # Pokerus bits
@@ -2432,12 +2432,12 @@ Here's the updated list of offsets for Gen II, **||** Separates stage 1 and 2. B
 0x08, 0x09,         # Speed EV
 0x0A, 0x0B,         # Special (ATK + DEF) EV
 
-0x0C, 0x0D,         # IV DATA
+0x0C, 0x0D,         # IV Data
 
-0x0E,               # PP MOVE 1
-0x0F,               # PP MOVE 2
-0x10,               # PP MOVE 3
-0x11,               # PP MOVE 4
+0x0E,               # Move 1 PP
+0x0F,               # Move 2 PP
+0x10,               # Move 3 PP
+0x11,               # Move 4 PP
 
 0x12,               # Friendship
 0x13,               # Pokerus bits
