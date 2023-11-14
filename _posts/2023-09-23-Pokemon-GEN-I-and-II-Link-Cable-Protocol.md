@@ -227,7 +227,7 @@ Note that **in this example** MOSI and MISO signals will only change when the cl
   * Does the clock stay idle at HIGH or at LOW? This is called **C**lock **POL**arity (**CPOL**).
   * Is data read when the clock changes to LOW or to HIGH? and in that same line, is data written when the clock changes to LOW or to HIGH? This is called **C**lock **Pha**se (**CPHA**).
 * Read/write should be done on **clock edges** which is the moment when the clock changes values, a rising edge goes from LOW to HIGH and a falling edge goes from HIGH to LOW.
-* Its more important to write on time than to read on time, you can actually read your data whenever you want before the next clock edge.
+* It's more important to write on time than to read on time, you can actually read your data whenever you want before the next clock edge.
 
 <br>
 
