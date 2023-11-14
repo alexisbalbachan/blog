@@ -49,7 +49,15 @@
       * [Original Owner Name (x6)](#original-owner-name-x6-1)
       * [Pokemon Nickname (x6)](#pokemon-nickname-x6-1)
       * [**Zeros (x3)**](#zeros-x3)
-    * [Patch Section](#patch-section-1) 
+    * [Patch Section](#patch-section-1)
+    * [**Mail Information Exchange**](#mail-information-exchange)
+    * [**Mail Data Structure**](#mail-data-structure)
+      * [**Contents (x6)**](#contents-x6)
+      * [**Metadata (x6)**](#metadata-x6)
+    * [**Mail Patch Section**](#mail-patch-section)
+    * [Trade Request](#trade-request-1)
+    * [Trade Confirmation](#trade-confirmation-1)
+    * [Trade Sequence](#trade-sequence-1)
   * [Time Capsule](#time-capsule)
 
 
@@ -2491,6 +2499,92 @@ Same as in Gen I, Egg names are always "EGG" followed by a single string termina
 
 
 <hr>
+<br>
+<div align="center">
+
+#### Mail Information Exchange
+
+</div>
+
+* Gen II games introduced Mails, which are special held items. Players can write text messages into mails (before attaching them to a pokemon). Once attached they can't be modified any further.
+* Pokemon holding mails can be traded, so those messages need to be exchanged!
+* Each mail is stored in **47 bytes**. So a player with a full party of 6 pokemon, each holding a mail will need to send an additional **282 bytes**.
+  
+* **Even if no pokemon has attached mails, those 282 bytes will still be exchanged!**:
+  * [**Information Disclosure**] Games don't ever erase memory addresses that store mail information (of mails attached to pokemon in the player's party).
+  * This means that if a mail is attached to a pokemon and then removed, **the information is still there** (and is sent to the other player). It'll only change when another mail is attached.
+  * Games didn't really care about this because even if this information was sent, the other player wouldn't be able to read it (the only legal way to access it is by receiving a pokemon with a held mail).
+  * So, yes, we can read the contents of every attached mail even before receiving the pokemon that holds it, and **we can even read contents of deleted/removed mails**.
+ 
+* First thing's first, there's a **preamble** before exchanging the payload, this time it is a stream of six **0x20**:
+
+<br> 
+<div align="center">
+
+Mail Preamble
+  
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0x20  | 0x00 |
+|X+1      | 0x20  | 0x20 |
+|X+2      | 0x20  | 0x20 |
+|X+3      | 0x20  | 0x20 |
+|X+4      | 0x20  | 0x20 |
+|X+5      | 0x20  | 0x20 |
+|X+6      | MAIL DATA  | 0x20 |
+|X+7      | MAIL DATA  | MAIL DATA |
+
+</div>
+
+* Why 0x20 instead of 0xFD? My guess is that those 6 bytes were intended to represent the **length of each mail**, but that idea was later discarded to simplify the protocol and now every mail has a fixed text length of 32 (0x20) bytes.
+
+<hr>
+<br>
+<div align="center">
+
+#### Mail Data Structure
+
+</div>
+
+* Mails are divided into 2 sections:
+  * Mail contents (**33 bytes**): This is the message of the mail, one byte is reserved for a mandatory line break, the content itself has a maximum length of 32.
+  * Mail Metadata (**14 Bytes**): Extra information about the mail.
+
+* If **0xFE** (character '8') is contained within a mail's message then it'll be replaced with **0x21** (which is not a valid character):
+  * The other end will revert any **0x21** back to **0xFE**. **This is much simpler than a patch section**.
+* If a mail metadata contains **0xFE** then it'll also be patched with **0x21** but this part cannot be unpatched so easily:
+  * Mail metadata can normally contain **any** value (including 0x21), so the other end cannot distinguish between an authentic 0x21 and a patched 0x21. **A mail patch section is needed**:
+
+The payload itself is composed of:
+
+<br><br>
+<div align="center">
+
+#### Contents (x6)
+
+</div>
+
+* These are the mail contents of each pokemon in the player's party:
+  * The contents can be up to 33 bytes of length but one byte is reserved for a line break (resulting in 2 lines of 16 characters each).
+  * We can create a mail without line breaks, it won't be displayed correctly but nothing else breaks (pun intended).
+  * If the content is less than 32 bytes, the message ends with a string terminator (**0x50**), any extra bytes are just 0x00.
+  * Any 0xFE will be ignored (which shouldn't be there to begin with!).
+  * Sending 0x21 will make the other to interpret it as '8'.
+
+<br><br>
+<div align="center">
+
+#### Metadata (x6)
+
+</div>
+
+* Mail metadata consists of:
+    * Author's name (displayed at the bottom of the message, **10 bytes**). It is 1 byte shorter than the other strings, but the eleventh byte was reserved for the string terminator, so there isn't a problem here.
+    * Author's trainer ID (not shown, **2 bytes**).
+    * The species (pokedex number) of the pokemon that first held this mail (**1 byte**).
+    * The type of mail (item ID, **1 byte**), there're many types of mails, each one has a different background image. **It is not used** (the games use the *held item ID* field in the pokemon data structure).
+
+ * Any of those fields could potentially have 0xFE in them (Although only the Trainer ID field can contain 0xFE without any glitches). It'll be replaced with **0x21** and its offset will be sent later (in the mail patch section).
 
 
 ### Time Capsule
