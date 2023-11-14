@@ -105,8 +105,14 @@ The main goal of this post is to explain how trading works in pokemon red/blue/y
 
 I'll also include the misconceptions and problems encountered along the way while implementing said protocol (many of the problems will look trivial to you!)
 
+<hr>
 
-## Physical Layer
+<details>
+  <summary>
+
+  ## Physical Layer
+
+  </summary>
 
 ### Link Cable Pinout
 The cable pins have already been described many times ([1], [2], [3])
@@ -297,7 +303,16 @@ In the previous section i described the SPI capabilities of the Gameboy Hardware
 
 <br><br><br>
 
-## Pokemon Trading Protocol
+</details>
+
+<hr>
+
+<details>
+  <summary>
+    
+  ## Pokemon Trading Protocol
+
+  </summary>
 
 All the information provided in previous sections was tiresome to come by, as it's scattered all over the internet. But the important thing is that **it exists**!
 
@@ -315,7 +330,15 @@ The actual trading algorithms implemented in the games are available [HERE (Poke
 
 I'll describe the trading protocol for generation I first, then include how generation II differs from it and what was added (both generations have a lot in common so its important to read both sections).
 
-### Generation I
+<details>
+  <summary>
+    
+  ### Generation I
+  
+  </summary>
+
+
+
 
 <div align="center">
 
@@ -1857,9 +1880,18 @@ A COMPLETE Trade confirmation
 <br>
 </div>
 
-### Generation II
+</details>
 
 <hr>
+
+<details>
+  <summary>
+    
+  ### Generation II
+
+  </summary>
+
+
 <br>
 <div align="center">
 
@@ -2196,8 +2228,13 @@ Same as in Gen I, Egg names are always "EGG" followed by a single string termina
   * **The buffer overflow was fixed**: [Pokegold -> Link.asm#L593-597](https://github.com/pret/pokegold/blob/5140706094cd39bdfcd50f2e9eab33c25b03ad12/engine/link/link.asm#L593-L597)
   * The other game can still send offsets beyond the patch area forcing it to write 0xFE at those offsets: [Pokegold -> Link.asm#L297-318](https://github.com/pret/pokegold/blob/5140706094cd39bdfcd50f2e9eab33c25b03ad12/engine/link/link.asm#L297-L318)
 
+<br>
 
-Here's the updated list of offsets for Gen II, **||** Separates stage 1 and 2. Bytes marked as **XX** are unpatchable.: 
+  <div align="center">
+  <details>
+    <summary>Here's the updated list of offsets for Gen II:</summary>
+
+  <div align="left">
 
 ````
 
@@ -2474,7 +2511,20 @@ Here's the updated list of offsets for Gen II, **||** Separates stage 1 and 2. B
 ````
 
 
+  </div>
+  </details>
+  </div>
+
+</details>
+
+<hr>
+
+
 ### Time Capsule
+
+</details>
+
+<hr>
   
 
 [1]: https://hackaday.io/project/160329-blinky-for-game-boy/log/150762-game-link-cable-and-connector-pinout
