@@ -107,12 +107,8 @@ I'll also include the misconceptions and problems encountered along the way whil
 
 <hr>
 
-<details>
-  <summary>
+## Physical Layer
 
-  ## Physical Layer
-
-  </summary>
 
 ### Link Cable Pinout
 The cable pins have already been described many times ([1], [2], [3])
@@ -303,16 +299,9 @@ In the previous section i described the SPI capabilities of the Gameboy Hardware
 
 <br><br><br>
 
-</details>
-
 <hr>
-
-<details>
-  <summary>
-    
-  ## Pokemon Trading Protocol
-
-  </summary>
+ 
+## Pokemon Trading Protocol
 
 All the information provided in previous sections was tiresome to come by, as it's scattered all over the internet. But the important thing is that **it exists**!
 
@@ -329,16 +318,8 @@ There are other resources available that implement the trading protocol but unfo
 The actual trading algorithms implemented in the games are available [HERE (Pokered: GEN I)](https://github.com/pret/pokered/blob/b302e93674f376f2881cbd931a698345ad27bec3/engine/link/cable_club.asm) and [HERE (Pokegold: GEN II)](https://github.com/pret/pokegold/blob/70f883dc8670c95f411a9bbfa6ff13c44c027632/engine/link/link.asm). Both projects were really helpful but the code is written in pure Gameboy assembly (similar to Z80) with little to no comments.
 
 I'll describe the trading protocol for generation I first, then include how generation II differs from it and what was added (both generations have a lot in common so its important to read both sections).
-
-<details>
-  <summary>
-    
-  ### Generation I
-  
-  </summary>
-
-
-
+ 
+### Generation I
 
 <div align="center">
 
@@ -1880,16 +1861,9 @@ A COMPLETE Trade confirmation
 <br>
 </div>
 
-</details>
-
 <hr>
-
-<details>
-  <summary>
     
-  ### Generation II
-
-  </summary>
+### Generation II
 
 
 <br>
@@ -2230,7 +2204,7 @@ Same as in Gen I, Egg names are always "EGG" followed by a single string termina
 
 <br>
 
-  <div align="center">
+<div align="center">
   <details>
     <summary>Here's the updated list of offsets for Gen II:</summary>
 
@@ -2511,18 +2485,16 @@ Same as in Gen I, Egg names are always "EGG" followed by a single string termina
 ````
 
 
-  </div>
-  </details>
-  </div>
-
+</div>
 </details>
+</div>
+
 
 <hr>
 
 
 ### Time Capsule
 
-</details>
 
 <hr>
   
