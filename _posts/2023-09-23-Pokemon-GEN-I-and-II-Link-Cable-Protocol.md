@@ -2715,7 +2715,7 @@ Same as in [Gen I](#trade-confirmation) except that the choice prefix is **0x7X*
   * For most traded pokemon this byte will be **0x70**.
   * If the player sent a **Mew** the value will be **0x71**.
   * If the player sent a **Celebi** the value will be **0x72**.
-  * I'm not sure why the value changes with Mew and Celebi, the games seen to care about it. The assembly code can be found here: [Pokegold -> Link.asm#Ñ1827-1852](https://github.com/pret/pokegold/blob/5140706094cd39bdfcd50f2e9eab33c25b03ad12/engine/link/link.asm#L1827-L1852).
+  * I'm not sure why this value changes with Mew and Celebi, the games don't seem to care about it. The assembly code can be found here: [Pokegold -> Link.asm#Ñ1827-1852](https://github.com/pret/pokegold/blob/5140706094cd39bdfcd50f2e9eab33c25b03ad12/engine/link/link.asm#L1827-L1852).
  
 * After that sequence both games return to [Players Ready for Trade](#players-ready-for-trade-1).
 
