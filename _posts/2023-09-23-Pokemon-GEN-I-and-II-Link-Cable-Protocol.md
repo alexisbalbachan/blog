@@ -810,7 +810,8 @@ A summary of the structure's fields can be found here: [Bulbapedia -> Pokemon da
 
 I'll also describe them here:
 
-* [0] **Pokemon species Id**: As mentioned in [Pokemon Id List](#pokemon-id-list) each gen I pokemon has a hidden id which is different from its pokedex number (gen II just uses pokedex numbers). **This byte will be overriden by the id specified in [Pokemon Id List](#pokemon-id-list)** (they shouldn't be different under normal circumstances). So you could theoretically put any value here (except 0xFE of course!).
+* [0] **Pokemon species Id**: As mentioned in [Pokemon Id List](#pokemon-id-list) each gen I pokemon has a hidden id which is different from its pokedex number (gen II just uses pokedex numbers). It should match with the one provided in the [Pokemon Id List](#pokemon-id-list).
+  *  **Hybrid Pokemon**: If this id differs from the one in the id list this pokemon becomes an unstable hybrid ([Bulbapedia -> Unstable Hybrid Pokemon](https://bulbapedia.bulbagarden.net/wiki/Unstable_hybrid_Pok%C3%A9mon). This field corresponds to the recipient species, which is the "real" value. The value in the id list is the donor species.
 * [1:2] **Current HP** (2 bytes, big endian, unsigned). Its value goes from 0 to 65535, **it can even be higher than the pokemon's max HP without any problem**.
 * \[3] **Box Level**: From 0 to 255. This is NOT the actual pokemon level, i think that it's the level value displayed when browsing pokemon on Bill's PC. It can be completely ignored.
 * \[4] **Status Condition**: Each bit represents a status, i could only find information on the meaning of 5 out of 8 bits (SLP, PSN, BRN, FRZ, PAR. Check the Bulbapedia link above) and i don't know what happens when multiple statuses are present at the same time.
@@ -2102,6 +2103,8 @@ Same as in Gen I
   
 * Most of the remaining fields are the same as in Gen I, so'll just mention the differences:
   * Id Number: It's now the pokedex index of this pokemon (instead of a hidden ID).
+    * **Hybrid pokemon cannot be traded** (when this value differs from the one in the [Pokemon Id List](#pokemon-id-list-eggs), then the pokemon is regarded as an [unstable hybrid pokemon](https://bulbapedia.bulbagarden.net/wiki/Unstable_hybrid_Pok%C3%A9mon). Eggs are the exception (when the id in the list is 0xFD then this pokemon is an egg).
+    * Games have a specific check for these fields, if it fails then it informs that the pokemon is **abnormal** and can't be traded.
   * Held Item Id: The item which the current pokemon is holding, most of them can be found here: [Bulbapedia -> List of items by index number](https://bulbapedia.bulbagarden.net/wiki/List_of_items_by_index_number_(Generation_II)).
     * Some invalid items are converted into valid ones (hardcoded rules, most of those ids correspond to common catch rates in Gen I).
     * More information can be found on [The Cutting Room Floor -> Pokemon Gold & Silver -> Items](https://tcrf.net/Development:Pok%C3%A9mon_Gold_and_Silver/Items) and [Glitch City -> Obtaining arbitrary items in G/S/C through Time Capsule](https://archives.glitchcity.info/forums/board-108/thread-6719/page-0.html)
@@ -2154,7 +2157,7 @@ Same as in Gen I
       * The first bit of the second bite stores the Original Trainer's gender (0: Male, 1: Female)
       * The last 7 bits stores where it was captured. A list of locations can be found here: [Bulbapedia -> List of Locations by Index Number](https://bulbapedia.bulbagarden.net/wiki/List_of_locations_by_index_number_(Generation_II))
       * Trading a pokemon to Gen I and back will erase this information.
-  * Level: Same as in Gen I.
+  * Level: Same as in Gen I. **Pokemon with a level higher than 100 will be considered abnormal and cannot be traded.**
   * Status Condition: Same as in Gen I.
   * **Unused Byte**: Always 0x00.
   * Current HP: Same as in Gen I.
@@ -2755,11 +2758,25 @@ Example: Master sent a normal pokemon, slave sent a Celebi:
 </div>
 
 
+<hr>
 
 ### Time Capsule
 
+Gen II games can use the time capsule to trade with Gen I games, they'll **act almost exactly as a [Gen I](generation-i) game** except for a few things:
 
-<hr>
+* At the [Players Ready](#players-ready-1) stage they'll send **0x61** instead of 0x60:
+  * Gen I games will accept any message that starts with 0x6X.
+  * Gen II games can detect whether or not the other player is in fact a Gen I game or a Gen II game which is also using the time capsule, if that's the case it'll disconnect. **Trading between 2 Gen II games through the time capsule isn't allowed**.
+* If its party is less than 6, then it'll fill the remaining bytes of the [Pokemon Id List](#pokemon-id-list) with **0x00** instead of **0xFF** (it still sends a single 0xFF to terminate the list).
+* It won't trade any pokemon above level 100, considering it abnormal.
+* Gen II games won't accept pokemon whose typing fields don't match the types of that pokemon species. (E.g a grass type Mewtwo).
+  * Magnemite and Magneton are the exception. their types changed between Gen I (electric/electric) and Gen II (electric/steel). It'll accept a magnemite/magneton of ANY type (e.g Psychic Fire). Although those values will be discarded as Gen II games don't store types per pokemon, they'll just look at the types of the species instead.
+  * Most glitch pokemon in Gen I don't have the same types as their corresponding Gen II pokemon, that's why they can't be traded. Modifying their type values will make Gen II games accept them.
+  * **Gen II games can see and accept Gen II only pokemon coming from a Gen I game**. (For example the glitch Gen I pokemon ['M 'N g](https://bulbapedia.bulbagarden.net/wiki/%27M_%27N_g) is seen as a Celebi by Gen II games, if the Gen I player manages to modify its type from Rock/Ground to Psychic/Grass then Gen II games will accept it (and receive a Celebi)!
+* Gen II games will recalculate the Special Attack / Special Defense stats of the received pokemon (The "Special" stat that Gen I games send is discarded). Other stats are unaffected.
+* Friendship/Pokerus/Caught Data information will be permanently erased.
+* **Everstones won't work** (We're in a simulated Gen I environment).
+
   
 
 [1]: https://hackaday.io/project/160329-blinky-for-game-boy/log/150762-game-link-cable-and-connector-pinout
