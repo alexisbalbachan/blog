@@ -2710,7 +2710,7 @@ Same as in [Gen I](#trade-confirmation) except that the choice prefix is **0x7X*
 
 </div>
 
-* Similar to [Gen I](#trade-sequence), nothing is sent while the trade animation is playing. Everstones prevents Kadabra, Graveler, Haunter, and Machoke from evolving.
+* Similar to [Gen I](#trade-sequence), nothing is sent while the trade animation is playing. Everstones prevent Kadabra, Graveler, Haunter, and Machoke from evolving.
 * After the trade is complete there's also a confirmation sequence, which consists in **0x7X** (usually 14 times) followed by **0x00** (10 times):
   * For most traded pokemon this byte will be **0x70**.
   * If the player sent a **Mew** the value will be **0x71**.
