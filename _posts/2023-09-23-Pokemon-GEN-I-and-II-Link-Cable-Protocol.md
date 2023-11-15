@@ -2569,7 +2569,7 @@ The payload itself is composed of:
   * We can create a mail without line breaks, it won't be displayed correctly but nothing else breaks (pun intended).
   * If the content is less than 32 bytes, the message ends with a string terminator (**0x50**), any extra bytes are just 0x00.
   * Any 0xFE will be ignored (which shouldn't be there to begin with!).
-  * Sending 0x21 will make the other to interpret it as '8'.
+  * Sending 0x21 will make the other end to interpret it as '8'.
 
 <br><br>
 <div align="center">
