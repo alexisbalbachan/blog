@@ -2609,6 +2609,24 @@ The payload itself is composed of:
 
 
 <div align="center">
+
+In this example, the Trainer ID of player 1 is 43518 (0xA9**FE**), this means that every mail attached by this player will have at least one byte to be patched (which corresponds to that ID).
+Player 1 has 6 pokemon, only the first and the last one have attached mails. Player 2 doesn't have any pokemon holding a mail.
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0x0C  | MAIL DATA |
+|X+1      | 0x52  | 0xFF |
+|X+2      | 0xFF  | 0x00 |
+|X+3      | 0x00  | 0x00 |
+|X+4      | 0x00  | 0x00 |
+| ------- | ----- | ---- |
+|X+102    | 0x00  | 0x00 |
+
+</div>
+
+
+<div align="center">
   <details>
     <summary>Here's the offset of every byte in the metadata section:</summary>
       <div align="left">
@@ -2666,6 +2684,8 @@ The payload itself is composed of:
 
 #### Trade Request
 
+Same as in [Gen I](#trade-request) except that the choice prefix is **0x7X** instead of 0x6X, (**0x70** to **0x75** to choose a pokemon, **0x7F** to exit the menu).
+
 </div>
 
 
@@ -2676,6 +2696,8 @@ The payload itself is composed of:
 
 #### Trade Confirmation
 
+Same as in [Gen I](#trade-confirmation) except that the choice prefix is **0x7X** instead of 0x6X (**0x71** to cancel and **0x72** to accept).
+
 </div>
 
 
@@ -2685,6 +2707,50 @@ The payload itself is composed of:
 <div align="center">
 
 #### Trade Sequence
+
+</div>
+
+* Similar to [Gen I](#trade-sequence), nothing is sent while the trade animation is playing. Everstones prevents Kadabra, Graveler, Haunter, and Machoke from evolving.
+* After the trade is complete there's also a confirmation sequence, which consists in **0x7X** (usually 14 times) followed by **0x00** (10 times):
+  * For most traded pokemon this byte will be **0x70**.
+  * If the player sent a **Mew** the value will be **0x71**.
+  * If the player sent a **Celebi** the value will be **0x72**.
+  * I'm not sure why the value changes with Mew and Celebi, the games seen to care about it. The assembly code can be found here: [Pokegold -> Link.asm#Ñ1827-1852](https://github.com/pret/pokegold/blob/5140706094cd39bdfcd50f2e9eab33c25b03ad12/engine/link/link.asm#L1827-L1852).
+ 
+* After that sequence both games return to [Players Ready for Trade](#players-ready-for-trade-1).
+
+<div align="center">
+
+Example: Master sent a normal pokemon, slave sent a Celebi:
+
+| #MSG    | MASTER | SLAVE|
+|---------|--------|------|
+|X        | 0x70  | 0x00 |
+|X+1      | 0x70  | 0x72 |
+|X+2      | 0x70  | 0x72 |
+|X+3      | 0x70  | 0x72 |
+|X+4      | 0x70  | 0x72 |
+|X+5      | 0x70  | 0x72 |
+|X+6      | 0x70  | 0x72 |
+|X+7      | 0x70  | 0x72 |
+|X+8      | 0x70  | 0x72 |
+|X+9      | 0x70  | 0x72 |
+|X+10     | 0x70  | 0x72 |
+|X+11     | 0x70  | 0x72 |
+|X+12     | 0x70  | 0x72 |
+|X+13     | 0x70  | 0x72 |
+|X+14     | 0x00  | 0x72 |
+|X+15     | 0x00  | 0x00 |
+|X+16     | 0x00  | 0x00 |
+|X+17     | 0x00  | 0x00 |
+|X+18     | 0x00  | 0x00 |
+|X+19     | 0x00  | 0x00 |
+|X+20     | 0x00  | 0x00 |
+|X+21     | 0x00  | 0x00 |
+|X+22     | 0x00  | 0x00 |
+|X+23     | 0x00  | 0x00 |
+|x+24     | READY FOR TRADE| 0x00|
+|x+25     | READY FOR TRADE| READY FOR TRADE|
 
 </div>
 
