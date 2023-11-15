@@ -2775,6 +2775,7 @@ Gen II games can use the time capsule to trade with Gen I games, they'll **act a
   * **Gen II games can see and accept Gen II only pokemon coming from a Gen I game**. (For example the glitch Gen I pokemon ['M 'N g](https://bulbapedia.bulbagarden.net/wiki/%27M_%27N_g) is seen as a Celebi by Gen II games, if the Gen I player manages to modify its type from Rock/Ground to Psychic/Grass then Gen II games will accept it (and receive a Celebi)!
 * Gen II games will recalculate the Special Attack / Special Defense stats of the received pokemon (The "Special" stat that Gen I games send is discarded). Other stats are unaffected.
 * Friendship/Pokerus/Caught Data information will be permanently erased.
+* Shininess/gender information is preserved between trades (it's stored in the pokemon's IV data).
 * **Everstones won't work** (We're in a simulated Gen I environment).
 
   
