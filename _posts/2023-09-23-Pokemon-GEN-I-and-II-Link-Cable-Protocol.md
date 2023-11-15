@@ -2776,6 +2776,7 @@ Gen II games can use the time capsule to trade with Gen I games, they'll **act a
 * Gen II games will recalculate the Special Attack / Special Defense stats of the received pokemon (The "Special" stat that Gen I games send is discarded). Other stats are unaffected.
 * Friendship/Pokerus/Caught Data information will be permanently erased.
 * Shininess/gender information is preserved between trades (it's stored in the pokemon's IV data).
+* Shiny Pokemon can be obtained in Gen I games, but only Gen II games can see it.
 * **Everstones won't work** (We're in a simulated Gen I environment).
 
   
