@@ -2604,7 +2604,7 @@ The payload itself is composed of:
 * There's no preamble, so the list starts immediately after the last byte of the mails payload.
 * Offset values range from 0x01 to [NOT CONFIRMED] 0xFC.
 * Any 0XFE will be ignored, as if nothing was sent.
-* **102 bytes are always exchanged**. This ensures that even in the worst case players can patch any amount of bytes of the metadata section.
+* **102 bytes are always exchanged**. This ensures that even in the worst case players can patch **all** the bytes in the metadata section.
 * After players finish sending their lists they will repeatedly send **0x00** until 102 bytes are exchanged.
 
 
