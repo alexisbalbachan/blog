@@ -2587,6 +2587,109 @@ The payload itself is composed of:
  * Any of those fields could potentially have 0xFE in them (Although only the Trainer ID field can contain 0xFE without any glitches). It'll be replaced with **0x21** and its offset will be sent later (in the mail patch section).
 
 
+<hr>
+<br>
+<div align="center">
+
+#### Mail Patch Section
+
+</div>
+
+* Similar to the [Patch Section](#patch-section), players exchange a list of offsets which point to parts of the (already exchanged) mail information payload, specifically at bytes in the [metadata](#metadata-x6) section.
+* Mail [contents](#contents-x6) didn't need a patch section (0xFE was replaced with 0x21 (a value that **never** appears in mail contents) and then **every** 0x21 was changed back to 0xFE).
+* Metadata can contain **any value** (from 0x00 to 0xFF), so the approach used for mail contents couldn't be used here.
+  
+* Only one list needs to be exchanged because the 6 metadata structures combined are just 84 bytes long. The [Patch Section](#patch-section) needed 2 lists because the patchable size was over 255 bytes.
+* This list also ends with **0xFF**.
+* There's no preamble, so the list starts immediately after the last byte of the mails payload.
+* Offset values range from 0x01 to [NOT CONFIRMED] 0xFC.
+* Any 0XFE will be ignored, as if nothing was sent.
+* **102 bytes are always exchanged**. This ensures that even in the worst case players can patch any amount of bytes of the metadata section.
+* After players finish sending their lists they will repeatedly send **0x00** until 102 bytes are exchanged.
+
+
+<div align="center">
+  <details>
+    <summary>Here's the offset of every byte in the metadata section:</summary>
+      <div align="left">
+        
+````
+
+# -------- Metadata 1 --------
+0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A,  # Author's Name
+0x0B, 0x0C,                                                  # Author's Trainer Id
+0x0D,                                                        # Pokedex number of the pokemon which first held this mail
+0x0E,                                                        # Item Id of this mail
+
+# -------- Metadata 2 --------
+0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,  # Author's Name
+0x19, 0x1A,                                                  # Author's Trainer Id
+0x1B,                                                        # Pokedex number of the pokemon which first held this mail
+0x1C,                                                        # Item Id of this mail
+
+# -------- Metadata 3 --------
+0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26,  # Author's Name
+0x27, 0x28,                                                  # Author's Trainer Id
+0x29,                                                        # Pokedex number of the pokemon which first held this mail
+0x2A,                                                        # Item Id of this mail
+
+# -------- Metadata 4 --------
+0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33, 0x34,  # Author's Name
+0x35, 0x36,                                                  # Author's Trainer Id
+0x37,                                                        # Pokedex number of the pokemon which first held this mail
+0x38,                                                        # Item Id of this mail
+
+# -------- Metadata 5 --------
+0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0x42,  # Author's Name
+0x43, 0x44,                                                  # Author's Trainer Id  
+0x45,                                                        # Pokedex number of the pokemon which first held this mail
+0x46,                                                        # Item Id of this mail
+
+# -------- Metadata 6 --------
+0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50,  # Author's Name
+0x51, 0x52,                                                  # Author's Trainer Id
+0x53,                                                        # Pokedex number of the pokemon which first held this mail
+0x54,                                                        # Item Id of this mail
+
+````
+
+   </div>
+  </details>
+</div>
+
+
+
+
+<hr>
+<br>
+<div align="center">
+
+#### Trade Request
+
+</div>
+
+
+
+<hr>
+<br>
+<div align="center">
+
+#### Trade Confirmation
+
+</div>
+
+
+
+<hr>
+<br>
+<div align="center">
+
+#### Trade Sequence
+
+</div>
+
+
+
 ### Time Capsule
 
 
