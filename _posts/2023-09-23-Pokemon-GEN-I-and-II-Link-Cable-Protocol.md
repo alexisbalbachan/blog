@@ -547,6 +547,8 @@ Here's how it looks like when players select and choose the trade option in the 
 
 #### Players Ready for Trade
 
+<p align="center"><img src="/docs/assets/images/gen_1_room_ready.png" alt="Players about to interact with the trading machine." style="width:500px;"/></p>
+
 This step is very similar to [Players Ready](#players-ready)
 
 </div>
@@ -2774,6 +2776,7 @@ Gen II games can use the time capsule to trade with Gen I games, they'll **act a
 * At the [Players Ready](#players-ready-1) stage they'll send **0x61** instead of 0x60:
   * Gen I games will accept any message that starts with 0x6X.
   * Gen II games can detect whether or not the other player is in fact a Gen I game or a Gen II game which is also using the time capsule, if that's the case it'll disconnect. **Trading between 2 Gen II games through the time capsule isn't allowed**.
+* Gen II games don't send the single 0xFE before signaling that they're ready, see [Players Ready for trade](#players-ready-for-trade).
 * If its party is less than 6, then it'll fill the remaining bytes of the [Pokemon Id List](#pokemon-id-list) with **0x00** instead of **0xFF** (it still sends a single 0xFF to terminate the list).
 * It won't trade any pokemon above level 100, considering it abnormal.
 * Gen II games won't accept pokemon whose typing fields don't match the types of that pokemon species. (E.g a grass type Mewtwo).
