@@ -1996,6 +1996,7 @@ Some examples:
 <div align="center">
 
 <p align="center"><img src="/docs/assets/images/gen_2_welcome.png" alt="Cable Club Trade Welcome!" style="width:500px;"/></p>
+<p align="center">In Gen II there's one room for trading, and another one for battling, so both players need to talk to the same NPC</p>
 
 #### Handshake
 
