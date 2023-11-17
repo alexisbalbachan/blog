@@ -685,6 +685,8 @@ A normal exchange (Preamble + 415 bytes):
 
 </div>
 
+<p align="center"><img src="/docs/assets/images/gen_1_stats.png" alt="Stats of a pokemon" style="width:500px;"/></p>
+
 
 * This is not part of the protocol per se, but it's important to understand **WHAT** is being exchanged in those 415 bytes as it affects the final result.
 
