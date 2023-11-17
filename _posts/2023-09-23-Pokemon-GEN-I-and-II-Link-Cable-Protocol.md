@@ -595,6 +595,8 @@ Here's what it looks like when both gameboys are ready (Master was ready first):
 
 </div>
 
+ <p align="center"><img src="/docs/assets/images/gen_1_wait.png" alt="Games are exchanging the necessary information" style="width:500px;"/></p>
+
 A random seed is used when battling in order to calculate things like critical hits, misses, etc. However, they are also exchanged when trading even though they have no use there!
 Master and slave will exchange 10 random numbers between 1 and 252 (0xFC)
 
