@@ -1992,9 +1992,10 @@ Some examples:
     
 ### Generation II
 
-
 <br>
 <div align="center">
+
+<p align="center"><img src="/docs/assets/images/gen_2_welcome.png" alt="Cable Club Trade Welcome!" style="width:500px;"/></p>
 
 #### Handshake
 
