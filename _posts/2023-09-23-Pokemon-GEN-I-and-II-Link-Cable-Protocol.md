@@ -329,6 +329,8 @@ I'll describe the trading protocol for generation I first, then include how gene
  
 ### Generation I
 
+<p align="center"><img src="/docs/assets/images/gen_1_welcome.png" alt="Cable Club Welcome!" style="width:500px;"/></p>
+
 <div align="center">
 
 <hr>
