@@ -1813,6 +1813,8 @@ Both players confirmed immediately:
 
 </div>
 
+<p align="center"><img src="/docs/assets/images/gen_1_sequence.png" alt="Nothing really happens during this sequence" style="width:500px;"/></p>
+
 * Both players will see the trade animation, **nothing is sent during that sequence** (maybe because gameboys need some time to process the exchange).
   * Evolutions are hardcoded, if a Kadabra, Machoke, Haunter or Graveler is traded both gameboys will independently start their evolve animation.
   * **I think developers decided this to avoid complicating the protocol**.
