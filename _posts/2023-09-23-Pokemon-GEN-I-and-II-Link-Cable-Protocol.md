@@ -1158,7 +1158,12 @@ Just as in [Seed Exchange](#seed-exchange) and [Party Information Exchange](#par
 
 <div align="center">
 
-What a normal patch section preamble looks like:
+<details>
+  <summary>What a normal patch section preamble looks like:</summary>
+
+<br>
+
+
 
 | #MSG    | MASTER | SLAVE|
 |---------|--------|------|
@@ -1177,6 +1182,8 @@ What a normal patch section preamble looks like:
 |X+12     | 0x00   | 0x00 |
 |X+13     | PATCH  | 0x00 |
 |X+14     | PATCH  | PATCH |
+
+</details>
 
 <br>
 <br>
@@ -1205,8 +1212,19 @@ The games solve this issue by **logically spliting the payload in 2, and then se
 * Stage 2 offsets start exactly 252 bytes after that (Byte 271 of the payload). At the sixth pokemon's 4th move's PP values.
 
 <br> <br>
-  
-Here's a complete payload, byte values represent their corresponding offset. **||** Separates stage 1 and 2. Bytes marked as **XX** are unpatchable.
+
+
+<div align="center">
+  <details>
+    <summary><b>Here's a complete payload, byte values represent their corresponding offset:</b></summary>
+
+<br>
+
+Note: **||** Separates stage 1 and 2. Bytes marked as **XX** are unpatchable.
+
+  <div align="left">
+
+
 
 ````
 
@@ -1465,6 +1483,10 @@ Here's a complete payload, byte values represent their corresponding offset. **|
 
 ````
 
+</div>
+</details>
+</div>
+
 
 <br> <br>
 <div align="center">
@@ -1515,7 +1537,11 @@ Note: Another thing we could do is to force the other player to write 0xFE in a 
 
 <br>
 
-Empty patch list for both master and slave:
+<details>
+  <summary>Empty patch list for both master and slave:</summary>
+
+  <br>
+
 
 | #MSG    | MASTER | SLAVE|
 |---------|--------|------|
@@ -1535,9 +1561,16 @@ Empty patch list for both master and slave:
 |X+189    | 0x00   | 0x00 |
 |X+190    | 0x00   | 0x00 |
 
+</details>
+
 <br>
 
-Master patching 3 bytes of the first stage (offsets 0x01, 0x95, 0xFC), slave has nothing to patch:
+
+<details>
+  <summary>Master patching 3 bytes of the first stage (offsets 0x01, 0x95, 0xFC), slave has nothing to patch:</summary>
+
+<br>
+
 
 | #MSG    | MASTER | SLAVE|
 |---------|--------|------|
@@ -1557,9 +1590,16 @@ Master patching 3 bytes of the first stage (offsets 0x01, 0x95, 0xFC), slave has
 |X+189    | 0x00   | 0x00 |
 |X+190    | 0x00   | 0x00 |
 
+</details>
+
 <br>
 
-Master patching 5 bytes of the second stage, slave patching a single byte from the first stage:
+
+<details>
+  <summary>Master patching 5 bytes of the second stage, slave patching a single byte from the first stage:</summary>
+
+<br>
+
 
 
 | #MSG    | MASTER | SLAVE|
@@ -1580,10 +1620,18 @@ Master patching 5 bytes of the second stage, slave patching a single byte from t
 |X+189    | 0x00   | 0x00 |
 |X+190    | 0x00   | 0x00 |
 
+</details>
+
 
 <br>
 
-Master patching 1 byte of each stage (note the **0x02** in both sections, they belong to different parts of the payload), slave patching 2 bytes of each stage:
+
+<details>
+  <summary>Master patching 1 byte of each stage (note the <b>0x02</b> in both sections, they belong to different parts of the payload), slave patching 2 bytes of each stage:</summary>
+
+<br>
+
+
 
 | #MSG    | MASTER | SLAVE|
 |---------|--------|------|
@@ -1603,9 +1651,15 @@ Master patching 1 byte of each stage (note the **0x02** in both sections, they b
 |X+189    | 0x00   | 0x00 |
 |X+190    | 0x00   | 0x00 |
 
+</details>
+
 <br>
 
-Master using the entire patch area! (186 offsets in section 1, 3 offsets in section 2).
+
+<details>
+  <summary>Master using the entire patch area! (186 offsets in section 1, 3 offsets in section 2).</summary>
+
+<br>
 
 | #MSG    | MASTER | SLAVE|
 |---------|--------|------|
@@ -1624,6 +1678,8 @@ Master using the entire patch area! (186 offsets in section 1, 3 offsets in sect
 |X+188    | 0x02   | 0x00 |
 |X+189    | 0x03   | 0x00 |
 |X+190    | 0xFF   | 0x00 |
+
+</details>
 
 </div>
 
@@ -1662,7 +1718,12 @@ Examples:
 
 <div align="center">
 
-Master keeps sending its action for a long time until the slave chooses what to do:
+<details>
+  <summary>Master keeps sending its action for a long time until the slave chooses what to do:</summary>
+
+<br>
+
+
   
 | #MSG    | MASTER | SLAVE|
 |---------|--------|------|
@@ -1687,13 +1748,20 @@ Master keeps sending its action for a long time until the slave chooses what to 
 |X+400022 | 0x00   | 0x00   |
 |X+400023 | CONFIRMATION | CONFIRMATION |
 
+</details>
+
 
 </div>
 
 
 <div align="center">
+
+<details>
+  <summary>Master chooses to trade its 4th pokemon but slave exits the menu:</summary>
+
+<br>
   
-Master chooses to trade its 4th pokemon but slave exits the menu:
+
   
 | #MSG    | MASTER | SLAVE|
 |---------|--------|------|
@@ -1709,9 +1777,16 @@ Master chooses to trade its 4th pokemon but slave exits the menu:
 |X+24     | 0x00  | 0x00  |
 |X+25     | AT TRADE MENU | AT TRADE MENU |
 
+</details>
+
 <br>
 
-Master chooses to trade its 2nd pokemon, slave chooses its 3rd pokemon:
+
+<details>
+  <summary>Master chooses to trade its 2nd pokemon, slave chooses its 3rd pokemon:</summary>
+
+<br>
+
 
 | #MSG    | MASTER | SLAVE|
 |---------|--------|------|
@@ -1727,6 +1802,8 @@ Master chooses to trade its 2nd pokemon, slave chooses its 3rd pokemon:
 | ....... | ...... | .... |
 |X+24     | 0x00  | 0x00 |
 |X+25     | CONFIRMATION | CONFIRMATION |
+
+</details>
 
 
 </div>
@@ -1763,7 +1840,11 @@ Master chooses to trade its 2nd pokemon, slave chooses its 3rd pokemon:
 Some examples:
 
 
-Master (CANCEL) waited a long time for the slave to decide (CONFIRM)
+<details>
+  <summary>Master (CANCEL) waited a long time for the slave to decide (CONFIRM):</summary>
+
+<br>
+
 
 | #MSG    | MASTER | SLAVE|
 |---------|--------|------|
@@ -1782,9 +1863,16 @@ Master (CANCEL) waited a long time for the slave to decide (CONFIRM)
 |X+50017  | 0x00  | 0x00 |
 |X+50018  | TRADE MENU | TRADE MENU |
 
+</details>
+
 <br>
 
-Both players confirmed immediately:
+
+<details>
+  <summary>Both players confirmed immediately:</summary>
+
+<br>
+
 
 | #MSG    | MASTER | SLAVE|
 |---------|--------|------|
@@ -1800,6 +1888,8 @@ Both players confirmed immediately:
 | ....... | ..... | .... |
 |X+23     | 0x00  | 0x00 |
 |X+24     | TRADE SEQUENCE | TRADE SEQUENCE |
+
+</details>
 
 </div>
 
@@ -1835,8 +1925,12 @@ Both players confirmed immediately:
 <br>
 
 <div align="center">
-  
-A COMPLETE Trade confirmation
+
+
+<details>
+  <summary>A COMPLETE Trade confirmation:</summary>
+
+<br>
 
 | #MSG    | MASTER | SLAVE|
 |---------|--------|------|
@@ -1888,6 +1982,8 @@ A COMPLETE Trade confirmation
 |X+45     | 0x00  | 0x00 |
 |X+46     | SEED EXCHANGE PRAMBLE  | 0x00 |
 |X+47     | SEED EXCHANGE PRAMBLE  | SEED EXCHANGE PRAMBLE |
+
+</details>
 
 <br>
 </div>
@@ -2746,7 +2842,10 @@ Same as in [Gen I](#trade-confirmation) except that the choice prefix is **0x7X*
 
 <div align="center">
 
-Example: Master sent a normal pokemon, slave sent a Celebi:
+<details>
+  <summary>Example: Master sent a normal pokemon, slave sent a Celebi:</summary>
+  <br>
+
 
 | #MSG    | MASTER | SLAVE|
 |---------|--------|------|
@@ -2776,6 +2875,8 @@ Example: Master sent a normal pokemon, slave sent a Celebi:
 |X+23     | 0x00  | 0x00 |
 |x+24     | READY FOR TRADE| 0x00|
 |x+25     | READY FOR TRADE| READY FOR TRADE|
+
+</details>
 
 </div>
 
