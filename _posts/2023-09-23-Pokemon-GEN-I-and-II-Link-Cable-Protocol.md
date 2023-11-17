@@ -451,6 +451,8 @@ If both players are ready on that time window then the slave will be responding 
 
 #### Room Selection
 
+<p align="center"><img src="/docs/assets/images/gen_1_room_select.png" alt="Players choose what they want to do" style="width:500px;"/></p>
+
 This is where players select what they want to do: **Trade, Battle (Colosseum), or Cancel**. They can also exit the menu (by pressing **B**) at any time.
 
 Both gameboys will continuously send which menu is currently being selected, the messages are sent twice and then there's one acknowledge before repeating the loop:
