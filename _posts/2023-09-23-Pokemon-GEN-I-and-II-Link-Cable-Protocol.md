@@ -1742,6 +1742,8 @@ Master chooses to trade its 2nd pokemon, slave chooses its 3rd pokemon:
 </div>
 
 
+<p align="center"><img src="/docs/assets/images/gen_1_confirm.png" alt="Players need to confirm the trade." style="width:500px;"/></p>
+
 * Once both players chose to send one of their pokemon, a confirmation dialog will appear. They can either start the trade or cancel:
 
   * (Slave only) 0x00 is sent when still deciding what to do.
