@@ -1636,6 +1636,8 @@ Master using the entire patch area! (186 offsets in section 1, 3 offsets in sect
 
 </div>
 
+<p align="center"><img src="/docs/assets/images/gen_1_request.png" alt="Players offer to trade one of their pokemon" style="width:500px;"/></p>
+
 * Here, both players are in the trade menu, they can see the properties of each pokemon (in both parties) and may offer to send any of their pokemon to the opposing player. They may also exit the menu at any moment.
 
 * Seeing pokemon properties won't trigger any exchange as the entire party data had already been exchanged.
