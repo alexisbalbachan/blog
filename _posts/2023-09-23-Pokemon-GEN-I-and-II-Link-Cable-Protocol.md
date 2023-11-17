@@ -400,6 +400,9 @@ After a handshake both players are asked to save the game.
 
 #### Players Ready
 
+
+<p align="center"><img src="/docs/assets/images/gen_1_save.png" alt="Saving game before continuing" style="width:500px;"/></p>
+
 The master won't send anything else until the player saves the game, similarly the slave will always reply with 0x00 until its player also saves their game.
 
 Once the master saved its game it will repeatedly send **0x60** (to signal that it's ready) until it receives **0x60** as well. It will abort and disconnect after several seconds of not receiving that same value! (it sends 0x00 before disconnecting)
