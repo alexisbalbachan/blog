@@ -646,6 +646,9 @@ A normal seed exchange (Master seed: A0-A9, Slave seed: B0-B9)
 
 </div>
 
+
+<p align="center"><img src="/docs/assets/images/gen_1_party.png" alt="Final result after all the exchanges" style="width:500px;"/></p>
+
 This step is almost exactly the same as the seed exchange but with a bigger payload. Immediately after exchanging seeds, the master will start sending several **0xFD** as a preamble, and again, the slave must also reply with 0xFD or else the other side will be stuck waiting forever.
 
 The exchange will start after the first non 0xFD byte appears and a total of **415 bytes** will be exchanged.
