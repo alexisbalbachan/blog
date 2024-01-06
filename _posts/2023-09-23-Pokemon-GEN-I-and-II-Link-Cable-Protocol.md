@@ -653,7 +653,7 @@ This step is almost exactly the same as the seed exchange but with a bigger payl
 
 The exchange will start after the first non 0xFD byte appears and a total of **415 bytes** will be exchanged.
 
-There's only one restriction: **The payload must not contain 0xFE**. 0xFE means that there is no more data to be exchanged, i'm not exactly sure how it works internally, but once the exchange ends the other side will just ignore everything after that byte (it's like an end of buffer marker or something like that).
+There's only one restriction: **The payload must not contain 0xFE**. 0xFE means that there is no more data to be exchanged, i'm not exactly sure how it works internally, but once the exchange ends the other side will just ignore that byte and the rest of the payload will be shifted by one, messing up everything after that 0xFE.
 
 What happens when 0xFE is part of the payload? It needs to be patched (see [Patch Section](#patch-section)). To keep it simple for now: **Each 0xFE byte is replaced with 0xFF before being sent**.
 
