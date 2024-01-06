@@ -138,7 +138,7 @@ The cable pins have already been described many times ([1], [2], [3])
 
 </div>
 
-1. Gameboys are able to provide 5V through this pin, some (unofficial?) accessories use it (E.G: night lights), its not used when connected to another Gameboy.
+1. Gameboys are able to provide 5V through this pin, some (unofficial?) accessories use it (E.G: night lights), it's not used when connected to another Gameboy.
 2. Data is sent through this pin bit by bit. It is connected to SIN on the other side of the cable.
 3. Data is received through this pin bit by bit. It is connected to SOUT on the other side of the cable.
 4. Not used/Usage unknown/Haven't found any additional reference to this pin.
@@ -165,7 +165,7 @@ The cable pins have already been described many times ([1], [2], [3])
 
 At this layer (physical) we'll only be concerned with transmitting bits and bytes, their actual meaning will be dealt with in higher layers.
 
-SPI (**S**erial **P**eripheral **I**nterface) is a widely used communication protocol, its amazingly well documented ([4], [5], [6], [7], [8]) and is (in my opinion) quite easy to understand. 
+SPI (**S**erial **P**eripheral **I**nterface) is a widely used communication protocol, it's amazingly well documented ([4], [5], [6], [7], [8]) and is (in my opinion) quite easy to understand. 
 
 At its most basic level it has 2 lines used for sending and receiving data, one line for syncronization between the 2 peers, and one line for signaling the beginning/end of the trasmission.
 
@@ -212,7 +212,7 @@ Where does the clock signal come from? One of the peers generates it while the o
     * Or **C**ontroller **I**n **T**arget **O**ut (**CITO**).
 * There is also a fourth signal which indicates when the transmission starts and ends:
   * This line is controlled by the master aswell.
-  * Its called **S**lave **S**elect (**SS**), **C**hip **S**elect (**CS**), **C**hip **E**nable (**CE**).
+  * It's called **S**lave **S**elect (**SS**), **C**hip **S**elect (**CS**), **C**hip **E**nable (**CE**).
   * NOTE: SPI can support multiple slave nodes, and each one needs to have a separate **SS** line to the master (other lines are shared). They will only communicate when their **SS** line is active.
 * Both Master and Slave send and receive data at the same time.
  
@@ -325,7 +325,7 @@ There are other resources available that implement the trading protocol but unfo
 
 The actual trading algorithms implemented in the games are available [HERE (Pokered: GEN I)](https://github.com/pret/pokered/blob/b302e93674f376f2881cbd931a698345ad27bec3/engine/link/cable_club.asm) and [HERE (Pokegold: GEN II)](https://github.com/pret/pokegold/blob/70f883dc8670c95f411a9bbfa6ff13c44c027632/engine/link/link.asm). Both projects were really helpful but the code is written in pure Gameboy assembly (similar to Z80) with little to no comments.
 
-I'll describe the trading protocol for generation I first, then include how generation II differs from it and what was added (both generations have a lot in common so its important to read both sections).
+I'll describe the trading protocol for generation I first, then include how generation II differs from it and what was added (both generations have a lot in common so it's important to read both sections).
  
 ### Generation I
 
@@ -735,7 +735,7 @@ A few examples:
 
 * Byte [11]. This is only one byte with a value between 1 and 6. It specifies how many pokemon are there in the trainer's party.
 * It's the only way of telling the other side that your party is smaller than 6, you have to exchange 415 bytes no matter how many pokemon you have! By specifying a smaller party size, the other peer will ignore the extra bytes (corresponding to non existing pokemon).
-* [Glitch] if its bigger than expected (e.g: 6 when we only have 3 pokemon), the empty/random data corresponding to non existing party members will be interpreted as pokemon too!
+* [Glitch] if it's bigger than expected (e.g: 6 when we only have 3 pokemon), the empty/random data corresponding to non existing party members will be interpreted as pokemon too!
 * Things i haven't tested:
   * What happens if party size is 0.
   * What happens if party size is greater than 6.
@@ -1001,7 +1001,7 @@ An example PP Value:
 * This is the name of the trainer who caught this pokemon (that's why it's named *original* owner). It's used along with the Original Trainer's ID in order to determine if the current player is the original owner of this pokemon. There're some advantages to being the original owner of a pokemon (it will obey you no matter what!) and a disadvantage (they will gain xp at a standard rate while not owned pokemon will get bonus xp per battle).
 * It's a string, so it's almost the same as [Trainer Name](#trainer-name): Uses custom a encoding (not ASCII), 11 bytes, max length of 10, terminates with 0x50, bytes following 0x50 are usually 0x00:
   * It cannot contain 0xFE but this time it **CAN BE PATCHED**.  (see [Patch Section](#patch-section))
-  * Something interesting that i have found is that the encoding allows some words to be encoded as one byte. For example 0x5D represents the string "TRAINER", so its possible to have names longer than 10 if we use those special words: 0x5D5D5D5D5D5D5D5D5D5D50 is a *valid* name as it only occupies 10 bytes, but it's actually 70 characters long!
+  * Something interesting that i have found is that the encoding allows some words to be encoded as one byte. For example 0x5D represents the string "TRAINER", so it's possible to have names longer than 10 if we use those special words: 0x5D5D5D5D5D5D5D5D5D5D50 is a *valid* name as it only occupies 10 bytes, but it's actually 70 characters long!
   * There's one in-game trade which gives you a Mr.Mime nicknamed "Marcel", its original owner's name is "TRAINER" encoded as a single 0x5D (followed by the 0x50 terminator)!
 * If the party is smaller than 6, the remaining fields will be a copy of the last one (if there's only 1 pokemon, then all of the 6 fields will be the same!).
   * It shouldn't really matter because extra fields are ignored. They could have any value.
