@@ -986,7 +986,7 @@ An example PP Value:
 
 <br>
 
-* [33] **Level**: This is the *real* level value (as opposed to the box level [3]). It ranges from 0 to 255, although levels 0, 1 and levels above 100 can only be reached through glitches ('member missingNo?):
+* [33] **Level**: This is the *real* level value (as opposed to the box level \[3\]). It ranges from 0 to 255, although levels 0, 1 and levels above 100 can only be reached through glitches ('member missingNo?):
   * A pokemon should have enough experience points ([14:16]) to reach its level, otherwise it won't level up until it does: A level 99 pokemon with 0 experience will have to grind the same amount of experience as a level 1 pokemon to reach level 100!
 * [34:35], [36:37], [38:39], [40:41], [42:43]: **Stat Values** for Health (i.e. maximum health), Attack, Defense, Speed, Special. They can be anywhere between 0 and 65535, however their **real value** is calculated using the pokemon's base stats (hardcoded), level, EVs and IVs: [Bulbapedia -> Stat (Generations I and II)](https://bulbapedia.bulbagarden.net/wiki/Stat#Generations_I_and_II)
   * Once the pokemon is stored and then withdrawn from a PC box, its stats will be recalculated, overridding any previous value. Pokemon Stadium will also recalculate stats when registering pokemon into a team.
