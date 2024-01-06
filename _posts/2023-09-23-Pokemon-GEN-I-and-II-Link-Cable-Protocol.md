@@ -79,7 +79,7 @@ The really interesting thing about all of this is that the Gameshark cartridge c
 
 <!--![Gameshark Link to PC Cable](/docs/assets/images/s-l1600.png)-->
 
-That cable was used to upload/download cheats into the Gameshark, also to update its firmware. So of course i had to try it... Which ended up bricking my precious Gameshark. Now with a useless cartrige, the cable ended up collecting dust for decades.
+That cable was used to upload/download cheats into the Gameshark, also to update its firmware. So of course i had to try it... Which ended up bricking my precious Gameshark. Now with a useless cartridge, the cable ended up collecting dust for decades.
 
 About 5 years ago, while tinkering with a raspberry pi i suddenly remembered **the cable**. Would it be possible to trade Pokemon between a Gameboy and a PC?
 
@@ -89,7 +89,7 @@ I started searching for any existing information about this subject and it was m
 
 * Gameboy to PC:
     * To this day i'm still not sure **HOW** this cable was originally used, is it serial? Is it parallel?
-    * If serial: It seems that PC serial ports communicate using the RS232 protocol which works with voltage levels way beyond of the 0v/+5v signals that the Gameboy can handle (I've seen the name MAX-232 thrown around alot for adapting the signals) -> *Overwhelmed*.
+    * If serial: It seems that PC serial ports communicate using the RS232 protocol which works with voltage levels way beyond of the 0v/+5v signals that the Gameboy can handle (I've seen the name MAX-232 thrown around a lot for adapting the signals) -> *Overwhelmed*.
     * If parallel: Voltage levels match, so far so good... But my PC doesn't have a parallel port anymore, even if i had one.. How would i control individual pins (either in Windows or Linux)? -> *Overwhelmed*.
 * Gameboy to Raspberry Pi:
     * Already knew how to read from / write to individual pins, great!
@@ -150,8 +150,8 @@ The cable pins have already been described many times ([1], [2], [3])
 ### Signals
 
 * Voltage levels on each pin should be either 0V (representing 0/LOW) or 5V (representing 1/HIGH).
-* I haven't tested this, but lower voltages may still work (e.g 3V or 4V could also be considered as HIGH). Just make sure that whatever communicates with a Gameboy can tolerate 5V on its pins.
-* I would't recommend using voltages higher than 5V as you could damage your Gameboy.
+* I haven't tested this, but lower voltages may still work (e.g: 3V or 4V could also be considered as HIGH). Just make sure that whatever communicates with a Gameboy can tolerate 5V on its pins.
+* I wouldn't recommend using voltages higher than 5V as you could damage your Gameboy.
 
 <br>
 
@@ -167,7 +167,7 @@ At this layer (physical) we'll only be concerned with transmitting bits and byte
 
 SPI (**S**erial **P**eripheral **I**nterface) is a widely used communication protocol, it's amazingly well documented ([4], [5], [6], [7], [8]) and is (in my opinion) quite easy to understand. 
 
-At its most basic level it has 2 lines used for sending and receiving data, one line for syncronization between the 2 peers, and one line for signaling the beginning/end of the trasmission.
+At its most basic level it has 2 lines used for sending and receiving data, one line for synchronization between the 2 peers, and one line for signaling the beginning/end of the transmission.
 
 Why synchronization? Well, the peers need to know **when** to read from their input line and **when** to write into their output line, consider the following scenario:
 
@@ -211,7 +211,7 @@ Where does the clock signal come from? One of the peers generates it while the o
     * It can also be called **C**ontroller **I**n **P**eripheral **O**ut (**CIPO**).
     * Or **C**ontroller **I**n **T**arget **O**ut (**CITO**).
 * There is also a fourth signal which indicates when the transmission starts and ends:
-  * This line is controlled by the master aswell.
+  * This line is controlled by the master as well.
   * It's called **S**lave **S**elect (**SS**), **C**hip **S**elect (**CS**), **C**hip **E**nable (**CE**).
   * NOTE: SPI can support multiple slave nodes, and each one needs to have a separate **SS** line to the master (other lines are shared). They will only communicate when their **SS** line is active.
 * Both Master and Slave send and receive data at the same time.
@@ -270,7 +270,7 @@ A detailed description about the implementation can be found [HERE](https://gbde
 <br>
 
 * Gameboys use **SPI mode 3** when communicating through the link cable, so the clock signal stays HIGH when idle, data is written on falling edges and is read on rising edges.
-* Data is transfered byte by byte, that means that once 8 bits are transfered, an interrupt will trigger to signal the software that a byte has arrived/has been sent.
+* Data is transferred byte by byte, that means that once 8 bits are transferred, an interrupt will trigger to signal the software that a byte has arrived/has been sent.
 * Bytes are written/read from their **M**ost **S**ignificant **B**it (**MSB**) onwards, i.e. from left to right.
 * **THERE IS NO SS/CS LINE**: The master will just generate a clock signal and the slave will read/write from/into data lines as soon as it detects the corresponding clock edges.
 * This should be obvious but got me confused at first: The clock signal will only exist when data is being transferred, for some reason i thought that it was always active as long as the connection was established.
@@ -289,7 +289,7 @@ Things to keep in mind:
 
 * Slave nodes **cannot** send anything on their own, they have to wait for the master's clock signal first (which happens only when the master wants to transfer something themselves).
 * Similarly slaves are unable to signal if they're ready for the transfer or not, it will occur anyway and the master will read whatever is in its input signal.
-* This is why master nodes need to be considerate and give some time between each transfer to make sure that the slave is ready for it!
+* This is why master nodes need to be considerate and allow some time to pass between each transfer to make sure that the slave is ready for it!
 * Transfers are simultaneous, but the slave may have to read something from its master before knowing **what** to send, so in many implementations slaves are 1 step behind their master:
   * (MASTER <-> SLAVE):  (1) REQUEST1 <-> NOTHING | (2) REQUEST2 <-> RESPONSE1 | (3) REQUEST3 <-> RESPONSE2 | etc.
 
@@ -303,7 +303,7 @@ In the previous section i described the SPI capabilities of the Gameboy Hardware
 * Pokemon Games will use the lowest clock speed for transmissions (8192Hz). I'm assuming that this is to support trades between any hardware (original GB, GBP, and GBC).
 * There seems to be a limit on how SLOW a clock can be, so slaves will timeout if no clock edge is detected after a certain amount of time.
 * I'm not sure if slave pokemon games would support much higher clock speeds than the standard rate (haven't tested it yet).
-* It could be possible to change the clock rate at any time as long as it does no exceed the allowed limits.
+* It could be possible to change the clock rate at any time as long as it does not exceed the allowed limits.
 
 <br><br><br>
 
@@ -339,7 +339,7 @@ I'll describe the trading protocol for generation I first, then include how gene
 #### Handshake
 
 The first Gameboy to initiate the connection (by talking to the Cable Club NPC at the Pokemon Center) will probe the SCK line and won't find any clock signal there, thus becoming **master**.
-It will repeatedly send **0x01** looking for a response on the other side, the slave gameboy must always reply with **0x02** (everytime it receives 0x01). 
+It will repeatedly send **0x01** looking for a response on the other side, the slave gameboy must always reply with **0x02** (every time it receives 0x01). 
 
 Note that the slave gameboy won't reply to the first 0x01 because it can only reply to what it has already been received, (the master->slave and slave->master transmission happens at the same time!) so the first message will always be replied with 0x00:
 
@@ -427,7 +427,7 @@ After saving its game the slave will also abort after some time without any mess
 
 <br><br>
 
-If both players are ready on that time window then the slave will be responding with 0x60 everytime it receives that value. This can happen multiple times until the master acknowledges it (sending **0x00**, the default acknowledge message). The slave will also reply the acknowledge message with its own acknowledge (also **0x00**):
+If both players are ready on that time window then the slave will be responding with 0x60 every time it receives that value. This can happen multiple times until the master acknowledges it (sending **0x00**, the default acknowledge message). The slave will also reply the acknowledge message with its own acknowledge (also **0x00**):
 
 | #MSG | MASTER       | SLAVE       |
 |------|--------------|-------------|
@@ -520,7 +520,7 @@ The lowest 4 bits are the ones describing the action:
 * Colosseum takes priority over Cancel so #M = 3 (1 and 2 at the same time) is considered Colosseum (it shouldn't be a valid message anyways!).
 * If both A and B are 0 then #M indicates which item is currently being highlighted.
 * If B is 1 then the player quit the selection menu while #M was being highlighted, it is considered as a cancel. Both gameboys disconnect.
-* B takes priority over A, so if both A and B are 1 then it will also be treated as a cancel (This type of message shouldn't exist under normal circumnstances).
+* B takes priority over A, so if both A and B are 1 then it will also be treated as a cancel (This type of message shouldn't exist under normal circumstances).
 * If A is 1 then the player selected #M in the menu.
   * If A is 1 and #M is 2 then the player chose "Cancel" both gameboys will abort and disconnect right now.
 * **The first player that selects (or cancels) something will pick that option for both of them!**
@@ -558,7 +558,7 @@ Any other action (walking around) isn't communicated to the other peer! The cabl
 
 When the master is ready (presses "A"), it will first send a single **0xFE** which means that it doesn't have any remaining data to send (i'm not sure **WHY** it would have something else to send at this point). Followed by an endless stream of **0x60** until it receives several 0x60 from the slave as well. **There isn't a timeout here**. The master will be stuck waiting until the Gameboy is turned off.
 
-The same happens with the slave when it iteracts with the machine: It will wait for the master to communicate (and respond with a single 0xFE at first followed by 0x60 on subsequent transmissions). If the master never communicates then it will be stuck forever until the gameboy is turned off.
+The same happens with the slave when it interacts with the machine: It will wait for the master to communicate (and respond with a single 0xFE at first followed by 0x60 on subsequent transmissions). If the master never communicates then it will be stuck forever until the gameboy is turned off.
 
 After receiving many successful responses, the master will send a stream of 0x00 before continuing.
 
@@ -845,9 +845,9 @@ I'll also describe them here:
 
 * \[5] and \[6] **Type 1** and **Type 2**:
   * Pokemon with only one type will have both types set to the same value.
-  * **Types are overriden by the default type of the pokemon species**. So if you tried to send a fire/psychic type Bulbasaur, the other gameboy will just ignore those bytes and just show a grass/poison Bulbasaur. It's not a display bug, this change is permanent! When trading back that same Bulbasaur we will see that the typing bytes were reverted to their default values.
+  * **Types are overridden by the default type of the pokemon species**. So if you tried to send a fire/psychic type Bulbasaur, the other gameboy will just ignore those bytes and just show a grass/poison Bulbasaur. It's not a display bug, this change is permanent! When trading back that same Bulbasaur we will see that the typing bytes were reverted to their default values.
   * There are 255 available types, most of which are glitch types. Some glitch types share the same name as valid types!
-  * The only way to obtain a glitch type pokemon by trading is to receive a glitch pokemon that coincidentaly has a glitch type by default. (Non default types are ignored, read above)
+  * The only way to obtain a glitch type pokemon by trading is to receive a glitch pokemon that coincidentally has a glitch type by default. (Non default types are ignored, read above)
   * A complete list of **valid** types can be found on the [Bulbapedia link](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_data_structure_(Generation_I)).
 * \[7] **Catch Rate**: From 0 to 255, every pokemon species has a fixed catch rate, this value won't change even when that pokemon evolves. It represents an item in gen II so by modifying this value you could trade a pokemon holding (almost) any item to a gen II game.
 * \[8], \[9], \[10], \[11]: Id of moves 1, 2, 3, and 4. Gen I only has 165 valid moves (1-165). Id 0 means EMPTY. Ids > 165 are glitch moves.
@@ -863,7 +863,7 @@ I'll also describe them here:
 * [17:18], [19:20], [21:22], [23:24], [25:26]: **Effort Values (EVs)** for Health, Attack, Defense, Speed, and Special (2 bytes each, big endian, unsigned).
   * They're basically experience points for each stat. The final value of the stats will slightly increase when their EV's are high enough.
   * They're gained when defeating other pokemon (based on its stats).
-  * **EVs are ignored on traded pokemon until you deposit and withraw them**. This forces the game to recalculate pokemon stats. (see [Bulbapedia -> Box Trick](https://bulbapedia.bulbagarden.net/wiki/Box_trick)).
+  * **EVs are ignored on traded pokemon until you deposit and withdraw them**. This forces the game to recalculate pokemon stats. (see [Bulbapedia -> Box Trick](https://bulbapedia.bulbagarden.net/wiki/Box_trick)).
 * [27:28]: **Individual Values (IVs)** for Attack, Defense, Speed, and Special. They're hidden values from 0 to 15 which are also used to calculate the final value of a pokemon's stats. A higher IV results in higher stats. IV values are randomized when encountering wild pokemon and there's no way to change them (without glitches/cheats). **Pokemon are shiny if they have specific IV values** (although they'll still look normal in gen I games). a pokemon's gender is also determined by IVs (depending on its species).
   * Each stat IV consists in 4 bits, so naturally the 4 IV stats will occupy 16 bits / 2 bytes.
   * Health IV is calculated from the IVs of the other stats. Specifically, the last bit of each stat.
@@ -987,7 +987,7 @@ An example PP Value:
 * [33] **Level**: This is the *real* level value (as opposed to the box level [3]). It ranges from 0 to 255, although levels 0, 1 and levels above 100 can only be reached through glitches ('member missingNo?):
   * A pokemon should have enough experience points ([14:16]) to reach its level, otherwise it won't level up until it does: A level 99 pokemon with 0 experience will have to grind the same amount of experience as a level 1 pokemon to reach level 100!
 * [34:35], [36:37], [38:39], [40:41], [42:43]: **Stat Values** for Health (i.e. maximum health), Attack, Defense, Speed, Special. They can be anywhere between 0 and 65535, however their **real value** is calculated using the pokemon's base stats (hardcoded), level, EVs and IVs: [Bulbapedia -> Stat (Generations I and II)](https://bulbapedia.bulbagarden.net/wiki/Stat#Generations_I_and_II)
-  * Once the pokemon is stored and then withrawn from a PC box, its stats will be recalculated, overriding any previous value. Pokemon Stadium will also recalculate stats when registering pokemon into a team.
+  * Once the pokemon is stored and then withdrawn from a PC box, its stats will be recalculated, overridding any previous value. Pokemon Stadium will also recalculate stats when registering pokemon into a team.
   * It's better to modify EVs and IVs to obtain higher (and valid!) stats.
 
 <br><br>
@@ -1047,7 +1047,7 @@ Word encoded in a single byte:
 * This is the pokemon's nickname if it has one. Otherwise the name **must** match the name of the pokemon species (E.G. A Bulbasaur with no nickname should have "BULBASAUR" on this field)
 * Also 11 bytes long, terminated with 0x50, uses the same encoding.
 * It can also be patched.  (see [Patch Section](#patch-section))
-* Same behaviour if the party is less than 6 (repeats last name until 6 fields are sent)
+* Same behavior if the party is less than 6 (repeats last name until 6 fields are sent)
 * The only difference is that every character after 0x50 is also 0x50 (i'm no sure why, maybe an oversight or a way to differentiate a nickname from the species name).
 
 <div align="center">
@@ -1122,7 +1122,7 @@ As an example, if the player only owned Bulbasaur, Metapod, and Spearrow, then t
 
 </div>
 
-At this point both players have already transfered their payloads (which contained information about them and their pokemon). Those payloads **couldn't contain 0xFE** as this byte signals the premature end of the stream (the other side will basically ignore everything received after that!).
+At this point both players have already transferred their payloads (which contained information about them and their pokemon). Those payloads **couldn't contain 0xFE** as this byte signals the premature end of the stream (the other side will basically ignore everything received after that!).
 
 As you may have seen in the previous section [Data Structure](#data-structure), some (if not all) pokemon properties **can end up containing that value**, some examples are:
 
@@ -1198,7 +1198,7 @@ The simplest solution would be to send a **list of offsets**, each one pointing 
 
 Now, remember that the payload is 415 bytes long. 1 byte per offset is not enough (goes from 0 to 255) so to represent any offset within the payload we would need 2 bytes which are way overkill as they can represent any value between 0 to 65535. It also wastes a lot of memory and increases the transfer time (due to bigger list items).
 
-The games solve this issue by **logically spliting the payload in 2, and then sending 2 patch lists**, each one containing byte sized offsets which point to either the first or second half of the payload.
+The games solve this issue by **logically splitting the payload in 2, and then sending 2 patch lists**, each one containing byte sized offsets which point to either the first or second half of the payload.
 
 * The first list, which points to the first half of the payload is considered **Stage 1** of the patch section, while the second list (pointing to the second half) will be **Stage 2**.
 * The byte **0xFF** is used to mark the end of the lists. So an empty list will be just [0xFF], and a list with only one element will be [0xYY, 0xFF].
@@ -1712,7 +1712,7 @@ Note: Another thing we could do is to force the other player to write 0xFE in a 
 
 * **GLITCH**: Players can send indexes higher than their party sizes (e.g index 3 on a party of size 2, or even **index 14 (0x6E)**). If the index is less than 6 then players will interpret it as the last pokemon of the sender's party (the last pokemon is repeated until 6 pokemon structures are sent). Indexes higher than 5 will trigger an **out of bounds memory read** which will interpret those random 44 bytes as a pokemon.
   * For example, an index of 10 will read 44 bytes starting at index **440** (10*44). This invalid memory read happens in both games.
-  * I'm not sure what would happend if that glitch "pokemon" was traded (the bytes at that memory location will be copied/moved, and overwritten!), it may break both games.
+  * I'm not sure what would happen if that glitch "pokemon" was traded (the bytes at that memory location will be copied/moved, and overwritten!), it may break both games.
 
 Examples:
 
@@ -2221,14 +2221,14 @@ Same as in Gen I
 * The fields for Type 1 and Type 2 were removed, they're calculated based on the pokemon species (Gen I also did this so those fields were essentially useless).
 * Box level was also removed (it was also useless).
   
-* Most of the remaining fields are the same as in Gen I, so'll just mention the differences:
+* Most of the remaining fields are the same as in Gen I, so i'll just mention the differences:
   * Id Number: It's now the pokedex index of this pokemon (instead of a hidden ID).
     * **Hybrid pokemon cannot be traded** (when this value differs from the one in the [Pokemon Id List](#pokemon-id-list-eggs), then the pokemon is regarded as an [unstable hybrid pokemon](https://bulbapedia.bulbagarden.net/wiki/Unstable_hybrid_Pok%C3%A9mon). Eggs are the exception (when the id in the list is 0xFD then this pokemon is an egg).
     * Games have a specific check for these fields, if it fails then it informs that the pokemon is **abnormal** and can't be traded.
   * Held Item Id: The item which the current pokemon is holding, most of them can be found here: [Bulbapedia -> List of items by index number](https://bulbapedia.bulbagarden.net/wiki/List_of_items_by_index_number_(Generation_II)).
     * Some invalid items are converted into valid ones (hardcoded rules, most of those ids correspond to common catch rates in Gen I).
     * More information can be found on [The Cutting Room Floor -> Pokemon Gold & Silver -> Items](https://tcrf.net/Development:Pok%C3%A9mon_Gold_and_Silver/Items) and [Glitch City -> Obtaining arbitrary items in G/S/C through Time Capsule](https://archives.glitchcity.info/forums/board-108/thread-6719/page-0.html)
-    * This is the list of convertion rules:
+    * This is the list of conversion rules:
    
     <div align="center">
       
@@ -2639,7 +2639,7 @@ Same as in Gen I, Egg names are always "EGG" followed by a single string termina
   * Games didn't really care about this because even if this information was sent, the other player wouldn't be able to read it (the only legal way to access it is by receiving a pokemon with a held mail).
   * So, yes, we can read the contents of every attached mail even before receiving the pokemon that holds it, and **we can even read contents of deleted/removed mails**.
  
-* First thing's first, there's a **preamble** before exchanging the payload, this time it is a stream of six **0x20**:
+* First things first, there's a **preamble** before exchanging the payload, this time it is a stream of six **0x20**:
 
 <br> 
 <div align="center">
