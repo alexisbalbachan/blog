@@ -1126,7 +1126,7 @@ As an example, if the player only owned Bulbasaur, Metapod, and Spearrow, then t
 
 </div>
 
-At this point both players have already transferred their payloads (which contained information about them and their pokemon). Those payloads **couldn't contain 0xFE** as this byte signals the premature end of the stream (the other side will basically ignore everything received after that!).
+At this point both players have already transferred their payloads (which contained information about them and their pokemon). Those payloads **couldn't contain 0xFE** as this byte will be ignored by the other peer, shifting the rest of the payload by one byte for each 0xFE encountered.
 
 As you may have seen in the previous section [Data Structure](#data-structure), some (if not all) pokemon properties **can end up containing that value**, some examples are:
 
