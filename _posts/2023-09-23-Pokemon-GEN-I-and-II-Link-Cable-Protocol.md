@@ -820,6 +820,8 @@ Bytes [20:284] are 6 contiguous data structures (44 bytes long each). The struct
 
 If the player has less than 6 Pokemon, the remaining structures will be copies of the previous ones (E.G: A party of 2 will still have 6 structures but the last one will be repeated 4 times to replace the 4 missing pokemon: 1, 2, 2, 2, 2, 2). Those structures will be ignored anyway, so there's no real need to repeat the last structure (any value will do).
 
+\[YELLOW ONLY\]: Extra structures will be zero filled instead of being a copy of the last pokemon (44 zeroes for each structure).
+
 Structures cannot contain **0xFE**. but it **CAN BE PATCHED** (and it will be replaced by 0xFF).  (see [Patch Section](#patch-section))
 
 A summary of the structure's fields can be found here: [Bulbapedia -> Pokemon data structure (Generation I)](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_data_structure_(Generation_I)).
@@ -1005,6 +1007,7 @@ An example PP Value:
   * There's one in-game trade which gives you a Mr.Mime nicknamed "Marcel", its original owner's name is "TRAINER" encoded as a single 0x5D (followed by the 0x50 terminator)!
 * If the party is smaller than 6, the remaining fields will be a copy of the last one (if there's only 1 pokemon, then all of the 6 fields will be the same!).
   * It shouldn't really matter because extra fields are ignored. They could have any value.
+  * \[YELLOW ONLY\]: Sends zeroes instead of repeating the last name.
 
 <div align="center">
 
@@ -1048,6 +1051,7 @@ Word encoded in a single byte:
 * Also 11 bytes long, terminated with 0x50, uses the same encoding.
 * It can also be patched.  (see [Patch Section](#patch-section))
 * Same behavior if the party is less than 6 (repeats last name until 6 fields are sent)
+* \[YELLOW ONLY\] Sends zeroes instead of repeating the last name if party is less than 6.
 * The only difference is that every character after 0x50 is also 0x50 (i'm no sure why, maybe an oversight or a way to differentiate a nickname from the species name).
 
 <div align="center">
