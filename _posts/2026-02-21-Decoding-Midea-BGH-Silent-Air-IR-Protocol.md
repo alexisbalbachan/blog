@@ -320,23 +320,37 @@ I'll throw the full specification here just to illustrate how complicated it get
 | `5-7` | **Command Type** | `010` for standard commands, or `101` for macro commands. |
 
 #### Byte 1: Checksum 1
+
+
+
 | Bits | Purpose | Details |
 | :--- | :--- | :--- |
 | `8-15` | **Validation** | The ones' complement of Byte 0 (`~Byte 0`). |
 
+
 #### Byte 2: Fan Speed & Secondary Data
+
+
+
 | Bits | Purpose | Details |
 | :--- | :--- | :--- |
 | `16-23` | **Signature** | If [Macro mode](#macro-commands), [Sleep mode](#sleep-mode-3-frame-payload), [Power OFF](#power-off), or [Swing](#swing-toggle) is enabled, this entire byte is a constant signature. |
 | `16-18` | **Fan Speed** | In normal operation, dictates the [fan speed](#fan-speed-bits-16-18). |
 | `19-23` | **Multiplexed Data** | Depending on the state, this can represent: <br> • A "[Follow Me](#follow-me)" temperature update. <br> • Bits `0-3` of the [Timer OFF](#timers-the-first-rule-breaker) value (Bits `19-22`), alongside a Sleep disabled flag (Bit `23` is `1` if Sleep is disabled). |
 
+
 #### Byte 3: Checksum 2
+
+
+
 | Bits | Purpose | Details |
 | :--- | :--- | :--- |
 | `24-31` | **Validation** | The ones' complement of Byte 2 (`~Byte 2`). |
 
 #### Byte 4: Temperature & Mode
+
+
+
 | Bits | Purpose | Details |
 | :--- | :--- | :--- |
 | `32-39` | **Signature** | If [Macro mode](#macro-commands), [Sleep mode](#sleep-mode-3-frame-payload), [Power OFF](#power-off), or [Swing](#swing-toggle) is enabled, this entire byte acts as the second part of the constant signature. |
@@ -344,8 +358,11 @@ I'll throw the full specification here just to illustrate how complicated it get
 | `36-37` | **Operating Mode** | The current [mode](#operating-mode-bits-36-37) (e.g., Cool, Heat, Fan). |
 | `38-39` | **Multiplexed Data** | Can represent: <br> • Bits `4-5` of the [Timer OFF](#timers-the-first-rule-breaker) value. <br> • A constant `10` (Bit `38`=`1`, Bit `39`=`0`) for "[Follow Me](#follow-me)" packages. |
 
+
 #### Byte 5: Checksum 3 / Timers / ECO
 This byte is the most heavily overloaded, acting as a checksum in standard operation but being repurposed for advanced features.
+
+
 
 | Bits | Purpose | Details |
 | :--- | :--- | :--- |
@@ -353,7 +370,11 @@ This byte is the most heavily overloaded, acting as a checksum in standard opera
 | `40-47` | **Timers Enabled** | • Bit `40`: Copy of Bit `32`. <br> • Bits `41-46`: [Timer ON](#timers-the-first-rule-breaker) value. <br> • Bit `47`: Constant `1`. |
 | `40-47` | **ECO Mode** | • Bits `40-43`: [ECO](#eco-mode-the-rule-breaking-macro) temperature. <br> • Bits `44-45`: Zero (Probably ECO mode, but in my model only COOL is allowed to use ECO). <br> • Bits `46-47`: ECO fan speed. |
 
+
+
 #### Subsequent Frames
+
+
 As mentioned earlier, the protocol typically sends two frames.
 
 | Bytes | Frame | Details |
@@ -540,7 +561,7 @@ When the AC is set to Fan mode, temperature control is disabled. In this state, 
 
 The operating mode is controlled by just two bits, located immediately after the temperature in Byte 4 (Bits 36 and 37).
 
-<div align="center">
+<div align="center" markdown="1">
 
 | Mode | Bit 36 | Bit 37 |
 | :---: | :---: | :---: |
@@ -563,7 +584,7 @@ How does the AC tell them apart? It relies on the [Fan Speed](#fan-speed-bits-16
 
 The fan speed is encoded in the first three bits of Byte 2 (Bits 16 through 18). 
 
-<div align="center">
+<div align="center" markdown="1">
 
 | Speed State | Bit 16 | Bit 17 | Bit 18 | Notes |
 | :--- | :---: | :---: | :---: | :--- |
@@ -619,7 +640,7 @@ Both timers cannot be set to the same value, i'm not sure if this is a protocol 
 Here is the binary mapping for the timer values. Note how the bits are mapped depending on whether it is a Timer ON or Timer OFF command:
 
 </br>
-<div align="center">
+<div align="center" markdown="1">
 
 
 *(Note: I placed bits 41/42 and 38/39 as the Most Significant Bits in the table below, but my ordering is arbitrary. It might make more sense to place them as the Least Significant Bits, but this is how I originally mapped them out.)*
@@ -697,7 +718,7 @@ I couldn't find a logical bit-level meaning for the data within these macros. Th
 
 Here is how it works: For every macro command, **Byte 2 is always a constant `10101111`** (`0xAF`). The specific action to be performed is then determined entirely by the signature found in **Byte 4**:
 
-<div align="center">
+<div align="center" markdown="1">
 
 | Macro Action | Byte 4 Signature (Binary) | Byte 4 (Hex) |
 | :--- | :---: | :---: |
@@ -730,7 +751,7 @@ ECO Mode is a fascinating anomaly. It is technically a [Macro Command](#macro-co
 
 As with all macros, Byte 2 contains the hardcoded signature `10101111` (`0xAF`). The specific ECO action is then defined in Byte 4. You can think of this as two distinct signatures, or a single signature where the Most Significant Bit (MSB) acts as a toggle:
 
-<div align="center">
+<div align="center" markdown="1">
 
 | ECO Action | Byte 4 Signature (Binary) | Byte 4 (Hex) |
 | :--- | :---: | :---: |
@@ -745,7 +766,7 @@ On my specific AC model, ECO mode can only be activated while the unit is in COO
 
 The most interesting aspect of the ECO command is what happens in Byte 5. Instead of acting as a checksum for Byte 4, it is repurposed to store a snapshot of the AC's current state:
 
-<div align="center">
+<div align="center" markdown="1">
 
 | Bits | Purpose | Details |
 | :--- | :--- | :--- |
@@ -794,7 +815,7 @@ The Power OFF command is an interesting hybrid. It behaves exactly like a [Macro
 
 Because it doesn't share the universal `10101111` Byte 2 signature used by true macros, I classify it in its own distinct category. Instead, it uses a unique signature pair across both Byte 2 and Byte 4:
 
-<div align="center">
+<div align="center" markdown="1">
 
 | Action | Byte 2 Signature | Byte 4 Signature |
 | :--- | :---: | :---: |
@@ -818,7 +839,7 @@ The Swing command is perhaps the least complex of the special functions. Much li
 
 It also possesses its own unique signature pair, completely distinct from the standard macro family:
 
-<div align="center">
+<div align="center" markdown="1">
 
 | Action | Byte 2 Signature | Byte 4 Signature |
 | :--- | :---: | :---: |
@@ -849,7 +870,7 @@ My initial setup using an Arduino Nano and the standard IR library was hard-capp
 
 Like [Power OFF](#power-off) and [Swing](#swing-toggle), Sleep behaves like a [Macro Command](#macro-commands) but retains the `010` (Standard Command) [Command Type](#command-type-bits-5-7). It uses its own unique signature pair:
 
-<div align="center">
+<div align="center" markdown="1">
 
 | Action | Byte 2 Signature | Byte 4 Signature |
 | :--- | :---: | :---: |
@@ -871,7 +892,7 @@ You can conceptualize this in two ways:
 
 Here is what a complete Sleep payload looks like:
 
-<div align="center">
+<div align="center" markdown="1">
 
 | Frame | Byte | Contents |
 | :---: | :---: | :--- |
