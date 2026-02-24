@@ -639,7 +639,6 @@ Both timers cannot be set to the same value, i'm not sure if this is a protocol 
 **Timer Value Mapping:**
 Here is the binary mapping for the timer values. Note how the bits are mapped depending on whether it is a Timer ON or Timer OFF command:
 
-</br>
 <div align="center" markdown="1">
 
 
