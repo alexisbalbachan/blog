@@ -1226,7 +1226,7 @@ The games solve this issue by **logically splitting the payload in 2, and then s
 
 Note: **||** Separates stage 1 and 2. Bytes marked as **XX** are unpatchable.
 
-  <div align="left">
+  <div align="left" markdown="1">
 
 
 
