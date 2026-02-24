@@ -59,6 +59,8 @@ To give you an idea of how simple these commands are, here is what a standard NE
 | Header (9ms/4.5ms) | Address (8 bits) | ~Address (8 bits) | Command (8 bits) | ~Command (8 bits) | Stop Bit (Pulse) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **Start** | `0x00` | `0xFF` | `0x12` | `0xED` | 562.5µs |
+
+
 <br>
 
 And here is a variation used by Samsung TVs. As you can see, it's almost identical, instead of using 8 bit address and its compliment it now uses 16 bit addresses without compliment, also the header timings and stop bit changed.
