@@ -74,7 +74,7 @@ What about Mew? Well, a couple of years later i got a Gameshark which i used to 
 
 The really interesting thing about all of this is that the Gameshark cartridge came with a Gameboy to PC(Parallel? port) cable which is the closest thing i had that resembles a Link Cable:
 
- <p align="center"><img src="/docs/assets/images/s-l1600.png" alt="Gameshark Link to PC Cable" style="width:500px;"/></p>
+ <p align="center"><img src="{{ site.baseurl }}/docs/assets/images/s-l1600.png" alt="Gameshark Link to PC Cable" style="width:500px;"/></p>
  <p align="center"><em>Gameboy to PC cable</em></p>
 
 <!--![Gameshark Link to PC Cable](/docs/assets/images/s-l1600.png)-->
