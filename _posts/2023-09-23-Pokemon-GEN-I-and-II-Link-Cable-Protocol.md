@@ -1224,13 +1224,15 @@ The games solve this issue by **logically splitting the payload in 2, and then s
 
 <br>
 
-Note: **||** Separates stage 1 and 2. Bytes marked as **XX** are unpatchable.
+
 
   <div align="left" markdown="1">
 
 
 
 ````
+
+Note: **||** Separates stage 1 and 2. Bytes marked as **XX** are unpatchable.
 
 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX,   # Trainer Name
 0xXX,                                                               # Party Size
