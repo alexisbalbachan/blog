@@ -306,8 +306,8 @@ The 48-bit frame is divided into six distinct bytes, each serving a specific pur
 
 I'll throw the full specification here just to illustrate how complicated it gets (don't worry, i'll explain it step by step later):
 
-<div style="display: flex; justify-content: center;">
-<div style="text-align: left;">
+<div markdown="1" style="display: flex; justify-content: center;">
+<div markdown="1" style="text-align: left;">
 
 #### Byte 0: Header & Flags
 
@@ -505,7 +505,7 @@ The target temperature is encoded in the first four bits of Byte 4 (Bits 32 thro
 
 If you look closely at the binary values, you'll notice they don't follow a standard sequential binary count. Instead, they resemble a non-standard Gray code.
 
-<div align="center">
+<div align="center" markdown="1">
 
 | Temperature | Bit 32 | Bit 33 | Bit 34 | Bit 35 |
 | :---: | :---: | :---: | :---: | :---: |
