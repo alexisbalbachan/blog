@@ -105,7 +105,7 @@ So i knew **it was possible**, it wasn't extremely difficult, and had all the in
 
 Fast forward to **2023**: I found out that Arduino boards were REALLY cheap (compared to a RPI), and bought myself an Arduino Nano, a bunch of sensors, and started delving into the world of microcontrollers. Did some basic examples, then implemented communication protocols with different sensors until i felt confident for my next task: Trade pokemon between a PC and a Gameboy using the Arduino as an intermediary. \[**SPOILER: I DID IT!**\]
 
- <p align="center"><img src="/docs/assets/images/PoC.png" alt="Pokemon Trade GUI" style="width:500px;"/></p>
+ <p align="center"><img src="{{ site.baseurl }}/docs/assets/images/PoC.png" alt="Pokemon Trade GUI" style="width:500px;"/></p>
 <!-- ![Pokemon Trade GUI](/docs/assets/images/PoC.png) -->
 
 ## Introduction
@@ -173,23 +173,23 @@ Why synchronization? Well, the peers need to know **when** to read from their in
 
  <p align="center"> Assuming LOW is 0 and HIGH is 1.. What binary number is being transmitted? </p>
 
- <p align="center"><img src="/docs/assets/images/input_signal.png" alt="Mystery signal" style="width:500px;"/></p>
+ <p align="center"><img src="{{ site.baseurl }}/docs/assets/images/input_signal.png" alt="Mystery signal" style="width:500px;"/></p>
  
  The safest bet would be 000101010:
  
- <p align="center"><img src="/docs/assets/images/input_signal1.png" alt="Interpretation1" style="width:500px;"/></p>
+ <p align="center"><img src="{{ site.baseurl }}/docs/assets/images/input_signal1.png" alt="Interpretation1" style="width:500px;"/></p>
 
  But, there are other interpretations that are equally valid:
 
- <p align="center"><img src="/docs/assets/images/input_signal2.png" alt="Interpretation2" style="width:500px;"/></p>
+ <p align="center"><img src="{{ site.baseurl }}/docs/assets/images/input_signal2.png" alt="Interpretation2" style="width:500px;"/></p>
 
  Also, where does the transmission actually start? (and end?):
  
- <p align="center"><img src="/docs/assets/images/input_signal3.png" alt="Interpretation3" style="width:500px;"/></p>
+ <p align="center"><img src="{{ site.baseurl }}/docs/assets/images/input_signal3.png" alt="Interpretation3" style="width:500px;"/></p>
 
  I that even a single transmission?:
  
- <p align="center"><img src="/docs/assets/images/input_signal4.png" alt="Interpretation4" style="width:500px;"/></p>
+ <p align="center"><img src="{{ site.baseurl }}/docs/assets/images/input_signal4.png" alt="Interpretation4" style="width:500px;"/></p>
 
  <br>
 
@@ -197,7 +197,7 @@ SPI solves this problem by introducing a **shared clock** which indicates when t
 
 <p align="center">A clock is just a signal that switches between HIGH and LOW at regular intervals:</p>
 
-<p align="center"><img src="/docs/assets/images/clocks.png" alt="Clock examples" style="width:500px;"/></p>
+<p align="center"><img src="{{ site.baseurl }}/docs/assets/images/clocks.png" alt="Clock examples" style="width:500px;"/></p>
 
 Where does the clock signal come from? One of the peers generates it while the other one just reads from that line!
 
@@ -218,7 +218,7 @@ Where does the clock signal come from? One of the peers generates it while the o
  
 <p align="center">Here's an example of what SPI transmissions looks like (MOSI: 1011, MISO: 0110)</p>
 
-<p align="center"><img src="/docs/assets/images/SPI_transmission.png" alt="Clock examples" style="width:500px;"/></p>
+<p align="center"><img src="{{ site.baseurl }}/docs/assets/images/SPI_transmission.png" alt="Clock examples" style="width:500px;"/></p>
 
 Note that **in this example** MOSI and MISO signals will only change when the clock signal is LOW.
 
@@ -264,7 +264,7 @@ Here i'll describe some key aspects of the SPI implementation used by the Gamebo
 
 A detailed description about the implementation can be found [HERE](https://gbdev.io/pandocs/Serial_Data_Transfer_%28Link_Cable%29.html) (Pandocs) and more importantly [HERE](https://ia803208.us.archive.org/9/items/GameBoyProgManVer1.1/GameBoyProgManVer1.1.pdf#%5B%7B%22num%22%3A158%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22FitH%22%7D%2C769%5D) (Gameboy Programming Manual Chapter 1 Section 2.4).
 
- <p align="center"><img src="/docs/assets/images/SIO_block_diagram.png" alt="Serial communication block diagram" style="width:500px;"/></p>
+ <p align="center"><img src="{{ site.baseurl }}/docs/assets/images/SIO_block_diagram.png" alt="Serial communication block diagram" style="width:500px;"/></p>
  <p align="center"><em>Serial communication block diagram (Gameboy Programming Manual)</em></p>
 
 <br>
@@ -329,7 +329,7 @@ I'll describe the trading protocol for generation I first, then include how gene
  
 ### Generation I
 
-<p align="center"><img src="/docs/assets/images/gen_1_welcome.png" alt="Cable Club Welcome!" style="width:500px;"/></p>
+<p align="center"><img src="{{ site.baseurl }}/docs/assets/images/gen_1_welcome.png" alt="Cable Club Welcome!" style="width:500px;"/></p>
 
 <div align="center" markdown="1">
 
@@ -401,7 +401,7 @@ After a handshake both players are asked to save the game.
 #### Players Ready
 
 
-<p align="center"><img src="/docs/assets/images/gen_1_save.png" alt="Saving game before continuing" style="width:500px;"/></p>
+<p align="center"><img src="{{ site.baseurl }}/docs/assets/images/gen_1_save.png" alt="Saving game before continuing" style="width:500px;"/></p>
 
 The master won't send anything else until the player saves the game, similarly the slave will always reply with 0x00 until its player also saves their game.
 
@@ -451,7 +451,7 @@ If both players are ready on that time window then the slave will be responding 
 
 #### Room Selection
 
-<p align="center"><img src="/docs/assets/images/gen_1_room_select.png" alt="Players choose what they want to do" style="width:500px;"/></p>
+<p align="center"><img src="{{ site.baseurl }}/docs/assets/images/gen_1_room_select.png" alt="Players choose what they want to do" style="width:500px;"/></p>
 
 This is where players select what they want to do: **Trade, Battle (Colosseum), or Cancel**. They can also exit the menu (by pressing **B**) at any time.
 
@@ -547,7 +547,7 @@ Here's how it looks like when players select and choose the trade option in the 
 
 #### Players Ready for Trade
 
-<p align="center"><img src="/docs/assets/images/gen_1_room_ready.png" alt="Players about to interact with the trading machine." style="width:500px;"/></p>
+<p align="center"><img src="{{ site.baseurl }}/docs/assets/images/gen_1_room_ready.png" alt="Players about to interact with the trading machine." style="width:500px;"/></p>
 
 This step is very similar to [Players Ready](#players-ready)
 
@@ -595,7 +595,7 @@ Here's what it looks like when both gameboys are ready (Master was ready first):
 
 </div>
 
- <p align="center"><img src="/docs/assets/images/gen_1_wait.png" alt="Games are exchanging the necessary information" style="width:500px;"/></p>
+ <p align="center"><img src="{{ site.baseurl }}/docs/assets/images/gen_1_wait.png" alt="Games are exchanging the necessary information" style="width:500px;"/></p>
 
 A random seed is used when battling in order to calculate things like critical hits, misses, etc. However, they are also exchanged when trading even though they have no use there!
 Master and slave will exchange 10 random numbers between 1 and 252 (0xFC)
@@ -647,7 +647,7 @@ A normal seed exchange (Master seed: A0-A9, Slave seed: B0-B9)
 </div>
 
 
-<p align="center"><img src="/docs/assets/images/gen_1_party.png" alt="Final result after all the exchanges" style="width:500px;"/></p>
+<p align="center"><img src="{{ site.baseurl }}/docs/assets/images/gen_1_party.png" alt="Final result after all the exchanges" style="width:500px;"/></p>
 
 This step is almost exactly the same as the seed exchange but with a bigger payload. Immediately after exchanging seeds, the master will start sending several **0xFD** as a preamble, and again, the slave must also reply with 0xFD or else the other side will be stuck waiting forever.
 
@@ -688,7 +688,7 @@ A normal exchange (Preamble + 415 bytes):
 
 </div>
 
-<p align="center"><img src="/docs/assets/images/gen_1_stats.png" alt="Stats of a pokemon" style="width:500px;"/></p>
+<p align="center"><img src="{{ site.baseurl }}/docs/assets/images/gen_1_stats.png" alt="Stats of a pokemon" style="width:500px;"/></p>
 
 
 * This is not part of the protocol per se, but it's important to understand **WHAT** is being exchanged in those 415 bytes as it affects the final result.
@@ -1696,7 +1696,7 @@ Note: Another thing we could do is to force the other player to write 0xFE in a 
 
 </div>
 
-<p align="center"><img src="/docs/assets/images/gen_1_request.png" alt="Players offer to trade one of their pokemon" style="width:500px;"/></p>
+<p align="center"><img src="{{ site.baseurl }}/docs/assets/images/gen_1_request.png" alt="Players offer to trade one of their pokemon" style="width:500px;"/></p>
 
 * Here, both players are in the trade menu, they can see the properties of each pokemon (in both parties) and may offer to send any of their pokemon to the opposing player. They may also exit the menu at any moment.
 
@@ -1823,7 +1823,7 @@ Examples:
 </div>
 
 
-<p align="center"><img src="/docs/assets/images/gen_1_confirm.png" alt="Players need to confirm the trade." style="width:500px;"/></p>
+<p align="center"><img src="{{ site.baseurl }}/docs/assets/images/gen_1_confirm.png" alt="Players need to confirm the trade." style="width:500px;"/></p>
 
 * Once both players chose to send one of their pokemon, a confirmation dialog will appear. They can either start the trade or cancel:
 
@@ -1907,7 +1907,7 @@ Some examples:
 
 </div>
 
-<p align="center"><img src="/docs/assets/images/gen_1_sequence.png" alt="Nothing really happens during this sequence" style="width:500px;"/></p>
+<p align="center"><img src="{{ site.baseurl }}/docs/assets/images/gen_1_sequence.png" alt="Nothing really happens during this sequence" style="width:500px;"/></p>
 
 * Both players will see the trade animation, **nothing is sent during that sequence** (maybe because gameboys need some time to process the exchange).
   * Evolutions are hardcoded, if a Kadabra, Machoke, Haunter or Graveler is traded both gameboys will independently start their evolve animation.
@@ -1999,7 +1999,7 @@ Some examples:
 <br>
 <div align="center" markdown="1">
 
-<p align="center"><img src="/docs/assets/images/gen_2_welcome.png" alt="Cable Club Trade Welcome!" style="width:500px;"/></p>
+<p align="center"><img src="{{ site.baseurl }}/docs/assets/images/gen_2_welcome.png" alt="Cable Club Trade Welcome!" style="width:500px;"/></p>
 <p align="center">In Gen II there's one room for trading, and another one for battling, so both players need to talk to the same NPC</p>
 
 #### Handshake
