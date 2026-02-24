@@ -125,7 +125,7 @@ The cable pins have already been described many times ([1], [2], [3])
                                                                  |  2  4  6  |
                                                                   \_1__3__5_/
 
-<div align="center">
+<div align="center" markdown="1">
 
 | #           | Name        | Description |
 | ----------- | ----------- | ----------- |
@@ -231,7 +231,7 @@ Note that **in this example** MOSI and MISO signals will only change when the cl
 
 <br>
 
-<div align="center">
+<div align="center" markdown="1">
 
 Here is a table briefly describing the 4 SPI modes:
   
@@ -331,7 +331,7 @@ I'll describe the trading protocol for generation I first, then include how gene
 
 <p align="center"><img src="/docs/assets/images/gen_1_welcome.png" alt="Cable Club Welcome!" style="width:500px;"/></p>
 
-<div align="center">
+<div align="center" markdown="1">
 
 <hr>
 <br>
@@ -528,7 +528,7 @@ The lowest 4 bits are the ones describing the action:
  
 <br>
 
-<div align="center">
+<div align="center" markdown="1">
   
 Here's how it looks like when players select and choose the trade option in the menu (slave chose first!):
 
@@ -564,7 +564,7 @@ After receiving many successful responses, the master will send a stream of 0x00
 
 Note: Just as with the initial [Handshake](#handshake), the only thing that games care about 0x60 is its highest nibble (6), so valid values are 0x60 to 0x6F (only 0x60 is used in both gen I and gen II games).
 
-<div align="center">
+<div align="center" markdown="1">
 
 Here's what it looks like when both gameboys are ready (Master was ready first):
 
@@ -608,7 +608,7 @@ Seed values go from 1 to 0xFC, so the first number in that range after the pream
 
 I haven't tested what happens when sending 0xFD/0xFE/0xFF as part of the seed (which shouldn't happen).
 
-<div align="center">
+<div align="center" markdown="1">
 
 A normal seed exchange (Master seed: A0-A9, Slave seed: B0-B9)
 
@@ -657,7 +657,7 @@ There's only one restriction: **The payload must not contain 0xFE**. 0xFE means 
 
 What happens when 0xFE is part of the payload? It needs to be patched (see [Patch Section](#patch-section)). To keep it simple for now: **Each 0xFE byte is replaced with 0xFF before being sent**.
 
-<div align="center">
+<div align="center" markdown="1">
 
 A normal exchange (Preamble + 415 bytes):
 
@@ -680,7 +680,7 @@ A normal exchange (Preamble + 415 bytes):
 </div>
 
 
-<div align="center">
+<div align="center" markdown="1">
 
 <hr> <br>
 
@@ -699,7 +699,7 @@ A normal exchange (Preamble + 415 bytes):
 
 
 
-<div align="center">
+<div align="center" markdown="1">
 
 A few examples:
 
@@ -727,7 +727,7 @@ A few examples:
 * **IT CAN'T START WITH NULL CHARACTERS (0x00)**. Also an invalid name because not only it's empty, but also its first character isn't 0x50! Anyways, null characters will be interpreted as acknowledges and therefore skipped.
 
 <br><br>
-<div align="center">
+<div align="center" markdown="1">
 
 ##### Party Size
 
@@ -743,7 +743,7 @@ A few examples:
  
 <br><br>
  
-<div align="center">
+<div align="center" markdown="1">
 
 ##### Pokemon Id List
 
@@ -769,7 +769,7 @@ A few examples:
 
 <br>
 
-<div align="center">
+<div align="center" markdown="1">
 
 Some examples:
 
@@ -810,7 +810,7 @@ Same party but with random numbers after the first list terminator (unusual but 
 
 <br><br>
 
-<div align="center">
+<div align="center" markdown="1">
 
 ##### Pokemon Structure (x6)
 
@@ -835,7 +835,7 @@ I'll also describe them here:
 * \[4] **Status Condition**: Each bit represents a status, i could only find information on the meaning of 5 out of 8 bits (SLP, PSN, BRN, FRZ, PAR. Check the Bulbapedia link above) and i don't know what happens when multiple statuses are present at the same time.
   * I suspect the missing statuses are confusion, badly poisoned, and leech seeded (which cannot happen outside battles).
   
-<div align="center">
+<div align="center" markdown="1">
 
 
 | Bits  | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
@@ -870,7 +870,7 @@ I'll also describe them here:
   * Each stat IV consists in 4 bits, so naturally the 4 IV stats will occupy 16 bits / 2 bytes.
   * Health IV is calculated from the IVs of the other stats. Specifically, the last bit of each stat.
 
-<div align="center">
+<div align="center" markdown="1">
 
 Here's an example:
 
@@ -943,7 +943,7 @@ Here's an example:
   * A move's MAX PP depends on their base PP (which is hardcoded) and how much PP UPs they have: [Bulbapedia -> PP UP](https://bulbapedia.bulbagarden.net/wiki/PP_Up).
   
  
-<div align="center">
+<div align="center" markdown="1">
   
 An example PP Value:
 
@@ -994,7 +994,7 @@ An example PP Value:
 
 <br><br>
 
-<div align="center">
+<div align="center" markdown="1">
 
 ##### Original Owner Name (x6)
 
@@ -1009,7 +1009,7 @@ An example PP Value:
   * It shouldn't really matter because extra fields are ignored. They could have any value.
   * \[YELLOW ONLY\]: Sends zeroes instead of repeating the last name.
 
-<div align="center">
+<div align="center" markdown="1">
 
 Examples:
   
@@ -1041,7 +1041,7 @@ Word encoded in a single byte:
 
 
 <br><br>
-<div align="center">
+<div align="center" markdown="1">
 
 ##### Pokemon Nickname (x6)
 
@@ -1054,7 +1054,7 @@ Word encoded in a single byte:
 * \[YELLOW ONLY\] Sends zeroes instead of repeating the last name if party is less than 6.
 * The only difference is that every character after 0x50 is also 0x50 (i'm no sure why, maybe an oversight or a way to differentiate a nickname from the species name).
 
-<div align="center">
+<div align="center" markdown="1">
 
 Examples:
 
@@ -1088,7 +1088,7 @@ A nickname
 </div>
 
 <br><br>
-<div align="center">
+<div align="center" markdown="1">
 
 ##### Owned Pokemon Bytes (x3)
 
@@ -1107,7 +1107,7 @@ A nickname
  
 
 
-<div align="center">
+<div align="center" markdown="1">
 
 As an example, if the player only owned Bulbasaur, Metapod, and Spearrow, then those 3 bytes would be:
 
@@ -1120,7 +1120,7 @@ As an example, if the player only owned Bulbasaur, Metapod, and Spearrow, then t
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Patch Section
 
@@ -1151,7 +1151,7 @@ Players need to send their payloads even if they contain 0xFE, so they **patch**
 <br>
 <br>
 
-<div align="center">
+<div align="center" markdown="1">
   
 ##### Preamble
 
@@ -1160,7 +1160,7 @@ Players need to send their payloads even if they contain 0xFE, so they **patch**
 
 Just as in [Seed Exchange](#seed-exchange) and [Party Information Exchange](#party-information-exchange), a preamble consisting in multiple 0xFD bytes is sent (usually 6 bytes), after that another stream of bytes is exchanged, this time it's 0x00. The first non 0x00 byte marks the start of the patch list.
 
-<div align="center">
+<div align="center" markdown="1">
 
 <details>
   <summary>What a normal patch section preamble looks like:</summary>
@@ -1218,7 +1218,7 @@ The games solve this issue by **logically splitting the payload in 2, and then s
 <br> <br>
 
 
-<div align="center">
+<div align="center" markdown="1">
   <details>
     <summary><b>Here's a complete payload, byte values represent their corresponding offset:</b></summary>
 
@@ -1493,7 +1493,7 @@ Note: **||** Separates stage 1 and 2. Bytes marked as **XX** are unpatchable.
 
 
 <br> <br>
-<div align="center">
+<div align="center" markdown="1">
   
 ##### Restrictions
 
@@ -1520,7 +1520,7 @@ Note: **||** Separates stage 1 and 2. Bytes marked as **XX** are unpatchable.
   * **Games are hardcoded to always exchange the 190 bytes of the patch buffer** even if there's nothing to patch (0x00 is sent repeatedly in those cases).
 
 <br> <br>
-<div align="center">
+<div align="center" markdown="1">
   
 ##### Buffer Overflow
 
@@ -1535,7 +1535,7 @@ Note: **||** Separates stage 1 and 2. Bytes marked as **XX** are unpatchable.
 Note: Another thing we could do is to force the other player to write 0xFE in a memory region which doesn't belong to their received payload: The second patch list can have any offset value between 1 and 252 but the actual patchable payload is 147 bytes long (which is the remaining second half, take a look at the offsets at the [Stages](#stages) section). If we sent a malicious patch list with offsets higher than 0x93, then the other gameboy will happily write 0xFE in a memory area which is beyond the payload to be patched. 106 Bytes after the payload area can be written (offsets 0x94 to 0xFC).
 
 <br> <br>
-<div align="center">
+<div align="center" markdown="1">
   
 ##### Examples
 
@@ -1690,7 +1690,7 @@ Note: Another thing we could do is to force the other player to write 0xFE in a 
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Trade Request
 
@@ -1720,7 +1720,7 @@ Note: Another thing we could do is to force the other player to write 0xFE in a 
 
 Examples:
 
-<div align="center">
+<div align="center" markdown="1">
 
 <details>
   <summary>Master keeps sending its action for a long time until the slave chooses what to do:</summary>
@@ -1758,7 +1758,7 @@ Examples:
 </div>
 
 
-<div align="center">
+<div align="center" markdown="1">
 
 <details>
   <summary>Master chooses to trade its 4th pokemon but slave exits the menu:</summary>
@@ -1816,7 +1816,7 @@ Examples:
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Trade Confirmation
 
@@ -1839,7 +1839,7 @@ Examples:
 
 * When both players confirm the trade, the trading process will start.
 
-<div align="center">
+<div align="center" markdown="1">
   
 Some examples:
 
@@ -1901,7 +1901,7 @@ Some examples:
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Trade Sequence
 
@@ -1928,7 +1928,7 @@ Some examples:
 
 <br>
 
-<div align="center">
+<div align="center" markdown="1">
 
 
 <details>
@@ -1997,7 +1997,7 @@ Some examples:
 ### Generation II
 
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 <p align="center"><img src="/docs/assets/images/gen_2_welcome.png" alt="Cable Club Trade Welcome!" style="width:500px;"/></p>
 <p align="center">In Gen II there's one room for trading, and another one for battling, so both players need to talk to the same NPC</p>
@@ -2012,7 +2012,7 @@ Exactly the same as in Gen I: [\[Gen I\] Handshake](#handshake)
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Players Ready
 
@@ -2027,7 +2027,7 @@ Exactly the same as in Gen I: [\[Gen I\] Handshake](#handshake)
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Room Selection
 
@@ -2048,7 +2048,7 @@ Exactly the same as in Gen I: [\[Gen I\] Handshake](#handshake)
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Players Ready for Trade
 
@@ -2062,7 +2062,7 @@ Exactly the same as in Gen I: [\[Gen I\] Handshake](#handshake)
  
 <br>
 
-<div align="center">
+<div align="center" markdown="1">
   
 <details>
   <summary>
@@ -2131,7 +2131,7 @@ Exactly the same as in Gen I: [\[Gen I\] Handshake](#handshake)
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Seed Exchange
 
@@ -2141,7 +2141,7 @@ Exactly the same as in Gen I: [\[Gen I\] Seed Exchange](#seed-exchange)
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Party Information Exchange
 
@@ -2153,7 +2153,7 @@ Exactly the same as in Gen I: [\[Gen I\] Seed Exchange](#seed-exchange)
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Data Structure
 
@@ -2166,7 +2166,7 @@ Exactly the same as in Gen I: [\[Gen I\] Seed Exchange](#seed-exchange)
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 ##### Trainer Name
 
@@ -2176,7 +2176,7 @@ Same as in Gen I
 
 <br><br>
 
-<div align="center">
+<div align="center" markdown="1">
 
 ##### Party Size
 
@@ -2186,7 +2186,7 @@ Same as in Gen I
 
 <br><br>
 
-<div align="center">
+<div align="center" markdown="1">
 
 ##### Pokemon Id List (EGGS)!
 
@@ -2202,7 +2202,7 @@ Same as in Gen I
 <br><br>
 
 
-<div align="center">
+<div align="center" markdown="1">
 
 ##### Trainer Id
 
@@ -2214,7 +2214,7 @@ Same as in Gen I
 
 <br><br>
 
-<div align="center">
+<div align="center" markdown="1">
 
 ##### Pokemon Structure (x6)
 
@@ -2234,7 +2234,7 @@ Same as in Gen I
     * More information can be found on [The Cutting Room Floor -> Pokemon Gold & Silver -> Items](https://tcrf.net/Development:Pok%C3%A9mon_Gold_and_Silver/Items) and [Glitch City -> Obtaining arbitrary items in G/S/C through Time Capsule](https://archives.glitchcity.info/forums/board-108/thread-6719/page-0.html)
     * This is the list of conversion rules:
    
-    <div align="center">
+    <div align="center" markdown="1">
       
     | Item Id |     Name      | Converted to |
     |---------|---------------|--------------|
@@ -2290,7 +2290,7 @@ Same as in Gen I
 <br><br>
 
 
-<div align="center">
+<div align="center" markdown="1">
 
 ##### Original Owner Name (x6)
 
@@ -2300,7 +2300,7 @@ Similar to Gen I, but names end with an extra terminator (0x50) instead of one. 
 <br><br>
 
 
-<div align="center">
+<div align="center" markdown="1">
 
 ##### Pokemon Nickname (x6)
 
@@ -2310,7 +2310,7 @@ Same as in Gen I, Egg names are always "EGG" followed by a single string termina
 <br><br>
 
 
-<div align="center">
+<div align="center" markdown="1">
 
 ##### Zeros (x3)
 
@@ -2324,7 +2324,7 @@ Same as in Gen I, Egg names are always "EGG" followed by a single string termina
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Patch Section
 
@@ -2339,7 +2339,7 @@ Same as in Gen I, Egg names are always "EGG" followed by a single string termina
 
 <br>
 
-<div align="center">
+<div align="center" markdown="1">
   <details>
     <summary>Here's the updated list of offsets for Gen II:</summary>
 
@@ -2627,7 +2627,7 @@ Same as in Gen I, Egg names are always "EGG" followed by a single string termina
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Mail Information Exchange
 
@@ -2646,7 +2646,7 @@ Same as in Gen I, Egg names are always "EGG" followed by a single string termina
 * First things first, there's a **preamble** before exchanging the payload, this time it is a stream of six **0x20**:
 
 <br> 
-<div align="center">
+<div align="center" markdown="1">
 
 Mail Preamble
   
@@ -2667,7 +2667,7 @@ Mail Preamble
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Mail Data Structure
 
@@ -2685,7 +2685,7 @@ Mail Preamble
 The payload itself is composed of:
 
 <br><br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Contents (x6)
 
@@ -2699,7 +2699,7 @@ The payload itself is composed of:
   * Sending 0x21 will make the other end to interpret it as '8'.
 
 <br><br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Metadata (x6)
 
@@ -2716,7 +2716,7 @@ The payload itself is composed of:
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Mail Patch Section
 
@@ -2735,7 +2735,7 @@ The payload itself is composed of:
 * After players finish sending their lists they will repeatedly send **0x00** until 102 bytes are exchanged.
 
 
-<div align="center">
+<div align="center" markdown="1">
 
 In this example, the Trainer ID of player 1 is 43518 (0xA9**FE**), this means that every mail attached by this player will have at least one byte to be patched (which corresponds to that ID).
 Player 1 has 6 pokemon, only the first and the last one have attached mails. Player 2 doesn't have any pokemon holding a mail.
@@ -2753,7 +2753,7 @@ Player 1 has 6 pokemon, only the first and the last one have attached mails. Pla
 </div>
 
 
-<div align="center">
+<div align="center" markdown="1">
   <details>
     <summary>Here's the offset of every byte in the metadata section:</summary>
       <div align="left">
@@ -2807,7 +2807,7 @@ Player 1 has 6 pokemon, only the first and the last one have attached mails. Pla
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Trade Request
 
@@ -2819,7 +2819,7 @@ Same as in [Gen I](#trade-request) except that the choice prefix is **0x7X** ins
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Trade Confirmation
 
@@ -2831,7 +2831,7 @@ Same as in [Gen I](#trade-confirmation) except that the choice prefix is **0x7X*
 
 <hr>
 <br>
-<div align="center">
+<div align="center" markdown="1">
 
 #### Trade Sequence
 
@@ -2846,7 +2846,7 @@ Same as in [Gen I](#trade-confirmation) except that the choice prefix is **0x7X*
  
 * After that sequence both games return to [Players Ready for Trade](#players-ready-for-trade-1).
 
-<div align="center">
+<div align="center" markdown="1">
 
 <details>
   <summary>Example: Master sent a normal pokemon, slave sent a Celebi:</summary>
