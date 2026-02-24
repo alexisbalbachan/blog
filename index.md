@@ -1,6 +1,10 @@
 ---
+layout: home
 title: Welcome to my blog
 ---
+
+
+<!-- 
 
 # H1
 ## H2
@@ -37,3 +41,5 @@ title: Welcome to my blog
 Here's a sentence with a footnote. [^1]
 
 [^1]: This is the footnote. 
+
+-->
