@@ -2340,11 +2340,10 @@ Same as in Gen I, Egg names are always "EGG" followed by a single string termina
 
 <br>
 
-<div align="center" markdown="1">
-  <details markdown="1">
-    <summary>Here's the updated list of offsets for Gen II:</summary>
+<div align="center">
+  <details><summary>Here's the updated list of offsets for Gen II:</summary>
 
-  <div align="left">
+  <div align="left" markdown="1">
 
 ````
 
