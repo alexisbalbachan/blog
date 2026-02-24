@@ -645,7 +645,7 @@ Here is the binary mapping for the timer values. Note how the bits are mapped de
 
 *(Note: I placed bits 41/42 and 38/39 as the Most Significant Bits in the table below, but my ordering is arbitrary. It might make more sense to place them as the Least Significant Bits, but this is how I originally mapped them out.)*
 
-| Hours | Timer ON Bits <br> `43` `44` `45` `46` `41` `42` <hr> Timer OFF Bits <br> `19` `20` `21` `22` `38` `39` |
+| Hours | Timer ON Bits <br> `43` `44` `45` `46` `41` `42` <br> Timer OFF Bits <br> `19` `20` `21` `22` `38` `39` |
 | :---: | :---: |
 | **0.5** | `0 0 0 0 0 0` |
 | **1.0** | `0 0 0 1 0 0` |
