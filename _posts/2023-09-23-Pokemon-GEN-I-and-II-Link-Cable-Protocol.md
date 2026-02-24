@@ -1162,7 +1162,7 @@ Just as in [Seed Exchange](#seed-exchange) and [Party Information Exchange](#par
 
 <div align="center" markdown="1">
 
-<details>
+<details markdown="1">
   <summary>What a normal patch section preamble looks like:</summary>
 
 <br>
@@ -1219,7 +1219,7 @@ The games solve this issue by **logically splitting the payload in 2, and then s
 
 
 <div align="center" markdown="1">
-  <details>
+  <details markdown="1">
     <summary><b>Here's a complete payload, byte values represent their corresponding offset:</b></summary>
 
 <br>
@@ -1541,7 +1541,7 @@ Note: Another thing we could do is to force the other player to write 0xFE in a 
 
 <br>
 
-<details>
+<details markdown="1">
   <summary>Empty patch list for both master and slave:</summary>
 
   <br>
@@ -1570,7 +1570,7 @@ Note: Another thing we could do is to force the other player to write 0xFE in a 
 <br>
 
 
-<details>
+<details markdown="1">
   <summary>Master patching 3 bytes of the first stage (offsets 0x01, 0x95, 0xFC), slave has nothing to patch:</summary>
 
 <br>
@@ -1599,7 +1599,7 @@ Note: Another thing we could do is to force the other player to write 0xFE in a 
 <br>
 
 
-<details>
+<details markdown="1">
   <summary>Master patching 5 bytes of the second stage, slave patching a single byte from the first stage:</summary>
 
 <br>
@@ -1630,7 +1630,7 @@ Note: Another thing we could do is to force the other player to write 0xFE in a 
 <br>
 
 
-<details>
+<details markdown="1">
   <summary>Master patching 1 byte of each stage (note the <b>0x02</b> in both sections, they belong to different parts of the payload), slave patching 2 bytes of each stage:</summary>
 
 <br>
@@ -1660,7 +1660,7 @@ Note: Another thing we could do is to force the other player to write 0xFE in a 
 <br>
 
 
-<details>
+<details markdown="1">
   <summary>Master using the entire patch area! (186 offsets in section 1, 3 offsets in section 2).</summary>
 
 <br>
@@ -1722,7 +1722,7 @@ Examples:
 
 <div align="center" markdown="1">
 
-<details>
+<details markdown="1">
   <summary>Master keeps sending its action for a long time until the slave chooses what to do:</summary>
 
 <br>
@@ -1760,7 +1760,7 @@ Examples:
 
 <div align="center" markdown="1">
 
-<details>
+<details markdown="1">
   <summary>Master chooses to trade its 4th pokemon but slave exits the menu:</summary>
 
 <br>
@@ -1786,7 +1786,7 @@ Examples:
 <br>
 
 
-<details>
+<details markdown="1">
   <summary>Master chooses to trade its 2nd pokemon, slave chooses its 3rd pokemon:</summary>
 
 <br>
@@ -1844,7 +1844,7 @@ Examples:
 Some examples:
 
 
-<details>
+<details markdown="1">
   <summary>Master (CANCEL) waited a long time for the slave to decide (CONFIRM):</summary>
 
 <br>
@@ -1872,7 +1872,7 @@ Some examples:
 <br>
 
 
-<details>
+<details markdown="1">
   <summary>Both players confirmed immediately:</summary>
 
 <br>
@@ -1931,7 +1931,7 @@ Some examples:
 <div align="center" markdown="1">
 
 
-<details>
+<details markdown="1">
   <summary>A COMPLETE Trade confirmation:</summary>
 
 <br>
@@ -2064,7 +2064,7 @@ Exactly the same as in Gen I: [\[Gen I\] Handshake](#handshake)
 
 <div align="center" markdown="1">
   
-<details>
+<details markdown="1">
   <summary>
   Full Example:
   </summary>
@@ -2340,7 +2340,7 @@ Same as in Gen I, Egg names are always "EGG" followed by a single string termina
 <br>
 
 <div align="center" markdown="1">
-  <details>
+  <details markdown="1">
     <summary>Here's the updated list of offsets for Gen II:</summary>
 
   <div align="left">
@@ -2754,7 +2754,7 @@ Player 1 has 6 pokemon, only the first and the last one have attached mails. Pla
 
 
 <div align="center" markdown="1">
-  <details>
+  <details markdown="1">
     <summary>Here's the offset of every byte in the metadata section:</summary>
       <div align="left">
         
@@ -2848,7 +2848,7 @@ Same as in [Gen I](#trade-confirmation) except that the choice prefix is **0x7X*
 
 <div align="center" markdown="1">
 
-<details>
+<details markdown="1">
   <summary>Example: Master sent a normal pokemon, slave sent a Celebi:</summary>
   <br>
 
