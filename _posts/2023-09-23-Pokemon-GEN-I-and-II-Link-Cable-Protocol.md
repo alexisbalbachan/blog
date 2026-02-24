@@ -1219,19 +1219,17 @@ The games solve this issue by **logically splitting the payload in 2, and then s
 
 
 <div align="center">
-  <details><summary><b>Here's a complete payload, byte values represent their corresponding offset:</b></summary>
+  <details><summary><b>Here's a complete payload, byte values represent their corresponding offset:</b></summary><br>
 
-<br>
-
-
+Note: **||** Separates stage 1 and 2. Bytes marked as **XX** are unpatchable.
 
   <div align="left" markdown="1">
 
 
 
-<pre><code>
+````
 
-Note: **||** Separates stage 1 and 2. Bytes marked as **XX** are unpatchable.
+
 
 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX, 0xXX,   # Trainer Name
 0xXX,                                                               # Party Size
@@ -1486,7 +1484,7 @@ Note: **||** Separates stage 1 and 2. Bytes marked as **XX** are unpatchable.
 
 0x91, 0x92, 0x93                                                    # Owned Pokemon Bytes (Patchable?)
 
-</code></pre>
+````
 
 </div>
 </details>
@@ -2753,10 +2751,9 @@ Player 1 has 6 pokemon, only the first and the last one have attached mails. Pla
 </div>
 
 
-<div align="center" markdown="1">
-  <details markdown="1">
-    <summary>Here's the offset of every byte in the metadata section:</summary>
-      <div align="left">
+<div align="center">
+  <details><summary>Here's the offset of every byte in the metadata section:</summary>
+      <div align="left" markdown="1">
         
 ````
 
